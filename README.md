@@ -1,8 +1,9 @@
 
 # AppArmor Security Profiles for some applications
-	Author: Nibaldo González Salgado
 
-	Last Change: February 20, 2017
+Author: Nibaldo González Salgado
+
+Last Change: February 20, 2017
 
 ## Description:
 
@@ -25,9 +26,9 @@ If you use Ubuntu, please install the packages
 
 	`sudo aa-enforce /etc/apparmor.d/usr.bin.profile`
 	
-	For all profiles:
+	For all profiles: `sudo aa-enforce /etc/apparmor.d/*`
 	
-	`sudo aa-enforce /etc/apparmor.d/*`
+	If you need to reload a profile: `sudo apparmor_parser -r /etc/apparmor.d/usr.bin.profile`	
 
 3. View profiles status: 
 
