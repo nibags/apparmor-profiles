@@ -1,29 +1,34 @@
-# apparmor-profiles
-AppArmor Security Profiles for some applications
------------------------------------------------------------------------
-Author: Nibaldo González Salgado
 
-Last Change: February 20, 2017
+# AppArmor Security Profiles for some applications
+	Author: Nibaldo González Salgado
 
-DESCRIPTION:
+	Last Change: February 20, 2017
 
-	Some AppArmor security profiles. 
-	These are designed to work on KDE Plasma 5, 
-	so these have not been tested in other desktop environments. 
+## Description:
 
-	The profiles have been tested in Ubuntu 16.04 & KDE Plasma 5.9. 
+Some AppArmor security profiles. 
+These are designed to work on KDE Plasma 5, 
+so these have not been tested in other desktop environments. 
 
-	If you use Ubuntu, please install the packages 
-	"apparmor-profiles" & "apparmor-profiles-extra".
+The profiles have been tested in Ubuntu 16.04 & KDE Plasma 5.9. 
 
-INSTALLATION:
+If you use Ubuntu, please install the packages 
+`apparmor-profiles` & `apparmor-profiles-extra`.
 
-	Copy the files in:
-		/etc/apparmor.d/
+## Installation:
+
+1. Copy the files in: `/etc/apparmor.d/`
+
 	Please do so with great caution!
+
+2. Profile in enforcing mode: 
+
+	`sudo aa-enforce /etc/apparmor.d/usr.bin.profile`
 	
-	Profile in enforcing mode:
-		sudo aa-enforce /etc/apparmor.d/le.profile
+	For all profiles:
 	
-	View profiles status:
-		sudo apparmor_status
+	`sudo aa-enforce /etc/apparmor.d/*`
+
+3. View profiles status: 
+
+	`sudo apparmor_status`
