@@ -1,0 +1,72 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez Salgado
+# Last change: February 19, 2017
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+profile okular /usr/bin/okular {
+	#include <abstractions/base>
+	#include <abstractions/dbus>
+	#include <abstractions/dbus-session>
+	#include <abstractions/dbus-accessibility>
+	#include <abstractions/fonts>
+	#include <abstractions/X>
+	#include <abstractions/kde>
+	#include <abstractions/consoles>
+	#include <abstractions/cups-client>
+	
+	# Block network connection
+	#include <abstractions/block-networking>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include <abstractions/confidential-deny>
+	
+	# Full reading access
+	/{,**/,**} r,
+	
+	# Write access in Home directory and mounted drives
+	@{HOME}/** rw,
+	# @{HOME}/{,**/}*.{okular,txt,pdf} rw,
+	/media/**/*.{okular,txt,pdf} rw,
+	
+	# Okular configuration
+	owner @{HOME}/.local/share/okular/{,**} rwk,
+	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
+	owner @{HOME}/.kde/share/config/okularrc ixrwk,
+	owner @{HOME}/.kde/share/config/okularpartrc rwk,
+	owner @{HOME}/.config/okularrc ixrwk,
+	# @{HOME}/.config/* rw, # okularpartrc  # Replicated
+	# @{HOME}/.cache/{,**} rw,
+	# @{HOME}/.config/session/* rwk,  # {okular,khelpcenter,.}*
+	# @{HOME}/.local/share/RecentDocuments/*.desktop rw,
+	
+	# Libraries and binaries
+	/usr/bin/okular ixr,
+	/usr/bin/* Pixr,
+	# /usr/lib{,32,64}/{,**} r,  # Replicated
+	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
+	/usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular/** Pixr,
+	allow /usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular*.so Pixrm,
+	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
+	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
+	
+	# Temp files
+	/tmp/*lock rwk,
+	/tmp/kde-*/{,**} rwk,
+	/var/tmp/kdecache-*/* rwk,
+	/run/user/[0-9]*/*-socket rwk,
+	/run/user/[0-9]*/bus rw,
+	/run/user/[0-9]*/kdeinit5* rwk,
+	/run/user/[0-9]*/ksocket-*/{,**} rwk,
+	/run/user/[0-9]*/pulse/{,*} rwk,
+	/{dev,run,var/run}/shm/pulse-shm* rwk,
+	/run/dbus/system_bus_socket w,
+	
+	deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx, # Only Bluetooth & USB data access
+	audit deny owner /**/*.py* r,  # Block python imports
+	audit deny owner /**/* m,        # Block compiled libraries
+	
+	signal (send) set=(term) peer=unconfined,
+}

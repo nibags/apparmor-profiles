@@ -1,0 +1,318 @@
+# vim:syntax=apparmor
+# Author: Jamie Strandboge <jamie@canonical.com>
+# Modifications: Nibaldo Gonzalez Salgado
+# Last change: February 20, 2017
+
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+@{CHROM_LIBDIR}=/usr/lib/chromium-browser
+
+# We need 'flags=(attach_disconnected)' in newer chromium versions
+/usr/lib/chromium-browser/chromium-browser flags=(attach_disconnected) {
+  #include <abstractions/audio>
+  #include <abstractions/cups-client>
+  #include <abstractions/dbus>
+  #include <abstractions/dbus-session>
+  #include <abstractions/gnome>
+  #include <abstractions/kde>
+  #include <abstractions/ibus>
+  #include <abstractions/nameservice>
+  #include <abstractions/user-tmp>
+
+  # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if
+  # you want access to productivity applications, adjust the following file
+  # accordingly.
+  #include <abstractions/ubuntu-browsers.d/chromium-browser>
+	
+  # Deny directories with sensitive data. View in: /etc/apparmor.d/tunables/confidential
+  deny @{CONFIDENTIAL_EXCEPT_CHROME} rwklmx,
+  
+  # Modifications
+  capability sys_admin,
+  #capability net_bind_service,  # Investigate
+  capability sys_chroot,
+  capability sys_ptrace,
+  
+  owner @{PROC}/[0-9]*/setgroups w,
+  owner @{PROC}/[0-9]*/gid_map w,
+  owner @{PROC}/[0-9]*/uid_map w,
+  @{PROC}/sys/net/ipv4/tcp_fastopen r,
+  
+  /usr/bin/xdg-desktop-menu ixr,
+  /usr/bin/xdg-icon-resource ixr,
+  
+  /dev/video[0-9]* r,
+  @{PROC}/[0-9]*/task/[0-9]*/status r,
+  @{PROC}/[0-9]*/stat r,
+  /sys/devices/system/cpu/cpu*/policy[0-9]*/cpuinfo_max_freq r,
+  /etc/ssl/openssl.cnf r,
+  /etc/lsb-release r,
+  /proc/[0-9]*/environ r,
+  /sys/devices/pci[0-9]*/**/idVendor r,
+  /sys/devices/virtual/tty/tty[0-9]/active r,
+  /sys/devices/**/uevent r,
+  #/sys/devices/system/cpu/cpu[0-9]*/uevent r,  (Replicated)
+  #/sys/devices/pnp[0-9]*/*/uevent r,
+
+  # Networking
+  network inet stream,
+  network inet6 stream,
+  @{PROC}/[0-9]*/net/if_inet6 r,
+  @{PROC}/[0-9]*/net/ipv6_route r,
+
+  # Should maybe be in abstractions
+  /etc/mime.types r,
+  /etc/mailcap r,
+  /etc/mtab r,
+  /etc/xdg/xubuntu/applications/defaults.list r,
+  owner @{HOME}/.local/share/applications/defaults.list r,
+  owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+
+  @{PROC}/[0-9]*/fd/ r,
+  @{PROC}/filesystems r,
+  @{PROC}/ r,
+  @{PROC}/[0-9]*/task/[0-9]*/stat r,
+  owner @{PROC}/[0-9]*/cmdline r,
+  owner @{PROC}/[0-9]*/io r,
+  @{PROC}/[0-9]*/smaps r,
+  owner @{PROC}/[0-9]*/stat r,
+  @{PROC}/[0-9]*/statm r,
+  owner @{PROC}/[0-9]*/status r,
+  deny @{PROC}/[0-9]*/oom_{,score_}adj w,
+  @{PROC}/sys/kernel/yama/ptrace_scope r,
+
+  # Newer chromium needs these now
+  /etc/udev/udev.conf r,
+  /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq r,
+  /sys/devices/pci[0-9]*/**/class r,
+  /sys/devices/pci[0-9]*/**/device r,
+  /sys/devices/pci[0-9]*/**/irq r,
+  /sys/devices/pci[0-9]*/**/resource r,
+  /sys/devices/pci[0-9]*/**/vendor r,
+  /sys/devices/pci[0-9]*/**/removable r,
+  #/sys/devices/pci[0-9]*/**/uevent r, # Replicated
+  /sys/devices/pci[0-9]*/**/block/**/size r,
+  /sys/devices/virtual/block/**/removable r,
+  #/sys/devices/virtual/block/**/uevent r, # Replicated
+  /sys/devices/virtual/block/**/size r,
+  # This is requested, but doesn't seem to actually be needed so deny for now
+  deny /run/udev/data/** r,
+
+  # Needed for the crash reporter
+  owner @{PROC}/[0-9]*/auxv r,
+
+  # chromium mmaps all kinds of things for speed.
+  /etc/passwd m,
+  /usr/share/fonts/truetype/**/*.tt[cf] m,
+  /usr/share/fonts/**/*.pfb m,
+  /usr/share/mime/mime.cache m,
+  /usr/share/icons/**/*.cache m,
+  owner /{dev,run}/shm/pulse-shm* m,
+  owner @{HOME}/.local/share/mime/mime.cache m,
+  owner /tmp/** m,
+
+  @{PROC}/sys/kernel/shmmax r,
+  owner /{dev,run}/shm/{,.}org.chromium.* mrw,
+  owner /{var/run,run,dev}/shm/shmfd-* mrw, # Modifications
+
+  @{CHROM_LIBDIR}/*.pak mr,
+  @{CHROM_LIBDIR}/locales/* mr,
+
+  # Noisy
+  deny @{CHROM_LIBDIR}/** w,
+
+  # Allow ptracing ourselves
+  ptrace (trace) peer=@{profile_name},
+  ptrace (trace) peer=@{profile_name}//xdgsettings, # Modifications
+  ptrace (trace) peer=@{profile_name}//lsb_release,
+
+  # Make browsing directories work
+  / r,
+  /**/ r,
+
+  # Allow access to documentation and other files the user may want to look
+  # at in /usr
+  /usr/{include,share,src}** r,
+
+  # Downloads and Desktop folders
+  owner @{HOME}/ r,
+  owner @{HOME}/Escritorio/ r,
+  owner @{HOME}/Escritorio/** rw,
+  owner @{HOME}/Descargas/ r,
+  owner @{HOME}/Descargas/** rw,
+
+  # For migration
+  # owner @{HOME}/.mozilla/firefox/profiles.ini r,
+  # owner @{HOME}/.mozilla/firefox/*/prefs.js r,
+
+  # Helpers
+  /usr/bin/xdg-open ixr,
+  /usr/bin/gnome-open ixr,
+  /usr/bin/kde-open{,5} ixr, # Modifications
+  /usr/bin/gvfs-open ixr,
+  /usr/bin/kdialog ixr,
+  # TODO: xfce
+
+  # Chromium Policies
+  /etc/chromium-browser/policies/** r,
+
+  # Chromium configuration
+  owner @{HOME}/.pki/nssdb/* rwk,
+  owner @{HOME}/.cache/chromium/ rw,
+  owner @{HOME}/.cache/chromium/** rw,
+  owner @{HOME}/.cache/chromium/Cache/* mr,
+  owner @{HOME}/.config/chromium/ rw,
+  owner @{HOME}/.config/chromium/** rwk,
+  owner @{HOME}/.config/chromium/**/Cache/* mr,
+  owner @{HOME}/.config/chromium/Dictionaries/*.bdic mr,
+  owner @{HOME}/.config/chromium/**/Dictionaries/*.bdic mr,
+
+  # Allow transitions to ourself and our sandbox
+  @{CHROM_LIBDIR}/chromium-browser ix,
+  @{CHROM_LIBDIR}/chromium-browser-sandbox cx -> chromium_browser_sandbox,
+  @{CHROM_LIBDIR}/chrome-sandbox cx -> chromium_browser_sandbox,
+
+  # Allow communicating with sandbox
+  unix (receive, send) peer=(label=@{CHROM_LIBDIR}/chromium-browser//chromium_browser_sandbox),
+
+  /bin/ps Uxr,
+  @{CHROM_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+  /usr/bin/xdg-settings Cxr -> xdgsettings,
+  /usr/bin/lsb_release Cxr -> lsb_release,
+
+  # GSettings
+  owner /{,var/}run/user/*/dconf/     rw,
+  owner /{,var/}run/user/*/dconf/user rw,
+  owner @{HOME}/.config/dconf/user r,
+
+  profile xdgsettings {
+    #include <abstractions/bash>
+    #include <abstractions/gnome>
+	
+	# Modifications
+	@{HOME}/.config/kdeglobals rk, 
+	@{HOME}/.cache/ksycoca5_* r,
+	/usr/share/qt5/translations/qt_*.qm r,
+	/dev/tty r,
+	  
+	/usr/bin/kreadconfig5 ixr,
+	/usr/bin/ktraderclient5 ixr,
+	/usr/bin/head ixr,
+
+    /bin/dash ixr,
+
+    /etc/ld.so.cache r,
+    /usr/bin/xdg-settings r,
+    @{CHROM_LIBDIR}/xdg-settings r,
+    /usr/share/applications/*.desktop r,
+
+    # Checking default browser
+    /bin/grep ixr,
+    /bin/readlink ixr,
+    /bin/sed ixr,
+    /bin/which ixr,
+    /usr/bin/basename ixr,
+    /usr/bin/cut ixr,
+
+    # Setting the default browser
+    /bin/mkdir ixr,
+    /bin/mv ixr,
+    /bin/touch ixr,
+    /usr/bin/dirname ixr,
+    /usr/bin/gconftool-2 ix,
+    /usr/bin/[gm]awk ixr,
+    /usr/bin/xdg-mime ixr,
+    owner @{HOME}/.local/share/applications/ w,
+    owner @{HOME}/.local/share/applications/mimeapps.list* rw,
+  }
+
+  profile lsb_release {
+    #include <abstractions/base>
+    #include <abstractions/python>
+    /usr/bin/lsb_release r,
+    /bin/dash ixr,
+    /usr/bin/dpkg-query ixr,
+    /usr/include/python2.[4567]/pyconfig.h r,
+    /etc/lsb-release r,
+    /etc/debian_version r,
+    /var/lib/dpkg/** r,
+	
+	# Modifications
+    /usr/local/lib/python3.[0-5]/dist-packages/ r,
+    /usr/bin/ r,
+    /usr/bin/python3.[0-5] r,
+	
+	/usr/share/distro-info/debian.csv r,
+  }
+
+
+  # Site-specific additions and overrides. See local/README for details.
+  #include <local/usr.bin.chromium-browser>
+
+profile chromium_browser_sandbox {
+    # Be fanatical since it is setuid root and don't use an abstraction
+    /lib/libgcc_s.so* mr,
+    /lib/@{multiarch}/libgcc_s.so* mr,
+    /lib{,32,64}/libm-*.so* mr,
+    /lib/@{multiarch}/libm-*.so* mr,
+    /lib{,32,64}/libpthread-*.so* mr,
+    /lib/@{multiarch}/libpthread-*.so* mr,
+    /lib{,32,64}/libc-*.so* mr,
+    /lib/@{multiarch}/libc-*.so* mr,
+    /lib{,32,64}/libld-*.so* mr,
+    /lib/@{multiarch}/libld-*.so* mr,
+    /lib{,32,64}/ld-*.so* mr,
+    /lib/@{multiarch}/ld-*.so* mr,
+    /lib/tls/*/{cmov,nosegneg}/libm-*.so* mr,
+    /lib/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
+    /lib/tls/*/{cmov,nosegneg}/libc-*.so* mr,
+    /usr/lib/libstdc++.so* mr,
+    /usr/lib/@{multiarch}/libstdc++.so* mr,
+    /etc/ld.so.cache r,
+
+    # Required for dropping into PID namespace. Keep in mind that until the
+    # process drops this capability it can escape confinement, but once it
+    # drops CAP_SYS_ADMIN we are ok.
+    capability sys_admin,
+
+    # All of these are for sanely dropping from root and chrooting
+    capability chown,
+    capability fsetid,
+    capability setgid,
+    capability setuid,
+    capability dac_override,
+    capability sys_chroot,
+
+    capability sys_ptrace,
+    ptrace (read, readby),
+
+    signal (receive) peer=unconfined,
+    signal peer=@{profile_name},
+    signal (receive, send) set=("exists"),
+    signal (receive) peer=@{CHROM_LIBDIR}/chromium-browser,
+
+    unix (receive, send) peer=(label=@{CHROM_LIBDIR}/chromium-browser),
+    unix (create),
+    unix peer=(label=@{profile_name}),
+    unix (getattr, getopt, setopt, shutdown) addr=none,
+
+    @{PROC}/ r,
+    @{PROC}/[0-9]*/ r,
+    @{PROC}/[0-9]*/fd/ r,
+    deny @{PROC}/[0-9]*/oom_adj w,
+    deny @{PROC}/[0-9]*/oom_score_adj w,
+    @{PROC}/[0-9]*/status r,
+    @{PROC}/[0-9]*/task/[0-9]*/stat r,
+
+    /usr/bin/chromium-browser r,
+    @{CHROM_LIBDIR}/chromium-browser Px,
+    @{CHROM_LIBDIR}/chromium-browser-sandbox r,
+    @{CHROM_LIBDIR}/chrome-sandbox r,
+
+    /dev/null rw,
+
+    owner /tmp/** rw,
+  }
+}

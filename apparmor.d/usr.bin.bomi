@@ -1,0 +1,70 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez Salgado
+# Last change: February 19, 2017
+
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+profile bomi /usr/bin/bomi {
+	#include <abstractions/audio>
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/kde>
+	#include <abstractions/dbus-session>
+	#include <abstractions/X>
+	#include <abstractions/consoles>
+	
+	# Block network connection
+	#include <abstractions/block-networking>
+	
+	# Block full access to sensitive data such as passwords and keys.
+	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tuneables/confidential.
+	#include <abstractions/confidential-deny>
+
+	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
+	
+	/{,**/,**} r,
+	#@{HOME}/{,**} r,  (Replicated)
+	#/media/{,**,**/} r,
+	
+	owner @{HOME}/.cache/xylosper/{,**} rwk,
+	owner @{HOME}/.config/xylosper/{,**} rwk,
+	
+	/dev/ati/{,**} rwlk,
+	/dev/video* rwlk,
+	/dev/fb* rwlk,
+	/dev/bus/{,**} rw,
+	/dev/shm/{,**} rwkl,
+
+	/usr/bin/bomi ixr,
+	/usr/bin/* Pixr,
+	/usr/lib{,32,64}/{,**} Pixr,
+
+	/etc/{,directfbrc*} r,
+
+	/var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/pulse/ w,
+	/run/user/[0-9]*/pulse/ r,
+	/run/user/[0-9]*/ksocket-*/{,**} rwkl,
+	/run/user/[0-9]*/bomi* rwkl,
+	owner /{dev,run,var/run}/shm/pulse-shm* k,
+	/{dev,run,var/run}/shm/pulse-shm* rw,
+	/run/systemd/journal/socket w,
+	/run/dbus/system_bus_socket w,
+	
+	@{HOME}/.cache/icon-cache.kcache w,
+	
+	deny /run/udev/data/{,**} rwklmx,
+	
+	# Dangerous files
+	audit deny owner /**/* m,        # compiled libraries
+	audit deny owner /**/*.py* r,  # python imports
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/DBus
+		interface=org.freedesktop.DBus
+		member=Hello
+		peer=(name=org.freedesktop.DBus),
+}

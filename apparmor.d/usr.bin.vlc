@@ -1,0 +1,82 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez Salgado
+# Last change: February 19, 2017
+
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+profile vlc /usr/bin/vlc {
+	#include <abstractions/audio>
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/kde>
+	#include <abstractions/dbus-strict>
+	#include <abstractions/dbus-accessibility-strict>
+	#include <abstractions/dbus-session>
+	#include <abstractions/nameservice>
+	#include <abstractions/X>
+	#include <abstractions/consoles>
+	
+	# Block full access to sensitive data such as passwords and keys.
+	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include <abstractions/confidential-deny>
+
+	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
+
+	/{,**/,**} r,
+	
+	@{HOME}/{,**} rw,
+	/media/*/{**^Windows,windows} rw,  # All mounted units, except those labeled Windows/windows
+	/media/*/{Windows,windows}/Users/*/** rw,  # Only user directories in Windows
+	
+	owner @{HOME}/.local/share/vlc/{,**} rwk,
+	owner @{HOME}/.config/vlc/{,**} rwk,
+	owner @{HOME}/.config/vlcrc rwk,
+	owner @{HOME}/.cache/vlc/{,**} rwk,
+	
+	/dev/ati/{,**} rwlk,
+	/dev/video* rwlk,
+	/dev/fb* rwlk,
+	/dev/bus/{,**} rw,
+	/dev/shm/{,**} rwkl,
+
+	/usr/bin/vlc ixr,
+	/usr/bin/* Pixr,
+	/usr/lib{,32,64}/{,**} Pixr,
+	# /usr/share/** r, # Replicated
+	# /etc/{,directfbrc*} r,
+	
+	/var/tmp/kdecache-*/* rwk,
+	/run/user/[0-9]*/pulse/{,*} rwk,
+	/run/user/[0-9]*/ksocket-*/{,**} rwk,
+	/run/user/[0-9]*/vlc* rwk,
+	owner /{dev,run,var/run}/shm/pulse-shm* k,
+	/{dev,run,var/run}/shm/pulse-shm* rw,
+	/run/dbus/system_bus_socket w,
+	
+	signal (send) set=(term) peer=unconfined,
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		member=state,
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager,
+	
+	dbus (send)
+		bus=session
+		peer=(name=org.a11y.Bus),
+	dbus (receive)
+		bus=session
+		interface=org.a11y.atspi**,
+	dbus (receive, send)
+		bus=accessibility,
+	
+	deny /run/udev/data/{,**} rwklmx,
+	
+	# Dangerous files
+	audit deny owner /**/* m,        # compiled libraries
+	audit deny owner /**/*.py* r,  # python imports
+}

@@ -1,0 +1,21 @@
+# Block networking
+
+	deny network inet stream,
+	deny network inet6 stream,
+	deny network inet  dgram,
+	deny network inet6 dgram,
+	deny network netlink raw,
+
+	deny @{PROC}/[0-9]*/net/if_inet6 r,
+	deny @{PROC}/[0-9]*/net/ipv6_route r,
+	deny @{PROC}/[0-9]*/net/dev r,
+	deny @{PROC}/[0-9]*/net/wireless r,
+	deny @{PROC}/@{pid}/net/route r,
+	
+	deny /etc/resolv.conf r,
+	deny /{,var/}run/{resolvconf,NetworkManager,systemd/resolve}/resolv.conf r,
+	deny /etc/resolvconf/run/resolv.conf r,
+
+	deny /etc/host.conf r,
+	deny /etc/hosts r,
+	deny /etc/protocols r,

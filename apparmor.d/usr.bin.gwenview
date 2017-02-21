@@ -1,0 +1,61 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez Salgado
+# Last change: February 19, 2017
+
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+profile gwenview /usr/bin/gwenview {
+	#include <abstractions/base>
+	#include <abstractions/dbus>
+	#include <abstractions/dbus-session>
+	#include <abstractions/dbus-accessibility>
+	#include <abstractions/fonts>
+	#include <abstractions/X>
+	#include <abstractions/kde>
+	#include <abstractions/consoles>
+	#include <abstractions/cups-client>
+	
+	# Block network connection
+	#include <abstractions/block-networking>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	deny @{CONFIDENTIAL_VIEWER} rwklmx,
+	
+	# Full reading access
+	/{,**/,**} r,
+	
+	# Write access in Home directory and mounted drives
+	@{HOME}/{,**} rw,
+	/{media,mnt}/** rw,
+	
+	# Gwenview configuration
+	owner @{HOME}/.config/gwenviewrc rwk,
+	owner @{HOME}/.config/org.kde.gwenviewrc rwk,
+	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
+	
+	# Libraries and binaries
+	/usr/bin/gwenview ixr,
+	/usr/bin/* Pixr,
+	#/usr/lib{,32,64}/{,**} r, # Pixr, Replicated
+	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
+	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
+	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
+	
+	# Temp files
+	/var/tmp/kdecache-*/* rwk,
+	/tmp/* rwk,
+	/tmp/kde-*/** rwk,
+	/run/user/[0-9]*/ksocket-*/** rwk,
+	/run/user/[0-9]*/bus rwk,
+	/run/user/[0-9]*/*-socket rwk,
+	/run/user/[0-9]*/kdeinit5* rwk,
+	/run/user/[0-9]*/pulse/{,*} rwk,
+	/{dev,run,var/run}/shm/pulse-shm* rwk,
+	
+	deny /run/udev/data/{,**} rmx,
+	
+	signal (send) set=(term) peer=unconfined,
+}

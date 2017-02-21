@@ -1,0 +1,117 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez Salgado
+# Last change: February 19, 2017
+
+# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+# NOTE: Change the Telegram binary path & the user downloads directory
+# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
+#include <tunables/global>
+
+profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/nameservice>
+	#include <abstractions/kde>
+	#include <abstractions/gnome>
+	#include <abstractions/X>
+	#include <abstractions/audio>
+	#include <abstractions/dbus-strict>
+	#include <abstractions/dbus-session>
+	#include <abstractions/dbus-accessibility-strict>
+	#include <abstractions/ibus>
+	
+	# Block full access to sensitive data such as passwords and keys.
+	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
+	
+	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
+	deny /run/udev/data/{,**} rwklmx,
+	deny /var/cache/fontconfig/ w,
+	deny @{HOME}/.local/share/recently-used.xbel r,
+	deny /usr/bin/gconftool-2 x,
+	
+	# Dangerous files
+	audit deny owner /**/* m,        # compiled libraries
+	audit deny owner /**/*.py* r,  # python imports
+	
+	@{HOME}/{**,} r,
+	@{HOME}/Descargas/** rw,  # Write only in the downloads directory
+	
+	owner @{HOME}/.TelegramDesktop/{**,} rwk,
+	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
+	
+	##@{HOME}/.Xauthority r,   (Replicated)
+	##@{HOME}/.config/fontconfig/fonts.conf r,
+	##@{HOME}/.local/share/mime/mime.cache r,
+	##@{HOME}/.local/share/mime/types r,
+	@{HOME}/.kde{,4}/share/config/kdeglobals rk,
+	@{HOME}/.config/kdeglobals rk,
+	@{HOME}/.config/gtk-3.0/bookmarks rw,
+	@{HOME}/.config/dconf/user rw,
+	/{,var/}run/user/*/dconf/user rw,
+	
+	/usr/bin/pulseaudio Pixr,
+	
+	##/usr/share/icons/{,**} r,   (Replicated)
+	##/usr/share/mime/mime.cache r,
+	##/usr/share/mime/types r,
+	/usr/share/** r,
+	/etc/timezone r,
+	/etc/openal/alsoft.conf r,
+	/etc/pulse/*.conf r,
+	@{PROC}/[0-9]*/cmdline r,
+	@{PROC}/[0-9]*/fd/{,**} r,
+	/run/dbus/system_bus_socket r,
+	/run/user/[0-9]*/bus r,
+	/sys/dbus/** r,
+	/dev/tty r,
+	##/etc/machine-id r,   (In abstractions/nameservice)
+	/etc/udev/udev.conf r,
+	
+	/tmp/** rwk,
+	/var/tmp/** rw,
+	
+	# Helpers
+	/usr/bin/xdg-open ixr,
+	/usr/bin/gnome-open ixr,
+	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/gvfs-open ixr,
+	/usr/bin/kdialog ixr,
+	
+	ptrace (trace) peer=unconfined,
+	
+	dbus (send)
+		bus=session
+		peer=(name=org.a11y.Bus),
+	dbus (receive)
+		bus=session
+		interface=org.a11y.atspi**,
+	dbus (receive, send)
+		bus=accessibility,
+		
+	dbus (send)
+		bus=system
+		interface=org.freedesktop.DBus.Property.EmitsChangedSignal,
+	
+	dbus (send)
+		bus=system
+		interface=org.freedesktop.DBus.Properties,
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		member=state,
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager,
+	
+	# For networking
+	network inet stream,
+	network inet6 stream,
+	@{PROC}/[0-9]*/net/if_inet6 r,
+	@{PROC}/[0-9]*/net/ipv6_route r,
+	@{PROC}/[0-9]*/net/dev r,
+	@{PROC}/[0-9]*/net/wireless r,
+}
