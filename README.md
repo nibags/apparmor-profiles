@@ -28,6 +28,18 @@ The profiles have been tested in Ubuntu 16.04 & KDE Plasma 5.9.
 If you use Ubuntu, please install the packages 
 `apparmor-profiles` & `apparmor-profiles-extra`.
 
+## Important:
+
+* Some profiles require you to review the location of the downloads and desktop directories. By default it is used:
+	Downloads Directory: `@{HOME}/Descargas/`	
+	Desktop Directory: `@{HOME}/Escritorio/`
+	
+* The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
+
+* Check the location of the Telegram executable. The profile uses: `/home/*/.TelegramDesktop/bin/{Telegram,Updater}`.
+
+* In the Opera profile, the executable path is `/usr/lib/x86_64-linux-gnu/opera/opera`. Modify if your architecture is not x86_64. Could be: `/usr/lib/*-linux-gnu/opera/opera`
+
 ## Installation:
 
 1. Copy the files in: `/etc/apparmor.d/`
@@ -48,11 +60,4 @@ If you use Ubuntu, please install the packages
 
 	`sudo apparmor_status`
 
-## To Do:
-
-Correct failed security profiles (Not included in the repository):
-* Clementine: I consider a profile unnecessary for this application. The profile generates some errors.
-* Dropbox: Check.
-* KGet: Check.
-* KWalletd: Failed to upgrade from Plasma 5.8 to 5.9. Correct profile thoroughly.
 
