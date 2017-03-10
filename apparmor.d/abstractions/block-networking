@@ -1,21 +1,29 @@
 # Block networking
 
-	deny network inet stream,
-	deny network inet6 stream,
-	deny network inet  dgram,
-	deny network inet6 dgram,
-	deny network netlink raw,
+# deny network inet stream,
+# deny network inet6 stream,
+# deny network inet  dgram,
+# deny network inet6 dgram,
+deny network inet,
+deny network inet6,
+deny network netlink raw,
 
-	deny @{PROC}/[0-9]*/net/if_inet6 r,
-	deny @{PROC}/[0-9]*/net/ipv6_route r,
-	deny @{PROC}/[0-9]*/net/dev r,
-	deny @{PROC}/[0-9]*/net/wireless r,
-	deny @{PROC}/@{pid}/net/route r,
-	
-	deny /etc/resolv.conf r,
-	deny /{,var/}run/{resolvconf,NetworkManager,systemd/resolve}/resolv.conf r,
-	deny /etc/resolvconf/run/resolv.conf r,
+deny @{PROC}/[0-9]*/net/if_inet6 rw,
+deny @{PROC}/[0-9]*/net/ipv6_route rw,
+deny @{PROC}/[0-9]*/net/dev rw,
+deny @{PROC}/[0-9]*/net/wireless rw,
+deny @{PROC}/@{pid}/net/route rw,
 
-	deny /etc/host.conf r,
-	deny /etc/hosts r,
-	deny /etc/protocols r,
+# on systems using resolvconf, /etc/resolv.conf is a symlink to
+# /{,var/}run/resolvconf/resolv.conf and a file sometimes referenced in
+# /etc/resolvconf/run/resolv.conf. Similarly, if NetworkManager is used
+# without resolvconf, /etc/resolv.conf is a symlink to its own resolv.conf.
+# Finally, on systems using systemd's networkd, /etc/resolv.conf is
+# a symlink to /run/systemd/resolve/resolv.conf
+deny /etc/resolv.conf rw,
+deny /{,var/}run/{resolvconf,NetworkManager,systemd/resolve}/resolv.conf rw,
+deny /etc/resolvconf/run/resolv.conf rw,
+
+deny /etc/host.conf rw,
+deny /etc/hosts rw,
+deny /etc/protocols rw,
