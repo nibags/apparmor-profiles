@@ -1,5 +1,5 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez Salgado
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: February 19, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory

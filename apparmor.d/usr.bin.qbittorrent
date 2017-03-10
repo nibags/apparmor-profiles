@@ -1,5 +1,5 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez Salgado
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: February 19, 2017
 
 # NOTE: This profile is more restrictive than

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
-# Modifications: Nibaldo Gonzalez Salgado
+# Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: February 20, 2017
 
 # Declare an apparmor variable to help with overrides

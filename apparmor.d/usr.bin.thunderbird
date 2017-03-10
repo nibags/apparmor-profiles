@@ -1,5 +1,5 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez Salgado
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: February 18, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
