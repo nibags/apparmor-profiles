@@ -18,7 +18,7 @@ AppArmor security profiles for:
 * Thunderbird
 * VLC
 
-	Note: The profiles of "Gwenview" and "Okular" had problems updating to KDE Applications 16.12.3. Please, use in compliant mode to wait to correct the error.
+ Note: The profiles of "Gwenview" and "Okular" had problems updating to KDE Applications 16.12.3. Please, use in compliant mode to wait to correct the error.
 
 
 These are designed to work on KDE Plasma 5, 
