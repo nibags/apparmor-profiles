@@ -40,6 +40,7 @@ profile gwenview /usr/bin/gwenview {
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
+	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
 	/usr/lib{,32,64}/** Pix,
 	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
