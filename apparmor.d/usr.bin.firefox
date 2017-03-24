@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 20, 2017
+# Last change: March 24, 2017
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -61,6 +61,7 @@
   /etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
   /etc/xfce4/defaults.list r,
   /usr/share/xubuntu/applications/defaults.list r,
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
@@ -238,7 +239,7 @@
 	# Python version correction
     /usr/local/lib/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] r,
+    /usr/bin/python3.[0-5] r,  # Mask required: "m"
 
     # file_inherit
     deny /tmp/gtalkplugin.log w,

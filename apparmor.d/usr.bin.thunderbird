@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 18, 2017
+# Last change: March 23, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -96,6 +96,7 @@
   /etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
   /etc/xfce4/defaults.list r,
   /usr/share/xubuntu/applications/defaults.list r,
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
@@ -177,8 +178,10 @@
   /dev/tty r,
   
   owner @{HOME}/.cache/thumbnails/** rw,
-  @{HOME}/.cache/icon-cache.kcache wr,
-
+  @{HOME}/.cache/icon-cache.kcache rw,
+  /usr/lib/*-linux-gnu/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
+  /usr/lib/*-linux-gnu/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
+  
   /etc/mtab r,
   /etc/fstab r,
 
@@ -253,6 +256,13 @@
   /usr/bin/mkfifo Uxr,  # investigate
   /bin/ps Uxr,
   /bin/uname Uxr,
+  
+  # Open Links
+  /usr/lib/firefox/firefox.sh ix,
+  /usr/lib/firefox/firefox{,*[^s][^h]} PUx,
+  /usr/lib/*-linux-gnu/opera/opera PUx,
+  /usr/bin/chromium-browser ix,
+  /usr/lib/chromium-browser/chromium-browser PUx,
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {

@@ -1,12 +1,13 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 18, 2017
+# Last change: March 23, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
-
 #include <tunables/global>
 
+# Important: Modify if your architecture is not x86_64 (also in the profile path).
+# Can be used: /usr/lib/*-linux-gnu/opera
 @{OPERA_LIBDIR}=/usr/lib/x86_64-linux-gnu/opera
 
 /usr/lib/x86_64-linux-gnu/opera/opera flags=(attach_disconnected) {
@@ -159,7 +160,7 @@
   owner @{HOME}/.cache/opera/Cache/* mr,
   owner @{HOME}/.config/opera/{,**} rwkm,
   
-  @{OPERA_LIBDIR}/opera_autoupdate ixr,
+  @{OPERA_LIBDIR}/opera_autoupdate ixrk,
   @{OPERA_LIBDIR}/opera_crashreporter ixr,
 
   # Allow transitions to ourself and our sandbox
@@ -298,7 +299,7 @@ profile opera_sandbox {
     /usr/bin/opera r,
     @{OPERA_LIBDIR}/opera Px,
     @{OPERA_LIBDIR}/opera_sandbox r,
-    @{OPERA_LIBDIR}/opera_autoupdate ixr,
+    @{OPERA_LIBDIR}/opera_autoupdate ixrk,
 	@{OPERA_LIBDIR}/opera_crashreporter ixr,
     /dev/null rw,
 
