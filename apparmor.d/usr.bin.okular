@@ -1,7 +1,6 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# Author: Nibaldo Gonzalez <nagonza@alumnos.inf.utfsm.cl>
+# Last change: March 24, 2017
 
 #include <tunables/global>
 
@@ -28,29 +27,30 @@ profile okular /usr/bin/okular {
 	
 	# Write access in Home directory and mounted drives
 	@{HOME}/** rw,
-	# @{HOME}/{,**/}*.{okular,txt,pdf} rw,
 	/media/**/*.{okular,txt,pdf} rw,
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,
 	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
-	owner @{HOME}/.kde/share/config/okularrc ixrwk,
-	owner @{HOME}/.kde/share/config/okularpartrc rwk,
-	owner @{HOME}/.config/okularrc ixrwk,
-	# @{HOME}/.config/* rw, # okularpartrc  # Replicated
-	# @{HOME}/.cache/{,**} rw,
-	# @{HOME}/.config/session/* rwk,  # {okular,khelpcenter,.}*
-	# @{HOME}/.local/share/RecentDocuments/*.desktop rw,
+	owner @{HOME}/.kde/share/config/okularrc{,.lock} ixrwk,
+	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
+	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
+	owner @{HOME}/.config/okularrc{,.lock} ixrwk,
+	@{HOME}/.config/session/{okular,khelpcenter,.}* rwk,
+	@{HOME}/.config/.[A-Z0-9]* rwk,
+	@{HOME}/.cache/khelpcenter/**lock rwk,
+	@{HOME}/.local/share/RecentDocuments/{*.desktop.lock,.[A-Z0-9]*} rwk,
 	
 	# Libraries and binaries
 	/usr/bin/okular ixr,
 	/usr/bin/* Pixr,
-	# /usr/lib{,32,64}/{,**} r,  # Replicated
+	/usr/lib{,32,64}/** Pix,
 	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
 	/usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular/** Pixr,
-	allow /usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular*.so Pixrm,
 	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
 	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
+	allow /usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular*.so Pixrm,
+	allow /usr/lib/*-linux-gnu/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
 	/tmp/*lock rwk,

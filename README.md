@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>)
 
-Last Change: March 17, 2017
+Last Change: March 24, 2017
 
 ## Description:
 
@@ -11,18 +11,15 @@ AppArmor security profiles for:
 * Bomi
 * Chromium
 * Firefox
-* ~~Gwenview~~
+* Gwenview
 * KTorrent
-* ~~Okular~~
+* Okular
 * Opera
 * qBittorrent
 * Telegram
 * Thunderbird
 * VLC
 
- **Note**: The profiles of "Gwenview" and "Okular" had problems updating to KDE Applications 16.12.3. Please, use in compliant mode to wait to correct the error.
-
----
 
 These are designed to work on KDE Plasma 5, 
 so these have not been tested in other desktop environments. 

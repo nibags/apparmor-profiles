@@ -1,8 +1,6 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
-
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# Author: Nibaldo Gonzalez <nagonza@alumnos.inf.utfsm.cl>
+# Last change: March 24, 2017
 
 #include <tunables/global>
 
@@ -32,17 +30,22 @@ profile gwenview /usr/bin/gwenview {
 	/{media,mnt}/** rw,
 	
 	# Gwenview configuration
-	owner @{HOME}/.config/gwenviewrc rwk,
-	owner @{HOME}/.config/org.kde.gwenviewrc rwk,
+	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
+	owner @{HOME}/.config/org.kde.gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
+	@{HOME}/.config/session/{gwenview,org.kde.gwenview,khelpcenter,.}* rwk,
+	@{HOME}/.config/.[A-Z0-9]* rwk,
+	@{HOME}/.local/share/baloo/index-lock rwk,
+	@{HOME}/.cache/khelpcenter/**lock rwk,
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/* Pixr,
-	#/usr/lib{,32,64}/{,**} r, # Pixr, Replicated
+	/usr/lib{,32,64}/** Pix,
 	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
 	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
 	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
+	/usr/lib/*-linux-gnu/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
 	/var/tmp/kdecache-*/* rwk,

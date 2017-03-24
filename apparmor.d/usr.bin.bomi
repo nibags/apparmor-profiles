@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
+# Last change: March 24, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
@@ -65,6 +65,6 @@ profile bomi /usr/bin/bomi {
 		bus=system
 		path=/org/freedesktop/DBus
 		interface=org.freedesktop.DBus
-		member=Hello
+		member={Hello,AddMatch,RemoveMatch,GetNameOwner,NameHasOwner}
 		peer=(name=org.freedesktop.DBus),
 }
