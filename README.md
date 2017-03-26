@@ -32,9 +32,7 @@ If you use Ubuntu, please install the packages
 ## Important:
 
 * Some profiles require you to review the location of the downloads and desktop directories. By default it is used:
-		Downloads Directory: `@{HOME}/Descargas/`	
-		
-		Desktop Directory: `@{HOME}/Escritorio/`
+		Downloads Directory: `@{HOME}/Descargas/`	 ; Desktop Directory: `@{HOME}/Escritorio/`
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
