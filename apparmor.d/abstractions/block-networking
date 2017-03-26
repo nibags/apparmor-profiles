@@ -1,9 +1,6 @@
+# Last change: March 25, 2017
 # Block networking
 
-# deny network inet stream,
-# deny network inet6 stream,
-# deny network inet  dgram,
-# deny network inet6 dgram,
 deny network inet,
 deny network inet6,
 deny network netlink raw,

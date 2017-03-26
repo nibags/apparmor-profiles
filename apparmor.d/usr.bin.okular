@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez <nagonza@alumnos.inf.utfsm.cl>
-# Last change: March 24, 2017
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: March 25, 2017
 
 #include <tunables/global>
 
@@ -19,8 +19,13 @@ profile okular /usr/bin/okular {
 	#include <abstractions/block-networking>
 	
 	# Block full access to sensitive data, as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
+	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
+	#  #include <abstractions/ubuntu-helpers>
+	#  #include <abstractions/ubuntu-browsers>
 	
 	# Full reading access
 	/{,**/,**} r,
@@ -45,13 +50,14 @@ profile okular /usr/bin/okular {
 	/usr/bin/okular ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
-	/usr/lib{,32,64}/** Pix,
-	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
-	/usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular/** Pixr,
-	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
-	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
-	allow /usr/lib{,32,64}/*-linux-gnu/qt5/plugins/okular*.so Pixrm,
-	allow /usr/lib/*-linux-gnu/qt5/plugins/{,**/}*.so rm,
+	/usr/lib{,64}/** Pixr,
+	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/libexec/** Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/qt5/** Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular/** Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/qt5/{libexec,bin}/* Pixr,
+	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular*.so Pixrm,
+	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
 	/tmp/*lock rwk,
@@ -67,7 +73,7 @@ profile okular /usr/bin/okular {
 	
 	deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx, # Only Bluetooth & USB data access
 	audit deny owner /**/*.py* r,  # Block python imports
-	audit deny owner /**/* m,        # Block compiled libraries
+	audit deny owner /**/* m,       # Block compiled libraries
 	
 	signal (send) set=(term) peer=unconfined,
 }

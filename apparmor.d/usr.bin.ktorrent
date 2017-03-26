@@ -60,7 +60,7 @@ profile ktorrent /usr/bin/ktorrent {
 	/etc/xdg/{,**} r,
 	
 	# Allow exec of libexec applications
-	/usr/lib{,32,64}/** Pixr,
+	/usr/lib{,64}/** Pixr,
 	
 	/proc/*/mounts r,
 	/etc/udev/udev.conf r,

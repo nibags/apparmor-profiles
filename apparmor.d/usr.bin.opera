@@ -1,16 +1,20 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 23, 2017
+# Last change: March 25, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 #include <tunables/global>
 
-# Important: Modify if your architecture is not x86_64 (also in the profile path).
-# Can be used: /usr/lib/*-linux-gnu/opera
-@{OPERA_LIBDIR}=/usr/lib/x86_64-linux-gnu/opera
+# The Opera directory can be:
+#    /usr/lib/x86_64-linux-gnu/opera/  [Ubuntu, Debian] [64 bits]
+#    /usr/lib/i386-linux-gnu/opera/  [Ubuntu, Debian] [32 bits]
+#    /usr/lib/opera/  [Arch Linux]
+#    /usr/lib64/opera/  [Fedora, OpenSUSE] [64 bits]
 
-/usr/lib/x86_64-linux-gnu/opera/opera flags=(attach_disconnected) {
+@{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
+
+/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus>
@@ -231,7 +235,7 @@
     /var/lib/dpkg/** r,
 	
 	# NOTE: Fix when outputting new version of Python
-    /usr/local/lib/python3.[0-5]/dist-packages/ r,
+    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
     /usr/bin/python3.[0-5] r,
 	
@@ -243,23 +247,23 @@
 
 profile opera_sandbox {
     # Be fanatical since it is setuid root and don't use an abstraction
-    /lib/libgcc_s.so* mr,
-    /lib/@{multiarch}/libgcc_s.so* mr,
-    /lib{,32,64}/libm-*.so* mr,
-    /lib/@{multiarch}/libm-*.so* mr,
-    /lib{,32,64}/libpthread-*.so* mr,
-    /lib/@{multiarch}/libpthread-*.so* mr,
-    /lib{,32,64}/libc-*.so* mr,
-    /lib/@{multiarch}/libc-*.so* mr,
-    /lib{,32,64}/libld-*.so* mr,
-    /lib/@{multiarch}/libld-*.so* mr,
-    /lib{,32,64}/ld-*.so* mr,
-    /lib/@{multiarch}/ld-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libm-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libc-*.so* mr,
-    /usr/lib/libstdc++.so* mr,
-    /usr/lib/@{multiarch}/libstdc++.so* mr,
+    /lib{,64}/libgcc_s.so* mr,
+    /lib{,64,/@{multiarch}}/libgcc_s.so* mr,
+    /lib{,64}/libm-*.so* mr,
+    /lib{,64,/@{multiarch}}/libm-*.so* mr,
+    /lib{,64}/libpthread-*.so* mr,
+    /lib{,64,/@{multiarch}}/libpthread-*.so* mr,
+    /lib{,64}/libc-*.so* mr,
+    /lib{,64,/@{multiarch}}/libc-*.so* mr,
+    /lib{,64}/libld-*.so* mr,
+    /lib{,64,/@{multiarch}}/libld-*.so* mr,
+    /lib{,64}/ld-*.so* mr,
+    /lib{,64,/@{multiarch}}/ld-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libm-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libc-*.so* mr,
+    /usr/lib{,64}/libstdc++.so* mr,
+    /usr/lib{,64,/@{multiarch}}/libstdc++.so* mr,
     /etc/ld.so.cache r,
 
     # Required for dropping into PID namespace. Keep in mind that until the

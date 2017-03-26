@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
+# Last change: March 25, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -19,6 +19,9 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	#include <abstractions/dbus-session>
 	#include <abstractions/dbus-accessibility-strict>
 	#include <abstractions/ibus>
+	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
 	
 	# Block full access to sensitive data such as passwords and keys.
 	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.

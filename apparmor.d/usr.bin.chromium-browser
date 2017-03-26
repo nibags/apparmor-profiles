@@ -1,16 +1,16 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 20, 2017
+# Last change: March 25, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
-@{CHROM_LIBDIR}=/usr/lib/chromium-browser
+@{CHROM_LIBDIR}=/usr/lib{,64}/chromium-browser
 
 # We need 'flags=(attach_disconnected)' in newer chromium versions
-/usr/lib/chromium-browser/chromium-browser flags=(attach_disconnected) {
+/usr/lib{,64}/chromium-browser/chromium-browser flags=(attach_disconnected) {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus>
@@ -240,7 +240,7 @@
     /var/lib/dpkg/** r,
 	
 	# Modifications
-    /usr/local/lib/python3.[0-5]/dist-packages/ r,
+    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
     /usr/bin/python3.[0-5] r,
 	
@@ -253,23 +253,23 @@
 
 profile chromium_browser_sandbox {
     # Be fanatical since it is setuid root and don't use an abstraction
-    /lib/libgcc_s.so* mr,
-    /lib/@{multiarch}/libgcc_s.so* mr,
-    /lib{,32,64}/libm-*.so* mr,
-    /lib/@{multiarch}/libm-*.so* mr,
-    /lib{,32,64}/libpthread-*.so* mr,
-    /lib/@{multiarch}/libpthread-*.so* mr,
-    /lib{,32,64}/libc-*.so* mr,
-    /lib/@{multiarch}/libc-*.so* mr,
-    /lib{,32,64}/libld-*.so* mr,
-    /lib/@{multiarch}/libld-*.so* mr,
-    /lib{,32,64}/ld-*.so* mr,
-    /lib/@{multiarch}/ld-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libm-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
-    /lib/tls/*/{cmov,nosegneg}/libc-*.so* mr,
-    /usr/lib/libstdc++.so* mr,
-    /usr/lib/@{multiarch}/libstdc++.so* mr,
+    /lib{,64}/libgcc_s.so* mr,
+    /lib{,64,/@{multiarch}}/libgcc_s.so* mr,
+    /lib{,64}/libm-*.so* mr,
+    /lib{,64,/@{multiarch}}/libm-*.so* mr,
+    /lib{,64}/libpthread-*.so* mr,
+    /lib{,64,/@{multiarch}}/libpthread-*.so* mr,
+    /lib{,64}/libc-*.so* mr,
+    /lib{,64,/@{multiarch}}/libc-*.so* mr,
+    /lib{,64}/libld-*.so* mr,
+    /lib{,64,/@{multiarch}}/libld-*.so* mr,
+    /lib{,64}/ld-*.so* mr,
+    /lib{,64,/@{multiarch}}ld-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libm-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
+    /lib{,64}/tls/*/{cmov,nosegneg}/libc-*.so* mr,
+    /usr/lib{,64}/libstdc++.so* mr,
+    /usr/lib{,64,/@{multiarch}}/libstdc++.so* mr,
     /etc/ld.so.cache r,
 
     # Required for dropping into PID namespace. Keep in mind that until the

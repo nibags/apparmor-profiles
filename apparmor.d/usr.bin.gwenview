@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
-# Author: Nibaldo Gonzalez <nagonza@alumnos.inf.utfsm.cl>
-# Last change: March 24, 2017
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: March 25, 2017
 
 #include <tunables/global>
 
@@ -18,8 +18,13 @@ profile gwenview /usr/bin/gwenview {
 	# Block network connection
 	#include <abstractions/block-networking>
 	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
+	#  #include <abstractions/ubuntu-helpers>
+	#  #include <abstractions/ubuntu-browsers>
+	
 	# Block full access to sensitive data, as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_VIEWER} rwklmx,
 	
 	# Full reading access
@@ -42,11 +47,11 @@ profile gwenview /usr/bin/gwenview {
 	/usr/bin/gwenview ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
-	/usr/lib{,32,64}/** Pix,
-	/usr/lib{,32,64}/kde4/libexec/{,**} Pixr,
-	/usr/lib{,32,64}/*-linux-gnu/qt5/{libexec,bin}/* Pixr,
-	/usr/lib{,32,64}/*-linux-gnu/libexec/** Pixr,
-	/usr/lib/*-linux-gnu/qt5/plugins/{,**/}*.so rm,
+	/usr/lib{,64}/** Pixr,
+	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/qt5/** Pixr,
+	# /usr/lib{,64,/*-linux-gnu}/libexec/** Pixr,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
 	/var/tmp/kdecache-*/* rwk,

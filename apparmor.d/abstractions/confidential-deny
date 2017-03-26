@@ -1,1 +1,3 @@
+# Block full access to sensitive data, as passwords, keys and some system directories.
+# View: tunables/confidential.
 deny @{CONFIDENTIAL} rwklmx,

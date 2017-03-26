@@ -39,7 +39,7 @@ profile bomi /usr/bin/bomi {
 
 	/usr/bin/bomi ixr,
 	/usr/bin/* Pixr,
-	/usr/lib{,32,64}/{,**} Pixr,
+	/usr/lib{,64}/{,**} Pixr,
 
 	/etc/{,directfbrc*} r,
 

@@ -43,7 +43,7 @@ profile vlc /usr/bin/vlc {
 
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
-	/usr/lib{,32,64}/{,**} Pixr,
+	/usr/lib{,64}/{,**} Pixr,
 	# /usr/share/** r, # Replicated
 	# /etc/{,directfbrc*} r,
 	

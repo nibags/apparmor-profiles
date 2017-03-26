@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 23, 2017
+# Last change: March 25, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -10,7 +10,7 @@
 # correctly in the KDE Plasma 5 desktop environment.
 
 # Declare an apparmor variable to help with overrides
-@{MOZ_LIBDIR}=/usr/lib/thunderbird
+@{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
 
 #include <tunables/global>
 
@@ -18,7 +18,7 @@
 #  /usr/lib/thunderbird/thunderbird
 # but not:
 #  /usr/lib/thunderbird/thunderbird.sh
-/usr/lib/thunderbird/thunderbird{,*[^s][^h]} {
+/usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
   #include <abstractions/audio>
   #include <abstractions/aspell>
   #include <abstractions/cups-client>
@@ -36,7 +36,12 @@
   #include <abstractions/ssl_certs>
   #include <abstractions/ubuntu-unity7-base>
   #include <abstractions/ubuntu-unity7-launcher>
-	
+  
+  # Needed to open links (only for Firefox, Opera & Chromium).
+  #include <abstractions/open-browser>
+  #  #include <abstractions/ubuntu-helpers>
+  #  #include <abstractions/ubuntu-browsers>
+  
   #include <abstractions/dbus-accessibility-strict>
   dbus (send)
        bus=session
@@ -52,7 +57,8 @@
        bus=session
        interface=org.kde.KWallet,
   
-  # Deny directories with sensitive data. View in: /etc/apparmor.d/tunables/confidential
+  # Block full access to sensitive data, as passwords and keys.
+  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_THUNDERBIRD} rwklmx,
        
   # for crash reports?
@@ -143,9 +149,9 @@
 
   # noisy
   deny @{MOZ_LIBDIR}/** w,
-  deny /usr/lib/thunderbird-addons/** w,
-  deny /usr/lib/xulrunner-addons/** w,
-  deny /usr/lib/xulrunner-*/components/*.tmp w,
+  deny /usr/lib{,64}/thunderbird-addons/** w,
+  deny /usr/lib{,64}/xulrunner-addons/** w,
+  deny /usr/lib{,64}/xulrunner-*/components/*.tmp w,
   deny /.suspended r,
   deny /boot/initrd.img* r,
   deny /boot/vmlinuz* r,
@@ -179,8 +185,8 @@
   
   owner @{HOME}/.cache/thumbnails/** rw,
   @{HOME}/.cache/icon-cache.kcache rw,
-  /usr/lib/*-linux-gnu/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
-  /usr/lib/*-linux-gnu/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
+  /usr/lib{,64,/*-linux-gnu}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
+  /usr/lib{,64,/*-linux-gnu}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
   
   /etc/mtab r,
   /etc/fstab r,
@@ -198,7 +204,7 @@
   owner @{PROC}/[0-9]*/smaps r,
 
   # Needed for container to work in xul builds
-  /usr/lib/xulrunner-*/plugin-container ixr,
+  /usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
   # allow access to documentation and other files the user may want to look
   # at in /usr and /opt
@@ -240,12 +246,12 @@
   owner @{HOME}/.mozilla/**/extensions/** mixr,
   owner @{HOME}/.thunderbird/**/extensions/** mixrw,
   /usr/share/xul-ext/**/*.sqlite              rk,
-  /usr/lib/xul-ext/**/*.sqlite                rk,
-  /usr/lib/thunderbird-addons/extensions/**/*.sqlite rk,
+  /usr/lib{,64}/xul-ext/**/*.sqlite                rk,
+  /usr/lib{,64}/thunderbird-addons/extensions/**/*.sqlite rk,
 
   deny @{MOZ_LIBDIR}/update.test w,
-  deny /usr/lib/mozilla/extensions/**/ w,
-  deny /usr/lib/xulrunner-addons/extensions/**/ w,
+  deny /usr/lib{,64}/mozilla/extensions/**/ w,
+  deny /usr/lib{,64}/xulrunner-addons/extensions/**/ w,
   deny /usr/share/mozilla/extensions/**/ w,
   deny /usr/share/mozilla/ w,
 
@@ -256,13 +262,6 @@
   /usr/bin/mkfifo Uxr,  # investigate
   /bin/ps Uxr,
   /bin/uname Uxr,
-  
-  # Open Links
-  /usr/lib/firefox/firefox.sh ix,
-  /usr/lib/firefox/firefox{,*[^s][^h]} PUx,
-  /usr/lib/*-linux-gnu/opera/opera PUx,
-  /usr/bin/chromium-browser ix,
-  /usr/lib/chromium-browser/chromium-browser PUx,
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {
@@ -276,7 +275,7 @@
     /etc/debian_version r,
     /var/lib/dpkg/** r,
 
-    /usr/local/lib/python3.[0-5]/dist-packages/ r,
+    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
     /usr/bin/python3.[0-5] r,
 
@@ -302,7 +301,7 @@
     /etc/ldap/ldap.conf r,
 
     /usr/bin/gpg mr,
-    /usr/lib/gnupg/gpgkeys_* ix,
+    /usr/lib{,64}/gnupg/gpgkeys_* ix,
     owner @{HOME}/.gnupg r,
     owner @{HOME}/.gnupg/gpg.conf r,
     owner @{HOME}/.gnupg/random_seed rwk,
@@ -334,7 +333,7 @@
     # Required to import keys from keyservers
     #include <abstractions/nameservice>
     #include <abstractions/p11-kit>
-    /usr/lib/gnupg2/gpg2keys_hkp ix,
+    /usr/lib{,64}/gnupg2/gpg2keys_hkp ix,
 
     # For smartcards?
     /dev/bus/usb/ r,

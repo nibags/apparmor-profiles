@@ -1,10 +1,10 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 24, 2017
+# Last change: March 25, 2017
 
 # Declare an apparmor variable to help with overrides
-@{MOZ_LIBDIR}=/usr/lib/firefox
+@{MOZ_LIBDIR}=/usr/lib{,64}/firefox
 
 #include <tunables/global>
 
@@ -13,7 +13,7 @@
 #  /usr/lib/firefox/firefox
 # but not:
 #  /usr/lib/firefox/firefox.sh
-/usr/lib/firefox/firefox{,*[^s][^h]} {
+/usr/lib{,64}/firefox/firefox{,*[^s][^h]} {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus-strict>
@@ -111,9 +111,9 @@
 
   # noisy
   deny @{MOZ_LIBDIR}/** w,
-  deny /usr/lib/firefox-addons/** w,
-  deny /usr/lib/xulrunner-addons/** w,
-  deny /usr/lib/xulrunner-*/components/*.tmp w,
+  deny /usr/lib{,64}/firefox-addons/** w,
+  deny /usr/lib{,64}/xulrunner-addons/** w,
+  deny /usr/lib{,64}/xulrunner-*/components/*.tmp w,
   deny /.suspended r,
   deny /boot/initrd.img* r,
   deny /boot/vmlinuz* r,
@@ -160,7 +160,7 @@
   owner @{PROC}/[0-9]*/smaps r,
 
   # Needed for container to work in xul builds
-  /usr/lib/xulrunner-*/plugin-container ixr,
+  /usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
   # allow access to documentation and other files the user may want to look
   # at in /usr and /opt
@@ -209,8 +209,8 @@
   owner @{HOME}/.mozilla/**/extensions/** mixr,
 
   deny @{MOZ_LIBDIR}/update.test w,
-  deny /usr/lib/mozilla/extensions/**/ w,
-  deny /usr/lib/xulrunner-addons/extensions/**/ w,
+  deny /usr/lib{,64}/mozilla/extensions/**/ w,
+  deny /usr/lib{,64}/xulrunner-addons/extensions/**/ w,
   deny /usr/share/mozilla/extensions/**/ w,
   deny /usr/share/mozilla/ w,
 
@@ -237,7 +237,7 @@
 	/usr/share/distro-info/debian.csv r,
 	
 	# Python version correction
-    /usr/local/lib/python3.[0-5]/dist-packages/ r,
+    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
     /usr/bin/python3.[0-5] r,  # Mask required: "m"
 
