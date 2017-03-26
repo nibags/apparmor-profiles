@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>)
 
-Last Change: March 24, 2017
+Last Change: March 25, 2017
 
 ## Description:
 
@@ -32,14 +32,14 @@ If you use Ubuntu, please install the packages
 ## Important:
 
 * Some profiles require you to review the location of the downloads and desktop directories. By default it is used:
-	Downloads Directory: `@{HOME}/Descargas/`	
-	Desktop Directory: `@{HOME}/Escritorio/`
+		Downloads Directory: `@{HOME}/Descargas/`	
+		
+		Desktop Directory: `@{HOME}/Escritorio/`
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
 * Check the location of the Telegram executable. The profile uses: `/home/*/.TelegramDesktop/bin/{Telegram,Updater}`.
 
-* In the Opera profile, the executable path is `/usr/lib/x86_64-linux-gnu/opera/opera`. Modify if your architecture is not x86_64. Could be: `/usr/lib/*-linux-gnu/opera/opera`
 
 ## Installation:
 
