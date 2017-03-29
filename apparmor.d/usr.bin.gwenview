@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: March 29, 2017
 
 #include <tunables/global>
 
@@ -18,10 +18,9 @@ profile gwenview /usr/bin/gwenview {
 	# Block network connection
 	#include <abstractions/block-networking>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
 	#include <abstractions/open-browser>
-	#  #include <abstractions/ubuntu-helpers>
-	#  #include <abstractions/ubuntu-browsers>
+	#include <abstractions/open-email>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -38,30 +37,32 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.config/org.kde.gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
-	@{HOME}/.config/session/{gwenview,org.kde.gwenview,khelpcenter,.}* rwk,
-	@{HOME}/.config/.[A-Z0-9]* rwk,
-	@{HOME}/.local/share/baloo/index-lock rwk,
-	@{HOME}/.cache/khelpcenter/**lock rwk,
+	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,khelpcenter,.}* rwk,
+	owner @{HOME}/.config/.[A-Z0-9]* rwk,
+	owner @{HOME}/.local/share/baloo/index-lock rwk,
+	owner @{HOME}/.cache/khelpcenter/**lock rwk,
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
+	
+	# Replicated Rules
 	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/libexec/** Pixr,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
-	/var/tmp/kdecache-*/* rwk,
-	/tmp/* rwk,
-	/tmp/kde-*/** rwk,
-	/run/user/[0-9]*/ksocket-*/** rwk,
-	/run/user/[0-9]*/bus rwk,
-	/run/user/[0-9]*/*-socket rwk,
-	/run/user/[0-9]*/kdeinit5* rwk,
-	/run/user/[0-9]*/pulse/{,*} rwk,
+	owner /var/tmp/kdecache-*/* rwk,
+	owner /tmp/* rwk,
+	owner /tmp/kde-*/** rwk,
+	owner /run/user/[0-9]*/ksocket-*/** rwk,
+	owner /run/user/[0-9]*/bus rwk,
+	owner /run/user/[0-9]*/*-socket rwk,
+	owner /run/user/[0-9]*/kdeinit5* rwk,
+	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	
 	deny /run/udev/data/{,**} rmx,

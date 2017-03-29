@@ -43,17 +43,17 @@ profile bomi /usr/bin/bomi {
 
 	/etc/{,directfbrc*} r,
 
-	/var/tmp/kdecache-*/* rwk,
+	owner /var/tmp/kdecache-*/* rwk,
 	owner /run/user/[0-9]*/pulse/ w,
-	/run/user/[0-9]*/pulse/ r,
-	/run/user/[0-9]*/ksocket-*/{,**} rwkl,
-	/run/user/[0-9]*/bomi* rwkl,
+	owner /run/user/[0-9]*/pulse/ r,
+	owner /run/user/[0-9]*/ksocket-*/{,**} rwkl,
+	owner /run/user/[0-9]*/bomi* rwkl,
 	owner /{dev,run,var/run}/shm/pulse-shm* k,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	/run/systemd/journal/socket w,
 	/run/dbus/system_bus_socket w,
 	
-	@{HOME}/.cache/icon-cache.kcache w,
+	owner @{HOME}/.cache/icon-cache.kcache w,
 	
 	deny /run/udev/data/{,**} rwklmx,
 	

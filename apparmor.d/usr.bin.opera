@@ -30,8 +30,8 @@
   # accordingly.
   #include <abstractions/ubuntu-browsers.d/chromium-browser>
 	
-  # Block full access to sensitive data such as passwords and keys.
-  # Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+  # Block full access to sensitive data, as passwords and keys.
+  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
   
   capability sys_admin,
@@ -54,11 +54,6 @@
   /sys/devices/pci[0-9]*/**/idVendor r,
   /sys/devices/virtual/tty/tty[0-9]/active r,
   /sys/devices/**/uevent r,
-  #/sys/devices/system/cpu/cpu[0-9]*/uevent r,  # Replicated
-  #/sys/devices/pnp[0-9]*/*/uevent r,
-  #/sys/devices/LNXSYSTM:[0-9]*/{LNX*/,LNX*/**/,}uevent r,
-  #/sys/devices/{msr,cpu}/uevent r,
-  #/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
   
   # Networking
   network inet stream,
@@ -95,13 +90,20 @@
   /sys/devices/pci[0-9]*/**/resource r,
   /sys/devices/pci[0-9]*/**/vendor r,
   /sys/devices/pci[0-9]*/**/removable r,
-  #/sys/devices/pci[0-9]*/**/uevent r, # Replicated
   /sys/devices/pci[0-9]*/**/block/**/size r,
   /sys/devices/virtual/block/**/removable r,
-  #/sys/devices/virtual/block/**/uevent r, # Replicated
   /sys/devices/virtual/block/**/size r,
   # This is requested, but doesn't seem to actually be needed so deny for now
   deny /run/udev/data/** r,
+  
+  # Replicated Rules
+  #/sys/devices/pci[0-9]*/**/uevent r,
+  #/sys/devices/virtual/block/**/uevent r, 
+  #/sys/devices/system/cpu/cpu[0-9]*/uevent r, 
+  #/sys/devices/pnp[0-9]*/*/uevent r,
+  #/sys/devices/LNXSYSTM:[0-9]*/{LNX*/,LNX*/**/,}uevent r,
+  #/sys/devices/{msr,cpu}/uevent r,
+  #/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
 
   # Needed for the crash reporter
   owner @{PROC}/[0-9]*/auxv r,

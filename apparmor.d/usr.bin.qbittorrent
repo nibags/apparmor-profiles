@@ -1,10 +1,10 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
+# Last change: March 29, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
-# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5
+# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
@@ -17,12 +17,15 @@ profile qbittorrent /usr/bin/qbittorrent {
 	#include <abstractions/X>
 	#include <abstractions/kde>
 	
-	# Block full access to sensitive data such as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
+	
 	# Just read/write in the Torrents directory. Modify according to qBittorrent configuration.
-	@{HOME}/Descargas/Torrents/** rw,
+	owner @{HOME}/Descargas/Torrents/** rw,
 	# Only read .torrent files
 	@{HOME}/{,**/}*.torrent r,
 	
@@ -35,28 +38,28 @@ profile qbittorrent /usr/bin/qbittorrent {
 	
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/qBittorrent/{,**} rwk,
-	@{HOME}/.local/share/data/ rw,
-	@{HOME}/.config/QtProject/{,**} rw,
-	@{HOME}/.config/QtProject.conf{,.*} rwk,
+	owner @{HOME}/.local/share/data/ rw,
+	owner @{HOME}/.config/QtProject/{,**} rw,
+	owner @{HOME}/.config/QtProject.conf{,.*} rwk,
 	
 	owner @{HOME}/.config/qBittorrentrc* rwk,
-	@{HOME}/.config/.[^d]* rwk,
+	owner @{HOME}/.config/.[^d]* rwk,
 	
-	@{HOME}/.local/share/user-places.xbel{,.*} rw,
-	# @{HOME}/.local/share/RecentDocuments/*.desktop rw,  # Used, but not essential
-	@{HOME}/.config/trashrc r, # rw
+	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
+	# owner @{HOME}/.local/share/RecentDocuments/*.desktop rw,  # Used, but not essential
+	owner @{HOME}/.config/trashrc r, # rw
 	
-	@{HOME}/.config/kdeglobals r, # rw
-	@{HOME}/.config/kdeglobals.* rw,
-	@{HOME}/.config/kio* r,
-	@{HOME}/.config/kdebugrc r,
-	@{HOME}/.config/breezerc r,
-	@{HOME}/.cache/icon-cache.kcache rw,
-	@{HOME}/.cache/ksycoca5_* r,
-	@{HOME}/.kde{,4}/share/config/{kde,kio}* r,
-	@{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
-	@{HOME}/.kde{,4}/share/config/kcookiejarrc r,
-	@{HOME}/.kde{,4}/share/config/breezerc r,
+	owner @{HOME}/.config/kdeglobals r, # rw
+	owner @{HOME}/.config/kdeglobals.* rw,
+	owner @{HOME}/.config/kio* r,
+	owner @{HOME}/.config/kdebugrc r,
+	owner @{HOME}/.config/breezerc r,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.cache/ksycoca5_* r,
+	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* r,
+	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
+	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
+	owner @{HOME}/.kde{,4}/share/config/breezerc r,
 	
 	/usr/share/knotifications5/* r,
 	/usr/share/qt5/translations/qt_*.qm r,
@@ -89,7 +92,6 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/etc/udev/udev.conf r,
 	
 	# /sys/devices/**/uevent r,  # Ideal, but not essential
-	# /sys/devices/system/cpu/{cpu[0-9]*/,}uevent r,	  # Replicated
 	/sys/devices/pci[0-9]*/**/uevent r,
 	/sys/devices/pnp[0-9]*/**/uevent r,
 	/sys/devices/system/node/node[0-9]*/uevent r,
@@ -97,14 +99,14 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
 	
 	# Temp files
-	/tmp/{,.}qBittorrent*.lock rwkl,
-	/tmp/kde-*/** rwk,
-	/var/tmp/kdecache-*/* rwk,
-	/run/user/[0-9]*/ksocket-*/qBittorrent* rwkl,
-	/run/user/[0-9]*/kioclient*-socket rwkl,
-	/run/user/[0-9]*/qBittorrent*-socket rwkl,
+	owner /tmp/{,.}qBittorrent*.lock rwkl,
+	owner /tmp/kde-*/** rwk,
+	owner /var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/ksocket-*/qBittorrent* rwkl,
+	owner /run/user/[0-9]*/kioclient*-socket rwkl,
+	owner /run/user/[0-9]*/qBittorrent*-socket rwkl,
 	
-	/run/user/[0-9]*/bus rwk,
+	owner /run/user/[0-9]*/bus rwk,
 	/run/dbus/system_bus_socket rw,
 	
 	network netlink dgram,
@@ -123,36 +125,4 @@ profile qbittorrent /usr/bin/qbittorrent {
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
 		peer=(name=org.freedesktop.UPower label=unconfined),
-	
-	# Used, but not essential
-	#dbus (send)
-	#	bus=system
-	#	path=/org/freedesktop/NetworkManager
-	#	interface=org.freedesktop.NetworkManager
-	#	member=GetDevices
-	#	peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	#dbus (send)
-	#	bus=system
-	#	path=/org/freedesktop/NetworkManager/Settings
-	#	interface=org.freedesktop.NetworkManager.Settings
-	#	member=ListConnections
-	#	peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	#dbus (send)
-	#	bus=system
-	#	path=/org/freedesktop/NetworkManager/ActiveConnection/0
-	#	interface=org.freedesktop.DBus.Properties
-	#	member=GetAll
-	#	peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	#dbus (send)
-	#	bus=system
-	#	path=/org/freedesktop/NetworkManager/Settings
-	#	interface=org.freedesktop.NetworkManager.Settings
-	#	member=ListConnection
-	#	peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	#dbus (send)
-	#	bus=system
-	#	path=/org/freedesktop/NetworkManager/Settings
-	#	interface=org.freedesktop.NetworkManager.Settings
-	#	member=ListConnections
-	#	peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }

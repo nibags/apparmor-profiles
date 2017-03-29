@@ -1,0 +1,16 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: March 29, 2017
+
+# Open e-mail clients.
+# Only for Thunderbird.
+# To support more e-mail clients, you can also use (in the toplevel profile):
+#      #include <abstractions/ubuntu-helpers>
+#      #include <abstractions/ubuntu-email>
+
+# Thunderbird
+# /usr/bin/thunderbird is a link to /usr/lib{,64}/thunderbird/thunderbird.sh
+# /usr/lib{,64}/thunderbird/thunderbird.sh is a script that executes /usr/lib{,64}/thunderbird/thunderbird
+/usr/lib{,64}/thunderbird/thunderbird.sh ix,
+/usr/lib{,64}/thunderbird/thunderbird PUx,
+/bin/which Pix,

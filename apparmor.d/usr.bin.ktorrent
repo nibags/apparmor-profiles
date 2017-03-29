@@ -1,8 +1,10 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
+# Last change: March 29, 2017
 
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# NOTE: This profile is more restrictive than
+# the one provided in <abstractions/ubuntu-bittorrent-clients>.
+# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
@@ -15,24 +17,26 @@ profile ktorrent /usr/bin/ktorrent {
 	#include <abstractions/X>
 	#include <abstractions/kde>
 	
-	# Block full access to sensitive data such as Thunderbird, Firefox, Opera,
-	# Chromium/Chrome passwords, SSH, PGP & Android keys,
-	# and /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Just read/write in the Torrents directory. Modify according to KTorrent configuration.
-	@{HOME}/Descargas/Torrents/** rw,
-	# Only read .torrent files
-	@{HOME}/{,**/}*.torrent r,
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
 	
-	@{HOME}/.kde{,4}/share/apps/ktorrent/** rw,
-	@{HOME}/.kde{,4}/share/config/ktorrent* rwk,
-	@{HOME}/.kde{,4}/share/config/{kde,kio}* rk,  # kdeglobals
-	@{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
-	@{HOME}/.kde{,4}/share/config/kcookiejarrc r,
-	@{HOME}/.kde{,4}/share/config/breezerc r,
-	@{HOME}/.kde{,4}/share/config/{kdeglobals,kdebugrc}*.new rw,
-	@{HOME}/.local/share/user-places.xbel{,.*} rw,
+	# Just read/write in the Torrents directory. Modify according to KTorrent configuration.
+	owner @{HOME}/Descargas/Torrents/** rw,
+	# Only read .torrent files
+	owner @{HOME}/{,**/}*.torrent r,
+	
+	owner @{HOME}/.kde{,4}/share/apps/ktorrent/** rw,
+	owner @{HOME}/.kde{,4}/share/config/ktorrent* rwk,
+	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* rk,  # kdeglobals
+	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
+	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
+	owner @{HOME}/.kde{,4}/share/config/breezerc r,
+	owner @{HOME}/.kde{,4}/share/config/{kdeglobals,kdebugrc}*.new rw,
+	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
 	
 	deny /run/udev/data/** rwklmx,
 	deny /{media,mnt}/** rwklmx,
@@ -69,10 +73,10 @@ profile ktorrent /usr/bin/ktorrent {
 	/sys/devices/pci[0-9]*/**/uevent r,
 	
 	# Temp files
-	/run/user/[0-9]*/ksocket-*/ktorrent* rwkl,
-	/tmp/{,.}ktorrent*.lock rwkl,
-	/tmp/kde-*/** rwk,
-	/var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/ksocket-*/ktorrent* rwkl,
+	owner /tmp/{,.}ktorrent*.lock rwkl,
+	owner /tmp/kde-*/** rwk,
+	owner /var/tmp/kdecache-*/* rwk,
 	
 	# For multimedia support
 	#/{,var/}run/user/*/pulse/ r,

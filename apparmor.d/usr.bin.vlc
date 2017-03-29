@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 19, 2017
+# Last change: March 29, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
@@ -18,10 +18,13 @@ profile vlc /usr/bin/vlc {
 	#include <abstractions/X>
 	#include <abstractions/consoles>
 	
-	# Block full access to sensitive data such as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
-
+	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
+	
 	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
 
 	/{,**/,**} r,
@@ -44,13 +47,12 @@ profile vlc /usr/bin/vlc {
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
-	# /usr/share/** r, # Replicated
-	# /etc/{,directfbrc*} r,
+	# /etc/{,directfbrc*} r, # Replicated
 	
-	/var/tmp/kdecache-*/* rwk,
-	/run/user/[0-9]*/pulse/{,*} rwk,
-	/run/user/[0-9]*/ksocket-*/{,**} rwk,
-	/run/user/[0-9]*/vlc* rwk,
+	owner /var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/pulse/{,*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
+	owner /run/user/[0-9]*/vlc* rwk,
 	owner /{dev,run,var/run}/shm/pulse-shm* k,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	/run/dbus/system_bus_socket w,

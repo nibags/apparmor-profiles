@@ -1,0 +1,82 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: March 29, 2017
+#include <tunables/global>
+
+profile konversation /usr/bin/konversation {
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/dbus>
+	#include <abstractions/dbus-accessibility>
+	#include <abstractions/dbus-session>
+	#include <abstractions/nameservice>
+	#include <abstractions/X>
+	#include <abstractions/audio>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include <abstractions/confidential-deny>
+	
+	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
+	#include <abstractions/open-browser>
+	#include <abstractions/open-email>
+
+	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
+
+	owner @{HOME}/Descargas/** rw,  # Downloads directory
+	owner @{HOME}/logs/{,**} rw,         # Logs directory
+	owner @{HOME}/*.log rw,
+	
+	# Konversation Configuration
+	owner @{HOME}/.Xauthority r,
+	owner @{HOME}/.config/** r,
+	owner @{HOME}/.config/kdeglobals rk,
+	owner @{HOME}/.config/*{rc,.dirs} rk,
+	owner @{HOME}/.config/kde.org/* rk,
+	owner @{HOME}/.config/session/** rwk,
+	owner @{HOME}/.config/k*.lock rwk,
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/konversation* rwk,
+	owner @{HOME}/.kde{,4}/share/config/konversation* rwk,
+	owner @{HOME}/.kde{,4}/share/apps/kabc/std.vcf rwk,
+	owner @{HOME}/.kde{,4}/share/config/kresources/contact/* rwk,
+	owner @{HOME}/.local/share/{,**} r,
+	owner @{HOME}/.local/share/konversation/{,**} rwk,
+	owner @{HOME}/.local/share/RecentDocuments/{*.desktop*,.[A-Z0-9]*} rwk,
+	owner @{HOME}/.cache/* rwk,
+	owner @{HOME}/.cache/khelpcenter/{,**} rwk,
+	
+	# Binaries
+	/usr/bin/konversation ixr,
+	/usr/bin/* Pixr,
+	
+	# Allow exec of libexec applications
+	/usr/lib{,64}/** Pixr,
+	
+	/usr/share/** r,
+	/etc/xdg/** r,
+	/etc/udev/** r,
+	/etc/machine-id r,
+	/etc/ssl/openssl.cnf r,
+	
+	/proc/sys/kernel/core_pattern r,
+	/sys/devices/** r,
+	/sys/bus/** r,
+	/sys/class/** r,
+	/run/udev/** r,
+	
+	# Temp files
+	owner /var/tmp/kdecache-*/** rwk,
+	owner /tmp/kde-*/** rwk,
+	owner /tmp/{,.}k*.{lock,tmp} rwk,
+	owner /run/user/[0-9]*/k*-socket rwk,
+	
+	deny /dev/** rwklmx,
+	deny /run/udev/data/{,**} rwklmx,
+	
+	# Dangerous files
+	audit deny owner /**/* m,        # Compiled libraries
+	audit deny owner /**/*.py* r,   # Python imports
+	
+	signal (send) set=(term) peer=unconfined,
+}

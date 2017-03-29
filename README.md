@@ -13,6 +13,7 @@ AppArmor security profiles for:
 * Firefox
 * Gwenview
 * KGet
+* Konversation
 * KTorrent
 * Okular
 * Opera

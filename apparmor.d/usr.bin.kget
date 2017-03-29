@@ -17,20 +17,21 @@ profile kget /usr/bin/kget {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
 	#include <abstractions/open-browser>
+	#include <abstractions/open-email>
 	
 	# Downloads directory
-	@{HOME}/Descargas/** rw,
-	@{HOME}/{,**} r,
+	owner @{HOME}/Descargas/** rw,
+	owner @{HOME}/{,**} r,
 	
 	# KGet configuration
-	@{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
-	@{HOME}/.kde{,4}/share/config/kget* rw,
-	@{HOME}/.local/share/user-places.xbel{,.*} rw,
-	@{HOME}/.kde{,4}/share/config/{kdeglobals,kio*} rk,
-	@{HOME}/.kde{,4}/share/config/{kde,kio}* rk, 
-	@{HOME}/.config/Trolltech.conf rk,
+	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
+	owner @{HOME}/.kde{,4}/share/config/kget* rw,
+	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
+	owner @{HOME}/.kde{,4}/share/config/{kdeglobals,kio*} rk,
+	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* rk, 
+	owner @{HOME}/.config/Trolltech.conf rk,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -56,9 +57,9 @@ profile kget /usr/bin/kget {
 	/run/dbus/system_bus_socket rw,
 	
 	# Temp files
-	/var/tmp/kdecache-*/** rwk,
-	/run/user/[0-9]*/ksocket-*/{,kget*} rwk,
-	/tmp/{,.}kget*.lock rwk,
+	owner /var/tmp/kdecache-*/** rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,kget*} rwk,
+	owner /tmp/{,.}kget*.lock rwk,
 	
 	deny /{sys,dev}/** rwklmx,
 	deny /run/udev/data/{,**} rwklmx,

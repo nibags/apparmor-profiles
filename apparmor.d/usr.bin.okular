@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: March 29, 2017
 
 #include <tunables/global>
 
@@ -22,10 +22,9 @@ profile okular /usr/bin/okular {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
 	#include <abstractions/open-browser>
-	#  #include <abstractions/ubuntu-helpers>
-	#  #include <abstractions/ubuntu-browsers>
+	#include <abstractions/open-email>
 	
 	# Full reading access
 	/{,**/,**} r,
@@ -41,33 +40,35 @@ profile okular /usr/bin/okular {
 	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
 	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
 	owner @{HOME}/.config/okularrc{,.lock} ixrwk,
-	@{HOME}/.config/session/{okular,khelpcenter,.}* rwk,
-	@{HOME}/.config/.[A-Z0-9]* rwk,
-	@{HOME}/.cache/khelpcenter/**lock rwk,
-	@{HOME}/.local/share/RecentDocuments/{*.desktop.lock,.[A-Z0-9]*} rwk,
+	owner @{HOME}/.config/session/{okular,khelpcenter,.}* rwk,
+	owner @{HOME}/.config/.[A-Z0-9]* rwk,
+	owner @{HOME}/.cache/khelpcenter/**lock rwk,
+	owner @{HOME}/.local/share/RecentDocuments/{*.desktop.lock,.[A-Z0-9]*} rwk,
 	
 	# Libraries and binaries
 	/usr/bin/okular ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
+	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular*.so Pixrm,
+	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
+	
+	# Replicated Rules
 	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/libexec/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/{libexec,bin}/* Pixr,
-	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular*.so Pixrm,
-	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
 	
 	# Temp files
-	/tmp/*lock rwk,
-	/tmp/kde-*/{,**} rwk,
-	/var/tmp/kdecache-*/* rwk,
-	/run/user/[0-9]*/*-socket rwk,
-	/run/user/[0-9]*/bus rw,
-	/run/user/[0-9]*/kdeinit5* rwk,
-	/run/user/[0-9]*/ksocket-*/{,**} rwk,
-	/run/user/[0-9]*/pulse/{,*} rwk,
+	owner /tmp/*lock rwk,
+	owner /tmp/kde-*/{,**} rwk,
+	owner /var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/*-socket rwk,
+	owner /run/user/[0-9]*/bus rw,
+	owner /run/user/[0-9]*/kdeinit5* rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
+	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	/run/dbus/system_bus_socket w,
 	

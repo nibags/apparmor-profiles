@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: March 29, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -23,8 +23,8 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Needed to open links (only for Firefox, Opera & Chromium).
 	#include <abstractions/open-browser>
 	
-	# Block full access to sensitive data such as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
 	
 	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
@@ -33,31 +33,19 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny @{HOME}/.local/share/recently-used.xbel r,
 	deny /usr/bin/gconftool-2 x,
 	
-	# Dangerous files
-	audit deny owner /**/* m,        # compiled libraries
-	audit deny owner /**/*.py* r,  # python imports
+	owner @{HOME}/{**,} r,
+	owner @{HOME}/Descargas/** rw,  # Write only in the downloads directory
 	
-	@{HOME}/{**,} r,
-	@{HOME}/Descargas/** rw,  # Write only in the downloads directory
-	
+	# Telegram directory
 	owner @{HOME}/.TelegramDesktop/{**,} rwk,
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
-	##@{HOME}/.Xauthority r,   (Replicated)
-	##@{HOME}/.config/fontconfig/fonts.conf r,
-	##@{HOME}/.local/share/mime/mime.cache r,
-	##@{HOME}/.local/share/mime/types r,
-	@{HOME}/.kde{,4}/share/config/kdeglobals rk,
-	@{HOME}/.config/kdeglobals rk,
-	@{HOME}/.config/gtk-3.0/bookmarks rw,
-	@{HOME}/.config/dconf/user rw,
-	/{,var/}run/user/*/dconf/user rw,
+	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
+	owner @{HOME}/.config/kdeglobals rk,
+	owner @{HOME}/.config/gtk-3.0/bookmarks rw,
+	owner @{HOME}/.config/dconf/user rw,
+	owner /{,var/}run/user/*/dconf/user rw,
 	
-	/usr/bin/pulseaudio Pixr,
-	
-	##/usr/share/icons/{,**} r,   (Replicated)
-	##/usr/share/mime/mime.cache r,
-	##/usr/share/mime/types r,
 	/usr/share/** r,
 	/etc/timezone r,
 	/etc/openal/alsoft.conf r,
@@ -71,15 +59,29 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	##/etc/machine-id r,   (In abstractions/nameservice)
 	/etc/udev/udev.conf r,
 	
-	/tmp/** rwk,
-	/var/tmp/** rw,
-	
-	# Helpers
+	# Binaries & Helpers
+	/usr/bin/pulseaudio Pixr,
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
+	
+	# Temp Files
+	owner /tmp/** rwk,
+	owner /var/tmp/** rw,
+	
+	# For Networking
+	network inet stream,
+	network inet6 stream,
+	@{PROC}/[0-9]*/net/if_inet6 r,
+	@{PROC}/[0-9]*/net/ipv6_route r,
+	@{PROC}/[0-9]*/net/dev r,
+	@{PROC}/[0-9]*/net/wireless r,
+	
+	# Dangerous Files
+	audit deny owner /**/* m,        # Compiled libraries
+	audit deny owner /**/*.py* r,   # Python imports
 	
 	ptrace (trace) peer=unconfined,
 	
@@ -107,12 +109,4 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	dbus (receive)
 		bus=system
 		path=/org/freedesktop/NetworkManager,
-	
-	# For networking
-	network inet stream,
-	network inet6 stream,
-	@{PROC}/[0-9]*/net/if_inet6 r,
-	@{PROC}/[0-9]*/net/ipv6_route r,
-	@{PROC}/[0-9]*/net/dev r,
-	@{PROC}/[0-9]*/net/wireless r,
 }
