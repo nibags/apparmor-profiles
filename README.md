@@ -20,6 +20,7 @@ AppArmor security profiles for:
 * qBittorrent
 * Telegram
 * Thunderbird
+* Vivaldi
 * VLC
 
 

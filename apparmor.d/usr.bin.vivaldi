@@ -6,15 +6,9 @@
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 #include <tunables/global>
 
-# The Opera directory can be:
-#    /usr/lib/x86_64-linux-gnu/opera/  [Ubuntu, Debian] [64 bits]
-#    /usr/lib/i386-linux-gnu/opera/  [Ubuntu, Debian] [32 bits]
-#    /usr/lib/opera/  [Arch Linux]
-#    /usr/lib64/opera/  [Fedora, OpenSUSE] [64 bits]
+@{VIVALDI_LIBDIR}=/opt/vivaldi
 
-@{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
-
-/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
+/opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus>
@@ -27,7 +21,7 @@
 	
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-  deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
+  deny @{CONFIDENTIAL_EXCEPT_VIVALDI} rwklmx,
   
   capability sys_admin,
   #capability net_bind_service,  # Investigate
@@ -91,15 +85,6 @@
   /sys/devices/virtual/block/**/size r,
   # This is requested, but doesn't seem to actually be needed so deny for now
   deny /run/udev/data/** r,
-  
-  # Replicated Rules
-  #/sys/devices/pci[0-9]*/**/uevent r,
-  #/sys/devices/virtual/block/**/uevent r, 
-  #/sys/devices/system/cpu/cpu[0-9]*/uevent r, 
-  #/sys/devices/pnp[0-9]*/*/uevent r,
-  #/sys/devices/LNXSYSTM:[0-9]*/{LNX*/,LNX*/**/,}uevent r,
-  #/sys/devices/{msr,cpu}/uevent r,
-  #/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
 
   # Needed for the crash reporter
   owner @{PROC}/[0-9]*/auxv r,
@@ -115,15 +100,15 @@
   owner /tmp/** m,
 
   @{PROC}/sys/kernel/shmmax r,
-  owner /{dev,run}/shm/{,.}com.opera.* mrw,
-  owner /{dev,run}/shm/{,.}org.chromium.* mrw,
+  owner /{dev,run}/shm/{,.}com.vivaldi.* mrw,
   owner /{var/run,run,dev}/shm/shmfd-* mrw,
   
-  @{OPERA_LIBDIR}/*.pak mr,
-  @{OPERA_LIBDIR}/locales/* mr,
+  @{VIVALDI_LIBDIR}/{,**} r,
+  @{VIVALDI_LIBDIR}/*.pak mr,
+  @{VIVALDI_LIBDIR}/locales/* mr,
 
   # Noisy
-  deny @{OPERA_LIBDIR}/** w,
+  deny @{VIVALDI_LIBDIR}/** w,
 
   # Allow ptracing ourselves
   ptrace (trace) peer=@{profile_name},
@@ -156,26 +141,24 @@
   # Chromium Policies
   /etc/chromium-browser/policies/** r,
 
-  # Opera configuration
+  # Vivaldi configuration
   owner @{HOME}/.pki/nssdb/* rwk,
-  owner @{HOME}/.cache/opera/{,**} rw,
-  owner @{HOME}/.cache/opera/Cache/* mr,
-  owner @{HOME}/.config/opera/ rw,
-  owner @{HOME}/.config/opera/** rwk,
-  owner @{HOME}/.config/opera/**/Cache/* mr,
-  
-  @{OPERA_LIBDIR}/opera_autoupdate ixrk,
-  @{OPERA_LIBDIR}/opera_crashreporter ixr,
+  owner @{HOME}/.cache/vivaldi/{,**} rw,
+  owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,  
+  owner @{HOME}/.config/vivaldi/ rw,
+  owner @{HOME}/.config/vivaldi/** rwk,
+  owner @{HOME}/.config/vivaldi/**/Cache/* mr,
+  owner @{HOME}/.config/vivaldi/{,**/}Dictionaries/*.bdic mr,
 
   # Allow transitions to ourself and our sandbox
-  @{OPERA_LIBDIR}/opera ix,
-  @{OPERA_LIBDIR}/opera_sandbox cx -> opera_sandbox,
+  @{VIVALDI_LIBDIR}/vivaldi-bin ix,
+  @{VIVALDI_LIBDIR}/vivaldi-sandbox cx -> vivaldi_sandbox,
 
   # Allow communicating with sandbox
-  unix (receive, send) peer=(label=@{OPERA_LIBDIR}/opera//opera_sandbox),
+  unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin//vivaldi_sandbox),
 
   /bin/ps Uxr,
-  @{OPERA_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+  @{VIVALDI_LIBDIR}/xdg-settings Cxr -> xdgsettings,
   /usr/bin/xdg-settings Cxr -> xdgsettings,
   /usr/bin/lsb_release Cxr -> lsb_release,
 
@@ -191,6 +174,7 @@
 	@{HOME}/.config/kdeglobals rk,
 	@{HOME}/.cache/ksycoca5_* r,
 	/usr/share/qt5/translations/qt_*.qm r,
+	/dev/tty r,
 	  
 	/usr/bin/kreadconfig5 ixr,
 	/usr/bin/ktraderclient5 ixr,
@@ -200,7 +184,7 @@
 
     /etc/ld.so.cache r,
     /usr/bin/xdg-settings r,
-    @{OPERA_LIBDIR}/xdg-settings r,
+    @{VIVALDI_LIBDIR}/xdg-settings r,
     /usr/share/applications/*.desktop r,
 
     # Checking default browser
@@ -245,7 +229,7 @@
   # Site-specific additions and overrides. See local/README for details.
   #include <local/usr.bin.chromium-browser>
 
-profile opera_sandbox {
+profile vivaldi_sandbox {
     # Be fanatical since it is setuid root and don't use an abstraction
     /lib{,64}/libgcc_s.so* mr,
     /lib{,64,/@{multiarch}}/libgcc_s.so* mr,
@@ -285,9 +269,9 @@ profile opera_sandbox {
     signal (receive) peer=unconfined,
     signal peer=@{profile_name},
     signal (receive, send) set=("exists"),
-    signal (receive) peer=@{OPERA_LIBDIR}/opera,
+    signal (receive) peer=@{VIVALDI_LIBDIR}/vivaldi-bin,
 
-    unix (receive, send) peer=(label=@{OPERA_LIBDIR}/opera),
+    unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin),
     unix (create),
     unix peer=(label=@{profile_name}),
     unix (getattr, getopt, setopt, shutdown) addr=none,
@@ -299,12 +283,10 @@ profile opera_sandbox {
     deny @{PROC}/[0-9]*/oom_score_adj w,
     @{PROC}/[0-9]*/status r,
     @{PROC}/[0-9]*/task/[0-9]*/stat r,
-
-    /usr/bin/opera r,
-    @{OPERA_LIBDIR}/opera Px,
-    @{OPERA_LIBDIR}/opera_sandbox r,
-    @{OPERA_LIBDIR}/opera_autoupdate ixrk,
-	@{OPERA_LIBDIR}/opera_crashreporter ixr,
+	
+	@{VIVALDI_LIBDIR}/vivaldi r,
+    @{VIVALDI_LIBDIR}/vivaldi-bin Px,
+    @{VIVALDI_LIBDIR}/vivaldi-sandbox r,
     /dev/null rw,
 
     owner /tmp/** rw,
