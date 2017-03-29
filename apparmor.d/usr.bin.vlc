@@ -22,7 +22,7 @@ profile vlc /usr/bin/vlc {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
 	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,

@@ -18,7 +18,7 @@ profile gwenview /usr/bin/gwenview {
 	# Block network connection
 	#include <abstractions/block-networking>
 	
-	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
+	# Needed to open links (only for some Web browsers/e-mail clients).
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
 	

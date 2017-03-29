@@ -21,7 +21,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
 	# Just read/write in the Torrents directory. Modify according to qBittorrent configuration.

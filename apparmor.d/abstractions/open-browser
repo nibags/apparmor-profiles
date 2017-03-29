@@ -1,30 +1,38 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: March 29, 2017
 
 # Open Web browsers, needed to open links.
-# Only for Firefox, Opera & Chromium.
+# Only for Firefox, Opera, Chromium, Chrome & Vivaldi.
 # To support more browsers, you can also use (in the toplevel profile):
 #      #include <abstractions/ubuntu-helpers>
 #      #include <abstractions/ubuntu-browsers>
 
 # Firefox
-# /usr/bin/firefox is a link to /usr/lib{,64}/firefox/firefox.sh
-# /usr/lib{,64}/firefox/firefox.sh is a script that executes /usr/lib{,64}/firefox/firefox
+# /usr/bin/firefox is a link to: /usr/lib{,64}/firefox/firefox.sh
+# This is a script that executes: /usr/lib{,64}/firefox/firefox
 /usr/lib{,64}/firefox/firefox.sh ix,
 /usr/lib{,64}/firefox/firefox PUx,
 
 # Opera
-# /usr/bin/opera is a link to /usr/lib{*,/*}/opera/opera
+# /usr/bin/opera is a link to: /usr/lib{*,/*}/opera/opera
 /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera PUx,
 
 # Chromium
-# /usr/bin/chromium-browser is a scritp that executes /usr/lib{,64}/chromium-browser/chromium-browser
+# /usr/bin/chromium-browser is a script that executes: /usr/lib{,64}/chromium-browser/chromium-browser
 /usr/bin/chromium-browser ix,
 /usr/lib{,64}/chromium-browser/chromium-browser PUx,
 
 # Chrome
-# /usr/bin/google-chrome ix,
-# /usr/bin/chrome ix,
-# /opt/google/chrome/google-chrome PUx,
-# /opt/google/chrome/chrome PUx,
+# /usr/bin/google-chrome-stable is a link to: /opt/google/chrome/google-chrome
+# This is a script that executes: /opt/google/chrome/chrome
+/opt/google/chrome/google-chrome ix,
+/opt/google/chrome/chrome PUx,
+
+# Vivaldi
+# /usr/bin/vivaldi is a link to: /opt/vivaldi/vivaldi
+# This is a script that executes: /opt/vivaldi/vivaldi-bin
+/opt/vivaldi/vivaldi ix,
+/opt/vivaldi/vivaldi-bin PUx,
+
+

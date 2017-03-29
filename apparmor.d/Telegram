@@ -20,7 +20,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	#include <abstractions/dbus-accessibility-strict>
 	#include <abstractions/ibus>
 	
-	# Needed to open links (only for Firefox, Opera & Chromium).
+	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
 	# Block full access to sensitive data, as passwords and keys.

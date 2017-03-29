@@ -17,7 +17,7 @@ profile konversation /usr/bin/konversation {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for Firefox, Opera, Chromium & Thunderbird).
+	# Needed to open links (only for some Web browsers/e-mail clients).
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
 
