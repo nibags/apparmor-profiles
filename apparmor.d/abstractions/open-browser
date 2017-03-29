@@ -9,8 +9,8 @@
 #      #include <abstractions/ubuntu-browsers>
 
 # Firefox
-# /usr/bin/firefox is a link to /usr/lib{,64,32}/firefox/firefox.sh
-# /usr/lib{,64,32}/firefox/firefox.sh is a script that executes /usr/lib{,64,32}/firefox/firefox
+# /usr/bin/firefox is a link to /usr/lib{,64}/firefox/firefox.sh
+# /usr/lib{,64}/firefox/firefox.sh is a script that executes /usr/lib{,64}/firefox/firefox
 /usr/lib{,64}/firefox/firefox.sh ix,
 /usr/lib{,64}/firefox/firefox PUx,
 
@@ -19,7 +19,7 @@
 /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera PUx,
 
 # Chromium
-# /usr/bin/chromium-browser is a scritp that executes /usr/lib{,64,32}/chromium-browser/chromium-browser
+# /usr/bin/chromium-browser is a scritp that executes /usr/lib{,64}/chromium-browser/chromium-browser
 /usr/bin/chromium-browser ix,
 /usr/lib{,64}/chromium-browser/chromium-browser PUx,
 

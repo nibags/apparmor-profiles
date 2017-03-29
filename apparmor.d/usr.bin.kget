@@ -1,0 +1,71 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: March 29, 2017
+#include <tunables/global>
+
+profile kget /usr/bin/kget {
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/dbus>
+	#include <abstractions/dbus-accessibility>
+	#include <abstractions/dbus-session>
+	#include <abstractions/nameservice>
+	#include <abstractions/X>
+	#include <abstractions/kde>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include <abstractions/confidential-deny>
+	
+	# Needed to open links (only for Firefox, Opera & Chromium).
+	#include <abstractions/open-browser>
+	
+	# Downloads directory
+	@{HOME}/Descargas/** rw,
+	@{HOME}/{,**} r,
+	
+	# KGet configuration
+	@{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
+	@{HOME}/.kde{,4}/share/config/kget* rw,
+	@{HOME}/.local/share/user-places.xbel{,.*} rw,
+	@{HOME}/.kde{,4}/share/config/{kdeglobals,kio*} rk,
+	@{HOME}/.kde{,4}/share/config/{kde,kio}* rk, 
+	@{HOME}/.config/Trolltech.conf rk,
+	
+	/{,**/} r,  # Read only directories
+	
+	# Binaries
+	/usr/bin/kget ixr,
+	/bin/dash Pixr,
+	/bin/which Pixr,
+	/usr/bin/kdeinit{4,5} ixr,
+	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/kde4-config ixr,
+	/usr/bin/xdg-open ixr,
+	/usr/bin/gnome-open ixr,
+	/usr/bin/gvfs-open ixr,
+	/usr/bin/kdialog ixr,
+	
+	# Allow exec of libexec applications
+	/usr/lib{,64}/** Pixr,
+	
+	/usr/share/** r,
+	/proc/*/mounts r,
+	/etc/udev/udev.conf r,
+	/etc/fstab r,
+	/run/dbus/system_bus_socket rw,
+	
+	# Temp files
+	/var/tmp/kdecache-*/** rwk,
+	/run/user/[0-9]*/ksocket-*/{,kget*} rwk,
+	/tmp/{,.}kget*.lock rwk,
+	
+	deny /{sys,dev}/** rwklmx,
+	deny /run/udev/data/{,**} rwklmx,
+	
+	# Dangerous files
+	audit deny owner /**/* m,        # Compiled libraries
+	audit deny owner /**/*.py* r,  # Python imports
+	
+	signal (send) set=(term) peer=unconfined,
+}

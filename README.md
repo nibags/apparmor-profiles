@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>)
 
-Last Change: March 25, 2017
+Last Change: March 29, 2017
 
 ## Description:
 
@@ -12,6 +12,7 @@ AppArmor security profiles for:
 * Chromium
 * Firefox
 * Gwenview
+* KGet
 * KTorrent
 * Okular
 * Opera
