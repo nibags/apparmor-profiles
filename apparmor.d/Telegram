@@ -1,11 +1,14 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
+
+# Downloads directory
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	#include <abstractions/base>
@@ -34,10 +37,10 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny /usr/bin/gconftool-2 x,
 	
 	owner @{HOME}/{**,} r,
-	owner @{HOME}/Descargas/** rw,  # Write only in the downloads directory
+	owner @{DOWNLOADS_DIR}/** rw,  # Write only in the downloads directory
 	
 	# Telegram directory
-	owner @{HOME}/.TelegramDesktop/{**,} rwk,
+	owner @{HOME}/.TelegramDesktop/{**,} rwkl,
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
 	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
@@ -55,9 +58,10 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	/run/dbus/system_bus_socket r,
 	/run/user/[0-9]*/bus r,
 	/sys/dbus/** r,
-	/dev/tty r,
 	##/etc/machine-id r,   (In abstractions/nameservice)
 	/etc/udev/udev.conf r,
+	/dev/tty* r,
+	deny /dev/video* rwmlkx,  # Block cameras
 	
 	# Binaries & Helpers
 	/usr/bin/pulseaudio Pixr,
@@ -105,7 +109,12 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	dbus (send)
 		bus=system
 		path=/org/freedesktop/NetworkManager
-		member=state,
+		member={state,GetDevices},
+	dbus (send)
+		bus=system
+		interface=org.freedesktop.NetworkManager.Settings
+		path=/org/freedesktop/NetworkManager/Settings
+		member=ListConnections,
 	dbus (receive)
 		bus=system
 		path=/org/freedesktop/NetworkManager,

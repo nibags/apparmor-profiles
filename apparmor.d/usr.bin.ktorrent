@@ -1,12 +1,15 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
+
+# Torrents directory. Modify according to KTorrent configuration.
+@{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
 profile ktorrent /usr/bin/ktorrent {
 	#include <abstractions/base>
@@ -24,32 +27,38 @@ profile ktorrent /usr/bin/ktorrent {
 	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
-	# Just read/write in the Torrents directory. Modify according to KTorrent configuration.
-	owner @{HOME}/Descargas/Torrents/** rw,
-	# Only read .torrent files
-	owner @{HOME}/{,**/}*.torrent r,
+	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
+	owner @{HOME}/{,**/}*.torrent r,    # Only read .torrent files
 	
-	owner @{HOME}/.kde{,4}/share/apps/ktorrent/** rw,
+	owner @{HOME}/.kde{,4}/share/apps/ktorrent/{,**} rwk,
 	owner @{HOME}/.kde{,4}/share/config/ktorrent* rwk,
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* rk,  # kdeglobals
-	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
+	owner @{HOME}/.kde{,4}/share/config/kdebugrc w,
+	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc rwk,
 	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
 	owner @{HOME}/.kde{,4}/share/config/breezerc r,
-	owner @{HOME}/.kde{,4}/share/config/{kdeglobals,kdebugrc}*.new rw,
+	owner @{HOME}/.kde{,4}/share/config/ktimezonedrc r,
+	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
+	owner @{HOME}/.kde{,4}/socket-* rwkl,
 	
 	deny /run/udev/data/** rwklmx,
-	deny /{media,mnt}/** rwklmx,
+	deny /{media,mnt}/** rwklmx,        # Mounted drives
+	deny /dev/{video,audio}* rwlkmx,  # Cameras & microphones
 	
 	# Dangerous files
-	audit deny owner /**/* m,        # compiled libraries
-	audit deny owner /**/*.py* r,  # python imports
+	audit deny owner /**/* m,        # Compiled libraries
+	audit deny owner /**/*.py* r,  # Python imports
 	
+	/usr/bin/ktorrent rix,
 	/bin/dash Pixr,
 	/usr/bin/kdeinit{4,5} rix,
 	/usr/bin/kde-open{,5} rix,
 	/usr/bin/kde4-config rix,
-	/usr/bin/ktorrent rix,
+	/usr/bin/kdialog ixr,
+	/usr/bin/xdg-open ixr,
+	/usr/bin/gnome-open ixr,
+	/usr/bin/gvfs-open ixr,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -57,10 +66,11 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/share/kde4/config/{,**} r,
 	/usr/share/kde4/services/{,**} r,
 	/usr/share/kde4/servicetypes/* r,
+	/usr/share/kde4/apps/kde*/** r,
 	/usr/share/GeoIP/* r,
 	
 	/etc/machine-id r,
-	# /etc/fstab r,  # Used, but not essential
+	#/etc/fstab r,  # Used, but not essential
 	/etc/xdg/{,**} r,
 	
 	# Allow exec of libexec applications
@@ -69,14 +79,14 @@ profile ktorrent /usr/bin/ktorrent {
 	/proc/*/mounts r,
 	/etc/udev/udev.conf r,
 	/run/dbus/system_bus_socket rw,
-	/sys/devices/system/cpu/{cpu[0-9]*/,}uevent r,	
-	/sys/devices/pci[0-9]*/**/uevent r,
+	/sys/devices/**/uevent r,
+	# /sys/devices/{system,platform,cpu,power, software,breakpoint,uncore_*,cstate_*,intel_*,pci[0-9]*,pnp[0-9]*}/{,**/}uevent r,
 	
 	# Temp files
-	owner /run/user/[0-9]*/ksocket-*/ktorrent* rwkl,
-	owner /tmp/{,.}ktorrent*.lock rwkl,
-	owner /tmp/kde-*/** rwk,
-	owner /var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,ktorrent*} rwk,
+	owner /tmp/{,.}ktorrent*.lock rwk,
+	owner /tmp/kde-*/{,**} rwk,
+	owner /var/tmp/kdecache-*/{,*} rwk,
 	
 	# For multimedia support
 	#/{,var/}run/user/*/pulse/ r,
@@ -92,11 +102,25 @@ profile ktorrent /usr/bin/ktorrent {
 		interface=org.freedesktop.DBus
 		member=Hello
 		peer=(name=org.freedesktop.DBus label=unconfined),
-		
+			
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/UDisks2/{block_devices,drives}
+		path=/org/freedesktop/UPower
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
+		peer=(name=org.freedesktop.UPower label=unconfined),
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/{block_devices,block_devices/**,drives}
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.UDisks2 label=unconfined),
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/block_devices{,/**}
+		interface=org.freedesktop.DBus.Properties
+		member={GetAll,Get}
 		peer=(name=org.freedesktop.UDisks2 label=unconfined),
 }

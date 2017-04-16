@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------
 #
 #    Copyright (C) 2006-2009 Novell/SUSE
-#    Copyright (C) 2010-2011 Canonical Ltd.
+#    Copyright (C) 2010-2014 Canonical Ltd.
 #
 #    This program is free software; you can redistribute it and/or
 #    modify it under the terms of version 2 of the GNU General Public
@@ -16,6 +16,7 @@
 #include <tunables/multiarch>
 #include <tunables/proc>
 #include <tunables/alias>
+#include <tunables/kernelvars>
+#include <tunables/xdg-user-dirs>
+
 #include <tunables/confidential>
-#include <tunables/multimedia>
-#include <tunables/apache-hosts>

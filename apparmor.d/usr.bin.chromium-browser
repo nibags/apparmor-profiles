@@ -1,13 +1,17 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: April 15, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
 @{CHROM_LIBDIR}=/usr/lib{,64}/chromium-browser
+
+# Downloads & Desktop directories
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{DESKTOP_DIR}=@{HOME}/Escritorio
 
 # We need 'flags=(attach_disconnected)' in newer chromium versions
 /usr/lib{,64}/chromium-browser/chromium-browser flags=(attach_disconnected) {
@@ -138,10 +142,10 @@
 
   # Downloads and Desktop folders
   owner @{HOME}/ r,
-  owner @{HOME}/Escritorio/ r,
-  owner @{HOME}/Escritorio/** rw,
-  owner @{HOME}/Descargas/ r,
-  owner @{HOME}/Descargas/** rw,
+  owner @{DESKTOP_DIR}/ r,
+  owner @{DESKTOP_DIR}/** rw,
+  owner @{DOWNLOADS_DIR}/ r,
+  owner @{DOWNLOADS_DIR}/** rw,
 
   # For migration
   # owner @{HOME}/.mozilla/firefox/profiles.ini r,

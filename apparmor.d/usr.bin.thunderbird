@@ -1,23 +1,24 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 25, 2017
+# Last change: April 15, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
 # by Simon Deziel <simon.deziel at gmail_com>
 
-# Note: This profile was designed with the intention of working
+# NOTE: This profile was designed with the intention of working
 # correctly in the KDE Plasma 5 desktop environment.
-
-# Declare an apparmor variable to help with overrides
-@{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
 
 #include <tunables/global>
 
-# We want to confine the binaries that match:
+# Thunderbird directory
+@{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
+
+# Downloads & Desktop directories
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{DESKTOP_DIR}=@{HOME}/Escritorio
+
 #  /usr/lib/thunderbird/thunderbird
-# but not:
-#  /usr/lib/thunderbird/thunderbird.sh
 /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
   #include <abstractions/audio>
   #include <abstractions/aspell>
@@ -71,11 +72,15 @@
   audit deny @{HOME}/.gnupg/** mrwkl,
   audit deny @{HOME}/.ssh/** mrwkl,
   
+  deny /dev/{video,audio}* rwlkmx, # Cameras & microphones
+  
   # Access to HOME
-  owner @{HOME}/** r,
+  owner @{HOME}/[^.]** r,
   owner @{HOME}/ rw,
-  owner @{HOME}/Descargas/{,**} rw,
-  owner @{HOME}/Escritorio/{,**} rw,
+  owner @{DESKTOP_DIR}/ r,
+  owner @{DESKTOP_DIR}/** rw,
+  owner @{DOWNLOADS_DIR}/ r,
+  owner @{DOWNLOADS_DIR}/** rw,
   
   # Required for LVM setups
   /sys/devices/virtual/block/dm-[0-9]*/uevent r,

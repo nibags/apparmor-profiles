@@ -1,7 +1,11 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
+
 #include <tunables/global>
+
+# Downloads directory
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile kget /usr/bin/kget {
 	#include <abstractions/base>
@@ -21,8 +25,8 @@ profile kget /usr/bin/kget {
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
 	
-	# Downloads directory
-	owner @{HOME}/Descargas/** rw,
+	# Downloads & Home directories
+	owner @{DOWNLOADS_DIR}/** rw,
 	owner @{HOME}/{,**} r,
 	
 	# KGet configuration

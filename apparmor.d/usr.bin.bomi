@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 24, 2017
+# Last change: April 15, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
@@ -21,8 +21,6 @@ profile bomi /usr/bin/bomi {
 	# Block full access to sensitive data such as passwords and keys.
 	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tuneables/confidential.
 	#include <abstractions/confidential-deny>
-
-	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
 	
 	/{,**/,**} r,
 	#@{HOME}/{,**} r,  (Replicated)
@@ -31,12 +29,12 @@ profile bomi /usr/bin/bomi {
 	owner @{HOME}/.cache/xylosper/{,**} rwk,
 	owner @{HOME}/.config/xylosper/{,**} rwk,
 	
-	/dev/ati/{,**} rwlk,
-	/dev/video* rwlk,
-	/dev/fb* rwlk,
+	/dev/ati/{,**} rwk,
+	/dev/fb* rwk,
 	/dev/bus/{,**} rw,
-	/dev/shm/{,**} rwkl,
-
+	/dev/shm/{,**} rwk,
+	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	
 	/usr/bin/bomi ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
@@ -56,6 +54,7 @@ profile bomi /usr/bin/bomi {
 	owner @{HOME}/.cache/icon-cache.kcache w,
 	
 	deny /run/udev/data/{,**} rwklmx,
+	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
 	audit deny owner /**/* m,        # compiled libraries

@@ -1,12 +1,15 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
+
+# Torrents directory. Modify according to qBittorrent configuration.
+@{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
 profile qbittorrent /usr/bin/qbittorrent {
 	#include <abstractions/base>
@@ -24,17 +27,16 @@ profile qbittorrent /usr/bin/qbittorrent {
 	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
-	# Just read/write in the Torrents directory. Modify according to qBittorrent configuration.
-	owner @{HOME}/Descargas/Torrents/** rw,
-	# Only read .torrent files
-	@{HOME}/{,**/}*.torrent r,
+	owner @{TORRENTS_DIR}/** rw,  # Just read/write in the Torrents directory.
+	@{HOME}/{,**/}*.torrent r,             # Only read .torrent files
 	
 	deny /run/udev/data/** r,
-	deny /{media,mnt}/** rwklmx,
+	deny /{media,mnt}/** rwklmx,       # Block access to mounted drives
+	deny /dev/{video,audio}* rwlkmx, # Block cameras & microphones
 	
 	# Dangerous files
-	audit deny owner /**/* m,        # compiled libraries
-	audit deny owner /**/*.py* r,  # python imports
+	audit deny owner /**/* m,        # Compiled libraries
+	audit deny owner /**/*.py* r,  # Python imports
 	
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/qBittorrent/{,**} rwk,
@@ -52,14 +54,16 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.config/kdeglobals r, # rw
 	owner @{HOME}/.config/kdeglobals.* rw,
 	owner @{HOME}/.config/kio* r,
-	owner @{HOME}/.config/kdebugrc r,
+	owner @{HOME}/.config/kdebugrc rw,
 	owner @{HOME}/.config/breezerc r,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.cache/ksycoca5_* r,
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* r,
-	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc r,
+	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc rw,
 	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
 	owner @{HOME}/.kde{,4}/share/config/breezerc r,
+	owner @{HOME}/.kde{,4}/share/config/ktimezonedrc r,
+	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
 	
 	/usr/share/knotifications5/* r,
 	/usr/share/qt5/translations/qt_*.qm r,
@@ -91,20 +95,19 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/proc/*/mounts r,
 	/etc/udev/udev.conf r,
 	
-	# /sys/devices/**/uevent r,  # Ideal, but not essential
-	/sys/devices/pci[0-9]*/**/uevent r,
-	/sys/devices/pnp[0-9]*/**/uevent r,
-	/sys/devices/system/node/node[0-9]*/uevent r,
-	/sys/devices/cpu/{,**/}uevent r,
-	/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
+	/sys/devices/**/uevent r,  # Ideal, but not essential
+	#/sys/devices/{pci[0-9]*,pnp[0-9]*}/**/uevent r,
+	#/sys/devices/system/node/node[0-9]*/uevent r,
+	#/sys/devices/cpu/{,**/}uevent r,
+	#/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
 	
 	# Temp files
 	owner /tmp/{,.}qBittorrent*.lock rwkl,
-	owner /tmp/kde-*/** rwk,
-	owner /var/tmp/kdecache-*/* rwk,
-	owner /run/user/[0-9]*/ksocket-*/qBittorrent* rwkl,
-	owner /run/user/[0-9]*/kioclient*-socket rwkl,
-	owner /run/user/[0-9]*/qBittorrent*-socket rwkl,
+	owner /tmp/kde-*/{,**} rwk,
+	owner /var/tmp/kdecache-*/{,*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,qBittorrent*} rwk,
+	owner /run/user/[0-9]*/kioclient*-socket rwk,
+	owner /run/user/[0-9]*/qBittorrent*-socket rwk,
 	
 	owner /run/user/[0-9]*/bus rwk,
 	/run/dbus/system_bus_socket rw,

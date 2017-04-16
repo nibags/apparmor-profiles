@@ -1,18 +1,23 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
+
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+
 #include <tunables/global>
 
 # The Opera directory can be:
 #    /usr/lib/x86_64-linux-gnu/opera/  [Ubuntu, Debian] [64 bits]
 #    /usr/lib/i386-linux-gnu/opera/  [Ubuntu, Debian] [32 bits]
 #    /usr/lib/opera/  [Arch Linux]
-#    /usr/lib64/opera/  [Fedora, OpenSUSE] [64 bits]
-
+#    /usr/lib64/opera/  [OpenSUSE, Fedora] [64 bits]
 @{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
+
+# Downloads & Desktop directories
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{DESKTOP_DIR}=@{HOME}/Escritorio
 
 /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
   #include <abstractions/audio>
@@ -140,10 +145,10 @@
 
   # Downloads and Desktop folders
   owner @{HOME}/ r,
-  owner @{HOME}/Escritorio/ r,
-  owner @{HOME}/Escritorio/** rw,
-  owner @{HOME}/Descargas/ r,
-  owner @{HOME}/Descargas/** rw,
+  owner @{DESKTOP_DIR}/ r,
+  owner @{DESKTOP_DIR}/** rw,
+  owner @{DOWNLOADS_DIR}/ r,
+  owner @{DOWNLOADS_DIR}/** rw,
 
   # Helpers
   /usr/bin/xdg-open ixr,

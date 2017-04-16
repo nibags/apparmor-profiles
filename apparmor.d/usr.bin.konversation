@@ -1,7 +1,12 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
+
 #include <tunables/global>
+
+# Downloads & Logs directories
+@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{LOGS_DIR}=@{HOME}/logs
 
 profile konversation /usr/bin/konversation {
 	#include <abstractions/base>
@@ -23,8 +28,8 @@ profile konversation /usr/bin/konversation {
 
 	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
 
-	owner @{HOME}/Descargas/** rw,  # Downloads directory
-	owner @{HOME}/logs/{,**} rw,         # Logs directory
+	owner @{DOWNLOADS_DIR}/** rw,  # Downloads directory
+	owner @{LOGS_DIR}/{,**} rw,             # Logs directory
 	owner @{HOME}/*.log rw,
 	
 	# Konversation Configuration

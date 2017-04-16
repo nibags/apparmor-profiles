@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 #include <tunables/global>
 
@@ -72,7 +72,8 @@ profile okular /usr/bin/okular {
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	/run/dbus/system_bus_socket w,
 	
-	deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx, # Only Bluetooth & USB data access
+	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx, # Only bluetooth & USB data access
 	audit deny owner /**/*.py* r,  # Block python imports
 	audit deny owner /**/* m,       # Block compiled libraries
 	

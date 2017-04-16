@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 #include <tunables/global>
 
@@ -66,6 +66,7 @@ profile gwenview /usr/bin/gwenview {
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	
 	deny /run/udev/data/{,**} rmx,
+	deny /dev/{video,audio}* rwlkmx, # Block Cameras & Microphones
 	
 	signal (send) set=(term) peer=unconfined,
 }

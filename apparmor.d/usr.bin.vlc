@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: April 15, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
@@ -25,8 +25,6 @@ profile vlc /usr/bin/vlc {
 	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
-	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
-
 	/{,**/,**} r,
 	
 	@{HOME}/{,**} rw,
@@ -38,11 +36,10 @@ profile vlc /usr/bin/vlc {
 	owner @{HOME}/.config/vlcrc rwk,
 	owner @{HOME}/.cache/vlc/{,**} rwk,
 	
-	/dev/ati/{,**} rwlk,
-	/dev/video* rwlk,
-	/dev/fb* rwlk,
-	/dev/bus/{,**} rw,
-	/dev/shm/{,**} rwkl,
+	/dev/ati/{,**} rwk,
+	/dev/{fb,video,audio}* rwk,
+	/dev/bus/{,**} rwk,
+	/dev/shm/{,**} rwk,
 
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
@@ -77,6 +74,7 @@ profile vlc /usr/bin/vlc {
 		bus=accessibility,
 	
 	deny /run/udev/data/{,**} rwklmx,
+	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
 	audit deny owner /**/* m,        # compiled libraries
