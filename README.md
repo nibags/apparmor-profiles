@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>)
 
-Last Change: March 29, 2017
+Last Change: April 15, 2017
 
 ## Description:
 
@@ -35,11 +35,13 @@ If you use Ubuntu, please install the packages
 ## Important:
 
 * Some profiles require you to review the location of the downloads and desktop directories. By default it is used:
-		Downloads Directory: `@{HOME}/Descargas/`	 ; Desktop Directory: `@{HOME}/Escritorio/`
+		Downloads Directory: `@{HOME}/Descargas/`	, Desktop Directory: `@{HOME}/Escritorio/`
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
 * Check the location of the Telegram executable. The profile uses: `/home/*/.TelegramDesktop/bin/{Telegram,Updater}`.
+
+* For the profiles to work correctly, add the line: `#include <tunables/confidential>`, in the file: `/etc/apparmor.d/tunables/global`.
 
 
 ## Installation:
