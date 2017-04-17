@@ -41,6 +41,8 @@
   dbus (receive, send)
        bus=accessibility,
   
+  # Block full access to sensitive data, as passwords and keys.
+  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_MOZILLA} rwklmx,
   
   # for networking

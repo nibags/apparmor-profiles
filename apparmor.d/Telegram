@@ -30,12 +30,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
 	
-	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
-	deny /run/udev/data/{,**} rwklmx,
-	deny /var/cache/fontconfig/ w,
-	deny @{HOME}/.local/share/recently-used.xbel r,
-	deny /usr/bin/gconftool-2 x,
-	
 	owner @{HOME}/{**,} r,
 	owner @{DOWNLOADS_DIR}/** rw,  # Write only in the downloads directory
 	
@@ -49,17 +43,24 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
 	
+	deny @{HOME}/.local/share/recently-used.xbel r,
+	deny /run/udev/data/{,**} rwklmx,
+	deny /usr/bin/gconftool-2 x,
+	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
+	deny /var/cache/fontconfig/ w,
+	
 	/usr/share/** r,
 	/etc/timezone r,
 	/etc/openal/alsoft.conf r,
 	/etc/pulse/*.conf r,
+	/etc/udev/udev.conf r,
+	##/etc/machine-id r,   (In abstractions/nameservice)
 	@{PROC}/[0-9]*/cmdline r,
 	@{PROC}/[0-9]*/fd/{,**} r,
 	/run/dbus/system_bus_socket r,
 	/run/user/[0-9]*/bus r,
 	/sys/dbus/** r,
-	##/etc/machine-id r,   (In abstractions/nameservice)
-	/etc/udev/udev.conf r,
+	
 	/dev/tty* r,
 	deny /dev/video* rwmlkx,  # Block cameras
 	
@@ -101,7 +102,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	dbus (send)
 		bus=system
 		interface=org.freedesktop.DBus.Property.EmitsChangedSignal,
-	
 	dbus (send)
 		bus=system
 		interface=org.freedesktop.DBus.Properties,

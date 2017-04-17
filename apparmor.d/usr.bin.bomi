@@ -18,8 +18,8 @@ profile bomi /usr/bin/bomi {
 	# Block network connection
 	#include <abstractions/block-networking>
 	
-	# Block full access to sensitive data such as passwords and keys.
-	# Includes /boot/** & /etc/apparmor.d/** directories. View in: tuneables/confidential.
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
 	/{,**/,**} r,
@@ -29,17 +29,19 @@ profile bomi /usr/bin/bomi {
 	owner @{HOME}/.cache/xylosper/{,**} rwk,
 	owner @{HOME}/.config/xylosper/{,**} rwk,
 	
-	/dev/ati/{,**} rwk,
-	/dev/fb* rwk,
-	/dev/bus/{,**} rw,
-	/dev/shm/{,**} rwk,
-	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	owner @{HOME}/.cache/icon-cache.kcache w,
 	
 	/usr/bin/bomi ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
 
 	/etc/{,directfbrc*} r,
+	
+	/dev/ati/{,**} rwk,
+	/dev/fb* rwk,
+	/dev/bus/{,**} rw,
+	/dev/shm/{,**} rwk,
+	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 
 	owner /var/tmp/kdecache-*/* rwk,
 	owner /run/user/[0-9]*/pulse/ w,
@@ -50,8 +52,6 @@ profile bomi /usr/bin/bomi {
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	/run/systemd/journal/socket w,
 	/run/dbus/system_bus_socket w,
-	
-	owner @{HOME}/.cache/icon-cache.kcache w,
 	
 	deny /run/udev/data/{,**} rwklmx,
 	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,

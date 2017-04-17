@@ -28,7 +28,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	#include <abstractions/open-browser>
 	
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
-	@{HOME}/{,**/}*.torrent r,             # Only read .torrent files
+	@{HOME}/{,**/}*.torrent r,                 # Only read .torrent files
 	
 	deny /run/udev/data/** r,
 	deny /{media,mnt}/** rwklmx,       # Block access to mounted drives

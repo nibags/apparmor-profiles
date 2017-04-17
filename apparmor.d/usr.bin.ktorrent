@@ -50,6 +50,7 @@ profile ktorrent /usr/bin/ktorrent {
 	audit deny owner /**/* m,        # Compiled libraries
 	audit deny owner /**/*.py* r,  # Python imports
 	
+	# Binaries
 	/usr/bin/ktorrent rix,
 	/bin/dash Pixr,
 	/usr/bin/kdeinit{4,5} rix,

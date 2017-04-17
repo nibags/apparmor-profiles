@@ -26,8 +26,6 @@ profile konversation /usr/bin/konversation {
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
 
-	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
-
 	owner @{DOWNLOADS_DIR}/** rw,  # Downloads directory
 	owner @{LOGS_DIR}/{,**} rw,             # Logs directory
 	owner @{HOME}/*.log rw,
@@ -78,6 +76,7 @@ profile konversation /usr/bin/konversation {
 	
 	deny /dev/** rwklmx,
 	deny /run/udev/data/{,**} rwklmx,
+	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
 	
 	# Dangerous files
 	audit deny owner /**/* m,        # Compiled libraries
