@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: April 24, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
@@ -28,7 +28,7 @@ profile ktorrent /usr/bin/ktorrent {
 	#include <abstractions/open-browser>
 	
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
-	owner @{HOME}/{,**/}*.torrent r,    # Only read .torrent files
+	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
 	
 	owner @{HOME}/.kde{,4}/share/apps/ktorrent/{,**} rwk,
 	owner @{HOME}/.kde{,4}/share/config/ktorrent* rwk,
@@ -84,7 +84,7 @@ profile ktorrent /usr/bin/ktorrent {
 	# /sys/devices/{system,platform,cpu,power, software,breakpoint,uncore_*,cstate_*,intel_*,pci[0-9]*,pnp[0-9]*}/{,**/}uevent r,
 	
 	# Temp files
-	owner /run/user/[0-9]*/ksocket-*/{,ktorrent*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,ktorrent*,kdeinit*,klauncher*} rwk,
 	owner /tmp/{,.}ktorrent*.lock rwk,
 	owner /tmp/kde-*/{,**} rwk,
 	owner /var/tmp/kdecache-*/{,*} rwk,
@@ -113,15 +113,15 @@ profile ktorrent /usr/bin/ktorrent {
 	
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/UDisks2/{block_devices,block_devices/**,drives}
+		path=/org/freedesktop/UDisks2/{block_devices,drives}{,/**}
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
 		peer=(name=org.freedesktop.UDisks2 label=unconfined),
 	
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/UDisks2/block_devices{,/**}
+		path=/org/freedesktop/UDisks2/{block_devices,drives}{,/**}
 		interface=org.freedesktop.DBus.Properties
-		member={GetAll,Get}
+		member={GetAll,Get,PropertiesChanged}
 		peer=(name=org.freedesktop.UDisks2 label=unconfined),
 }

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: April 20, 2017
 
 #include <tunables/global>
 
@@ -31,7 +31,8 @@ profile okular /usr/bin/okular {
 	
 	# Write access in Home directory and mounted drives
 	@{HOME}/** rw,
-	/media/**/*.{okular,txt,pdf} rw,
+	/media/**.{[oO][kK][uU][lL][aA][rR],[tT][xX][tT],[pP][dD][fF]} rw,
+	owner /**.{[oO][kK][uU][lL][aA][rR],[tT][xX][tT],[pP][dD][fF]} rw,
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,

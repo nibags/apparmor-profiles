@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: April 20, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
@@ -28,7 +28,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	#include <abstractions/open-browser>
 	
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
-	@{HOME}/{,**/}*.torrent r,                 # Only read .torrent files
+	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
 	
 	deny /run/udev/data/** r,
 	deny /{media,mnt}/** rwklmx,       # Block access to mounted drives
