@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 03, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -108,6 +108,7 @@
   /etc/xfce4/defaults.list r,
   /usr/share/xubuntu/applications/defaults.list r,
   /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,

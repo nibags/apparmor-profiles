@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 03, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
 # This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -30,24 +30,21 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
 	
-	owner @{HOME}/{**,} r,
+	owner @{HOME}/{*,[^.]*/,[^.]*/**} r,
 	owner @{DOWNLOADS_DIR}/** rw,  # Write only in the downloads directory
 	
 	# Telegram directory
 	owner @{HOME}/.TelegramDesktop/{**,} rwkl,
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
+	owner @{HOME}/.local/share/flatpak/exports/share/{**,} r,
 	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
+	owner @{HOME}/.config/* r,
+	owner @{HOME}/.config/{fontconfig,gtk-[0-9]*,pulse,session}/{**,} r,
 	owner @{HOME}/.config/kdeglobals rk,
-	owner @{HOME}/.config/gtk-3.0/bookmarks rw,
+	owner @{HOME}/.config/gtk-[0-9]*/bookmarks rw,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
-	
-	deny @{HOME}/.local/share/recently-used.xbel r,
-	deny /run/udev/data/{,**} rwklmx,
-	deny /usr/bin/gconftool-2 x,
-	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
-	deny /var/cache/fontconfig/ w,
 	
 	/usr/share/** r,
 	/etc/timezone r,
@@ -88,6 +85,12 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	audit deny owner /**/* m,        # Compiled libraries
 	audit deny owner /**/*.py* r,   # Python imports
 	
+	deny @{HOME}/.local/share/recently-used.xbel r,
+	deny /run/udev/data/{,**} rwklmx,
+	deny /usr/bin/gconftool-2 x,
+	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
+	deny /var/cache/fontconfig/ w,
+	
 	ptrace (trace) peer=unconfined,
 	
 	dbus (send)
@@ -110,12 +113,22 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 		bus=system
 		path=/org/freedesktop/NetworkManager
 		member={state,GetDevices},
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager,
 	dbus (send)
 		bus=system
 		interface=org.freedesktop.NetworkManager.Settings
 		path=/org/freedesktop/NetworkManager/Settings
 		member=ListConnections,
+	dbus (send)
+		bus=system
+		interface=org.freedesktop.NetworkManager.Settings.Connection
+		path=/org/freedesktop/NetworkManager/Settings/[0-9]*
+		member=GetSettings,
 	dbus (receive)
 		bus=system
-		path=/org/freedesktop/NetworkManager,
+		interface=org.freedesktop.NetworkManager.Connection.Active
+		path=/org/freedesktop/NetworkManager/ActiveConnection/[0-9]*
+		member=PropertiesChanged,
 }
