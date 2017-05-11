@@ -54,7 +54,7 @@ profile bomi /usr/bin/bomi {
 	/run/dbus/system_bus_socket w,
 	
 	deny /run/udev/data/{,**} rwklmx,
-	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
+	deny /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
 	audit deny owner /**/* m,        # compiled libraries

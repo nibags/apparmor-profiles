@@ -1,9 +1,9 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 03, 2017
+# Last change: May 08, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
-# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# This profile is tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 
 #include <tunables/global>
 
@@ -38,25 +38,33 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
 	owner @{HOME}/.local/share/flatpak/exports/share/{**,} r,
+	owner @{HOME}/.local/share/RecentDocuments/ r,
+	owner @{HOME}/.local/share/RecentDocuments/{.*,*.desktop,*.desktop.*} rw,
 	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
 	owner @{HOME}/.config/* r,
-	owner @{HOME}/.config/{fontconfig,gtk-[0-9]*,pulse,session}/{**,} r,
+	owner @{HOME}/.config/{fontconfig,gtk-[0-9]*,kde.org,menus,pulse,session}/{**,} r,
 	owner @{HOME}/.config/kdeglobals rk,
 	owner @{HOME}/.config/gtk-[0-9]*/bookmarks rw,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
+	owner @{HOME}/.cache/icon-cache.kcache rwk,
+	owner @{HOME}/.cache/ksycoca[0-9]_* rk,
 	
 	/usr/share/** r,
 	/etc/timezone r,
 	/etc/openal/alsoft.conf r,
 	/etc/pulse/*.conf r,
 	/etc/udev/udev.conf r,
-	##/etc/machine-id r,   (In abstractions/nameservice)
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	
 	@{PROC}/[0-9]*/cmdline r,
 	@{PROC}/[0-9]*/fd/{,**} r,
+	/run/systemd/journal/socket rw,
 	/run/dbus/system_bus_socket r,
 	/run/user/[0-9]*/bus r,
 	/sys/dbus/** r,
+	/sys/devices/**/uevent r,
 	
 	/dev/tty* r,
 	deny /dev/video* rwmlkx,  # Block cameras
@@ -72,6 +80,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Temp Files
 	owner /tmp/** rwk,
 	owner /var/tmp/** rw,
+	owner /run/user/[0-9]*/*.slave-socket rwk,
 	
 	# For Networking
 	network inet stream,
@@ -88,7 +97,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny @{HOME}/.local/share/recently-used.xbel r,
 	deny /run/udev/data/{,**} rwklmx,
 	deny /usr/bin/gconftool-2 x,
-	deny /usr/lib*/vlc/plugins/plugins.dat.* w,
 	deny /var/cache/fontconfig/ w,
 	
 	ptrace (trace) peer=unconfined,

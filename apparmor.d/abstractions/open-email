@@ -13,4 +13,5 @@
 # This is a script that executes: /usr/lib{,64}/thunderbird/thunderbird
 /usr/lib{,64}/thunderbird/thunderbird.sh ix,
 /usr/lib{,64}/thunderbird/thunderbird PUx,
+
 /bin/which Pix,

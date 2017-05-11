@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 08, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
@@ -44,6 +44,8 @@ profile vlc /usr/bin/vlc {
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
+	/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/vlc/** mr,
+	deny /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/vlc/plugins/plugins.dat.* w,
 	# /etc/{,directfbrc*} r, # Replicated
 	
 	owner /var/tmp/kdecache-*/* rwk,
@@ -53,7 +55,9 @@ profile vlc /usr/bin/vlc {
 	owner /{dev,run,var/run}/shm/pulse-shm* k,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	/run/dbus/system_bus_socket w,
+	/run/systemd/journal/socket w, 
 	
+	unix (connect, receive, send) type=stream peer=(addr=@/tmp/ibus/dbus-*) addr=none protocol=0,
 	signal (send) set=(term) peer=unconfined,
 	
 	dbus (send)
@@ -74,7 +78,6 @@ profile vlc /usr/bin/vlc {
 		bus=accessibility,
 	
 	deny /run/udev/data/{,**} rwklmx,
-	deny /usr/lib{,32,64}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
 	audit deny owner /**/* m,        # compiled libraries
