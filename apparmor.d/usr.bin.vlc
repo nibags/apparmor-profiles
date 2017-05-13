@@ -2,7 +2,7 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: May 08, 2017
 
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 
 #include <tunables/global>
 
@@ -80,6 +80,7 @@ profile vlc /usr/bin/vlc {
 	deny /run/udev/data/{,**} rwklmx,
 	
 	# Dangerous files
+	audit deny /{home,media,mnt}/**/* m,
 	audit deny owner /**/* m,        # compiled libraries
 	audit deny owner /**/*.py* r,  # python imports
 }

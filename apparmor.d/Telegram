@@ -3,7 +3,7 @@
 # Last change: May 08, 2017
 
 # NOTE: Change the Telegram binary path & the user downloads directory
-# This profile is tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
+# This profile is only tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 
 #include <tunables/global>
 

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 12, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -65,6 +65,12 @@
   /etc/xdg/xubuntu/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+  
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/{index.theme,icon-theme.cache} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
 
   @{PROC}/[0-9]*/fd/ r,
   @{PROC}/filesystems r,

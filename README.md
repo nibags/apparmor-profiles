@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>)
 
-Last Change: April 15, 2017
+Last Change: May 12, 2017
 
 ## Description:
 
@@ -25,12 +25,13 @@ AppArmor security profiles for:
 
 
 These are designed to work on KDE Plasma 5, 
-so these have not been tested in other desktop environments. 
+so most profiles have not been tested in other desktop environments. 
 
-The profiles have been tested in Ubuntu 16.04 & KDE Plasma 5.9. 
+All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5.9. 
+The VLC and Telegram profiles were also tested in GNOME 3.
 
 If you use Ubuntu, please install the packages 
-`apparmor-profiles` & `apparmor-profiles-extra`.
+`apparmor-utils` & `apparmor-profiles`.
 
 ## Important:
 
@@ -59,6 +60,8 @@ If you use Ubuntu, please install the packages
 	- If you need to reload a profile: `sudo apparmor_parser -r /etc/apparmor.d/usr.bin.profile`
 	
 	- For profile in compliant mode: `sudo aa-complain /etc/apparmor.d/usr.bin.profile`
+	
+	- NOTE: In Ubuntu, you need to install the `apparmor-utils` package to use the `aa-enforce` and `aa-complain` commands.
 
 3. View profiles status: 
 

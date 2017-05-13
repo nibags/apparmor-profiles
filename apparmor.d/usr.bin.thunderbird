@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 03, 2017
+# Last change: May 12, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -76,7 +76,7 @@
   
   # Access to HOME
   owner @{HOME}/[^.]** r,
-  owner @{HOME}/ rw,
+  owner @{HOME}/ r,
   owner @{DESKTOP_DIR}/ r,
   owner @{DESKTOP_DIR}/** rw,
   owner @{DOWNLOADS_DIR}/ r,
@@ -129,17 +129,20 @@
   
   /etc/fonts/** r,
   /etc/gnome/defaults.list r,
-  @{HOME}/.local/share/mime/mime.cache r,
-  @{HOME}/.local/share/mime/generic-icons r,
-  @{HOME}/.local/share/icons/hicolor/*/apps/ r,
-  @{HOME}/.local/share/icons/ r,
-  @{HOME}/.gtkrc-2.0 r,
-  @{HOME}/.gtkrc-2.0-kde4 r,
-  # @{HOME}/.config/ r,
-  @{HOME}/.config/user-dirs.dirs r,
-  @{HOME}/.config/mimeapps.list r,
-  @{HOME}/.config/kwalletrc r,
-  @{HOME}/.config/kdeglobals r,
+  owner @{HOME}/.local/share/mime/mime.cache r,
+  owner @{HOME}/.local/share/mime/generic-icons r,
+  owner @{HOME}/.local/share/icons/hicolor/*/apps/ r,
+  owner @{HOME}/.local/share/icons/ r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/{index.theme,icon-theme.cache} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
+  owner @{HOME}/.gtkrc-2.0 r,
+  owner @{HOME}/.gtkrc-2.0-kde4 r,
+  # owner @{HOME}/.config/ r,
+  owner @{HOME}/.config/user-dirs.dirs r,
+  owner @{HOME}/.config/mimeapps.list r,
+ owner  @{HOME}/.config/kwalletrc r,
+  owner @{HOME}/.config/kdeglobals r,
   
   /etc/timezone r,
   /etc/wildmidi/wildmidi.cfg r,

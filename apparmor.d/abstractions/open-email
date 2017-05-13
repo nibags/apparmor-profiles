@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 29, 2017
+# Last change: May 12, 2017
 
 # Open e-mail clients.
 # Only for Thunderbird.
@@ -9,9 +9,9 @@
 #      #include <abstractions/ubuntu-email>
 
 # Thunderbird
-# /usr/bin/thunderbird is a link to: /usr/lib{,64}/thunderbird/thunderbird.sh
-# This is a script that executes: /usr/lib{,64}/thunderbird/thunderbird
+# "/usr/bin/thunderbird" is a link to: "/usr/lib{,64}/thunderbird/thunderbird.sh"
+# This is a script that executes: "/usr/lib{,64}/thunderbird/thunderbird"
 /usr/lib{,64}/thunderbird/thunderbird.sh ix,
 /usr/lib{,64}/thunderbird/thunderbird PUx,
 
-/bin/which Pix,
+/bin/which ix,

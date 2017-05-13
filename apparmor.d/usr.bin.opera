@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 12, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -13,6 +13,8 @@
 #    /usr/lib/i386-linux-gnu/opera/  [Ubuntu, Debian] [32 bits]
 #    /usr/lib/opera/  [Arch Linux]
 #    /usr/lib64/opera/  [OpenSUSE, Fedora] [64 bits]
+#
+# For general use: /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera
 @{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
 
 # Downloads & Desktop directories
@@ -69,7 +71,13 @@
   /etc/xdg/xubuntu/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-
+  
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/{index.theme,icon-theme.cache} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
+  
   @{PROC}/[0-9]*/fd/ r,
   @{PROC}/filesystems r,
   @{PROC}/ r,
@@ -242,7 +250,7 @@
 	# NOTE: Fix when outputting new version of Python
     /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] r, # m
+    /usr/bin/python3.[0-5] mr, # m
 	
 	/usr/share/distro-info/debian.csv r,
   }
