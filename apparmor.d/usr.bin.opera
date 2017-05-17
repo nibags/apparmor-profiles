@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 12, 2017
+# Last change: May 16, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -31,6 +31,10 @@
   #include <abstractions/ibus>
   #include <abstractions/nameservice>
   #include <abstractions/user-tmp>
+  
+  # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if you
+  # want access to productivity applications, adjust the following file accordingly.
+  # #include <abstractions/ubuntu-browsers.d/chromium-browser>
 	
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -151,12 +155,20 @@
   # at in /usr
   /usr/{include,share,src}** r,
 
+  # Access to Home, removable medias & other folders
+  @{HOME}/[^.]** r,
+  /{media,mnt,srv,net}/** r,
+  
   # Downloads and Desktop folders
   owner @{HOME}/ r,
   owner @{DESKTOP_DIR}/ r,
   owner @{DESKTOP_DIR}/** rw,
   owner @{DOWNLOADS_DIR}/ r,
   owner @{DOWNLOADS_DIR}/** rw,
+  
+  audit deny owner /**/* m,
+  deny @{HOME}/** m,
+  deny /{media,mnt,srv,net}/** m,
 
   # Helpers
   /usr/bin/xdg-open ixr,
