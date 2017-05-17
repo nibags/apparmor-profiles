@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 15, 2017
+# Last change: May 16, 2017
 # This AppArmor profile is based on the Firefox profile
 # by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -176,6 +176,7 @@
   /sys/devices/platform/**/uevent r,
   /sys/devices/pci*/**/{busnum,idVendor,idProduct} r,
   /dev/tty r,
+  @{PROC}/[0-9]*/net/arp r,
   
   /etc/mtab r,
   /etc/fstab r,
@@ -211,12 +212,11 @@
   owner @{HOME}/.thunderbird/plugins/** rm,
   owner @{HOME}/.thunderbird/**/plugins/** rm,
   owner @{HOME}/.gnome2/thunderbird* rwk,
-  owner @{HOME}/.cache/thunderbird/{,**} rw,
-  owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
-  owner @{HOME}/.config/gtk-3.0/bookmarks r,
+  owner @{HOME}/.config/gtk-3.0/** r,
   owner @{HOME}/.{cache,config}/dconf/user rw,
   owner /{,var/}run/user/[0-9]*/dconf/user rw,
-  owner @{HOME}/.cache/thumbnails/** rw,
+  owner @{HOME}/.cache/thunderbird/{,**} rw,
+  owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
   owner @{HOME}/.cache/icon-cache.kcache rw,
   
   owner @{HOME}/.config/kdeglobals r,
@@ -232,9 +232,9 @@
   owner @{HOME}/.local/share/mime/generic-icons r,
   owner @{HOME}/.local/share/icons/hicolor/*/apps/ r,
   owner @{HOME}/.local/share/icons/ r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/{index.theme,icon-theme.cache} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
   owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/* r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
   owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
   
   dbus (send)
@@ -292,8 +292,9 @@
 
     /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] r,
-
+    /usr/bin/python3.[0-5] mr,  # m
+    /usr/share/distro-info/*.csv r,
+	
     # file_inherit
     deny /tmp/gtalkplugin.log w,
   }
