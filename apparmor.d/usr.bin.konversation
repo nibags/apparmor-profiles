@@ -4,7 +4,8 @@
 
 #include <tunables/global>
 
-# Downloads & Logs directories
+# NOTE: By default, there is only write access to the download & log directory.
+# Downloads & Logs directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{LOGS_DIR}=@{HOME}/logs
 
@@ -25,7 +26,8 @@ profile konversation /usr/bin/konversation {
 	# Needed to open links (only for some Web browsers/e-mail clients).
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
-
+	
+	# Write access to the download & log directory
 	owner @{DOWNLOADS_DIR}/** rw,  # Downloads directory
 	owner @{LOGS_DIR}/{,**} rw,             # Logs directory
 	owner @{HOME}/*.log rw,
@@ -74,13 +76,14 @@ profile konversation /usr/bin/konversation {
 	owner /tmp/{,.}k*.{lock,tmp} rwk,
 	owner /run/user/[0-9]*/k*-socket rwk,
 	
-	deny /dev/** rwklmx,
+	deny /dev/** rwklmx,  # Block device access
 	deny /run/udev/data/{,**} rwklmx,
 	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
 	
 	# Dangerous files
-	audit deny owner /**/* m,        # Compiled libraries
 	audit deny owner /**/*.py* r,   # Python imports
+	audit deny owner /**/* m,        # Compiled libraries
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

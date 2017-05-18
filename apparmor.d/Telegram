@@ -7,7 +7,8 @@
 
 #include <tunables/global>
 
-# Downloads directory
+# NOTE: By default, there is only write access to the download directory.
+# Downloads directory:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
@@ -30,6 +31,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
 	
+	# Access to Home
 	owner @{HOME}/{*,[^.]*/,[^.]*/**} r,
 	owner @{DOWNLOADS_DIR}/** rw,  # Write only in the downloads directory
 	
@@ -37,6 +39,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.TelegramDesktop/{**,} rwkl,
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
+	# Local configuration
 	owner @{HOME}/.local/share/flatpak/exports/share/{**,} r,
 	owner @{HOME}/.local/share/RecentDocuments/ r,
 	owner @{HOME}/.local/share/RecentDocuments/{.*,*.desktop,*.desktop.*} rw,
@@ -49,6 +52,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner /{,var/}run/user/*/dconf/user rw,
 	owner @{HOME}/.cache/icon-cache.kcache rwk,
 	owner @{HOME}/.cache/ksycoca[0-9]_* rk,
+	deny @{HOME}/.local/share/recently-used.xbel r,
 	
 	/usr/share/** r,
 	/etc/timezone r,
@@ -66,6 +70,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	/sys/dbus/** r,
 	/sys/devices/**/uevent r,
 	
+	# Device access
 	/dev/tty* r,
 	deny /dev/video* rwmlkx,  # Block cameras
 	
@@ -94,7 +99,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	audit deny owner /**/* m,        # Compiled libraries
 	audit deny owner /**/*.py* r,   # Python imports
 	
-	deny @{HOME}/.local/share/recently-used.xbel r,
 	deny /run/udev/data/{,**} rwklmx,
 	deny /usr/bin/gconftool-2 x,
 	deny /var/cache/fontconfig/ w,

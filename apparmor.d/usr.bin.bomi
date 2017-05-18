@@ -1,8 +1,10 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 17, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# By default the Internet connection is blocked and 
+# there are no write accesses in the Home directory.
 
 #include <tunables/global>
 
@@ -22,27 +24,30 @@ profile bomi /usr/bin/bomi {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
+	# Full reading access
 	/{,**/,**} r,
-	#@{HOME}/{,**} r,  (Replicated)
-	#/media/{,**,**/} r,
 	
-	owner @{HOME}/.cache/xylosper/{,**} rwk,
-	owner @{HOME}/.config/xylosper/{,**} rwk,
-	
+	# Bomi configuration & cache
+	owner @{HOME}/.config/xylosper/ rwk,
+	owner @{HOME}/.config/xylosper/bomi/{,**} rwk,
+	owner @{HOME}/.cache/xylosper/ rwk,
+	owner @{HOME}/.cache/xylosper/bomi/{,**} rwk,
 	owner @{HOME}/.cache/icon-cache.kcache w,
 	
+	# Libraries and binaries
 	/usr/bin/bomi ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
-
-	/etc/{,directfbrc*} r,
+	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
+	# Device access
 	/dev/ati/{,**} rwk,
 	/dev/fb* rwk,
 	/dev/bus/{,**} rw,
 	/dev/shm/{,**} rwk,
 	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-
+	
+	# Temporal files and sockets
 	owner /var/tmp/kdecache-*/* rwk,
 	owner /run/user/[0-9]*/pulse/ w,
 	owner /run/user/[0-9]*/pulse/ r,
@@ -52,13 +57,14 @@ profile bomi /usr/bin/bomi {
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	/run/systemd/journal/socket w,
 	/run/dbus/system_bus_socket w,
+	#/etc/{,directfbrc*} r,
 	
 	deny /run/udev/data/{,**} rwklmx,
-	deny /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
+	audit deny owner /**/*.py* r,   # python imports
 	audit deny owner /**/* m,        # compiled libraries
-	audit deny owner /**/*.py* r,  # python imports
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	dbus (send)
 		bus=system

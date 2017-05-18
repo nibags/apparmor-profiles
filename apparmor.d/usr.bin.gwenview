@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 17 15, 2017
 
 #include <tunables/global>
 
@@ -32,6 +32,7 @@ profile gwenview /usr/bin/gwenview {
 	# Write access in Home directory and mounted drives
 	@{HOME}/{,**} rw,
 	/{media,mnt}/** rw,
+	owner /{srv,net}/** rw,
 	
 	# Gwenview configuration
 	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
@@ -48,13 +49,14 @@ profile gwenview /usr/bin/gwenview {
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
+	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
 	# Replicated Rules
 	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/libexec/** Pixr,
 	
-	# Temp files
+	# Temporal files
 	owner /var/tmp/kdecache-*/* rwk,
 	owner /tmp/* rwk,
 	owner /tmp/kde-*/** rwk,
@@ -65,8 +67,12 @@ profile gwenview /usr/bin/gwenview {
 	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	
-	deny /run/udev/data/{,**} rmx,
+	deny /run/udev/data/{,**} rwlkmx,
 	deny /dev/{video,audio}* rwlkmx, # Block Cameras & Microphones
+	
+	audit deny owner /**/*.py* r,  # Block python imports
+	audit deny owner /**/* m,       # Block compiled libraries
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

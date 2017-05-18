@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 24, 2017
+# Last change: May 17 24, 2017
 
 # NOTE: This profile is more restrictive than
 # the one provided in <abstractions/ubuntu-bittorrent-clients>.
@@ -8,6 +8,7 @@
 
 #include <tunables/global>
 
+# NOTE: By default, there is only write access to the torrent directory.
 # Torrents directory. Modify according to KTorrent configuration.
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
@@ -27,9 +28,11 @@ profile ktorrent /usr/bin/ktorrent {
 	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
+	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
 	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
 	
+	# KTorrent configuration
 	owner @{HOME}/.kde{,4}/share/apps/ktorrent/{,**} rwk,
 	owner @{HOME}/.kde{,4}/share/config/ktorrent* rwk,
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* rk,  # kdeglobals
@@ -47,8 +50,9 @@ profile ktorrent /usr/bin/ktorrent {
 	deny /dev/{video,audio}* rwlkmx,  # Cameras & microphones
 	
 	# Dangerous files
-	audit deny owner /**/* m,        # Compiled libraries
-	audit deny owner /**/*.py* r,  # Python imports
+	audit deny owner /**/*.py* r,     # Python imports
+	audit deny owner /**/* mx,        # Compiled libraries & executables
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	# Binaries
 	/usr/bin/ktorrent rix,
@@ -73,6 +77,7 @@ profile ktorrent /usr/bin/ktorrent {
 	/etc/machine-id r,
 	#/etc/fstab r,  # Used, but not essential
 	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	
 	# Allow exec of libexec applications
 	/usr/lib{,64}/** Pixr,

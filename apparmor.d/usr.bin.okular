@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 20, 2017
+# Last change: May 17, 2017
 
 #include <tunables/global>
 
@@ -37,10 +37,10 @@ profile okular /usr/bin/okular {
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,
 	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
-	owner @{HOME}/.kde/share/config/okularrc{,.lock} ixrwk,
+	owner @{HOME}/.kde/share/config/okularrc{,.lock} rwk, # ix
 	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
 	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
-	owner @{HOME}/.config/okularrc{,.lock} ixrwk,
+	owner @{HOME}/.config/okularrc{,.lock} rwk, # ix
 	owner @{HOME}/.config/session/{okular,khelpcenter,.}* rwk,
 	owner @{HOME}/.config/.[A-Z0-9]* rwk,
 	owner @{HOME}/.cache/khelpcenter/**lock rwk,
@@ -53,6 +53,7 @@ profile okular /usr/bin/okular {
 	/usr/lib{,64}/** Pixr,
 	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular*.so Pixrm,
 	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
+	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
 	# Replicated Rules
 	# /usr/lib{,64}/kde4/libexec/{,**} Pixr,
@@ -61,7 +62,7 @@ profile okular /usr/bin/okular {
 	# /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular/** Pixr,
 	# /usr/lib{,64,/*-linux-gnu}/qt5/{libexec,bin}/* Pixr,
 	
-	# Temp files
+	# Temporal files and sockets
 	owner /tmp/*lock rwk,
 	owner /tmp/kde-*/{,**} rwk,
 	owner /var/tmp/kdecache-*/* rwk,
@@ -74,9 +75,12 @@ profile okular /usr/bin/okular {
 	/run/dbus/system_bus_socket w,
 	
 	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-	deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx, # Only bluetooth & USB data access
+	deny /run/udev/data/{,**} rwlkmx,
+	#deny /run/udev/data/{**^*bluetooth:*,*usb:*} rmx,
+	
 	audit deny owner /**/*.py* r,  # Block python imports
 	audit deny owner /**/* m,       # Block compiled libraries
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

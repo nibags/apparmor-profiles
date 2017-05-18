@@ -14,7 +14,8 @@
 # Thunderbird directory
 @{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
 
-# Downloads & Desktop directories
+# NOTE: By default, there is only write access to the download & desktop directory.
+# Download & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 

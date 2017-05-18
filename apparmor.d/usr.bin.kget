@@ -1,10 +1,11 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 15, 2017
+# Last change: May 17, 2017
 
 #include <tunables/global>
 
-# Downloads directory
+# NOTE: By default, there is only write access to the download directory.
+# Downloads directory:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile kget /usr/bin/kget {
@@ -42,7 +43,6 @@ profile kget /usr/bin/kget {
 	# Binaries
 	/usr/bin/kget ixr,
 	/bin/dash Pixr,
-	/bin/which Pixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/kde4-config ixr,
@@ -69,8 +69,9 @@ profile kget /usr/bin/kget {
 	deny /run/udev/data/{,**} rwklmx,
 	
 	# Dangerous files
+	audit deny owner /**/*.py* r,   # Python imports
 	audit deny owner /**/* m,        # Compiled libraries
-	audit deny owner /**/*.py* r,  # Python imports
+	deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

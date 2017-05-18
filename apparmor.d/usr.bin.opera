@@ -17,7 +17,8 @@
 # For general use: /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera
 @{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
 
-# Downloads & Desktop directories
+# NOTE: By default, there is only write access to the download & desktop directory.
+# Download & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
@@ -264,7 +265,7 @@
     /usr/bin/ r,
     /usr/bin/python3.[0-5] mr, # m
 	
-	/usr/share/distro-info/debian.csv r,
+	/usr/share/distro-info/*.csv r,
   }
 
   # Site-specific additions and overrides. See local/README for details.
