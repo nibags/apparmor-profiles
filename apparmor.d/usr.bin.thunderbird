@@ -11,7 +11,8 @@
 #  - By default, there is only write access to the download & desktop directories.
 #  - This profile was designed with the intention of working
 #    correctly in the KDE Plasma 5 desktop environment.
-#    This profile is tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
+#  - For this profile to work correctly in GNOME 3 & Unity,
+#    it is necessary to uncomment some lines. Please check!
 
 #include <tunables/global>
 
@@ -38,8 +39,10 @@
   #include <abstractions/p11-kit>
   #include <abstractions/private-files>
   #include <abstractions/ssl_certs>
-  #include <abstractions/ubuntu-unity7-base>
-  #include <abstractions/ubuntu-unity7-launcher>
+  
+  # WARNING: Required for Unity
+  # #include <abstractions/ubuntu-unity7-base>
+  # #include <abstractions/ubuntu-unity7-launcher>
   
   # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
   #include <abstractions/open-browser>
@@ -76,7 +79,7 @@
   audit deny @{HOME}/.ssh/** mrwkl,
   
   # Block access to camera & microphone
-  deny /dev/{video,audio}* rwlkmx,
+  audit deny /dev/{video,audio}* rwlkmx,
   
   # Access to HOME
   owner @{HOME}/{,[^.]**} r,
@@ -94,6 +97,10 @@
   
   # Required for LVM setups
   /sys/devices/virtual/block/dm-[0-9]*/uevent r,
+  
+  # WARNING: Required for GNOME 3
+  # /sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+  # /run/systemd/journal/socket w,
 
   # For networking
   network inet stream,
@@ -188,10 +195,6 @@
   /dev/tty r,
   @{PROC}/[0-9]*/net/arp r,
   
-  # Required for GNOME 3
-  /sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
-  /run/systemd/journal/socket w,
-  
   /etc/mtab r,
   /etc/fstab r,
   
@@ -215,10 +218,10 @@
   /**/ r,
   
   /usr/share/** r,
-  #/usr/share/applications/*.list r,
-  #/usr/share/glib-[1-9]*/** r,
-  #/usr/share/qt[4-6]/** r,
-  #/usr/share/plasma/look-and-feel/{,**} r,
+  # Replicated rules:
+  # /usr/share/applications/*.list r,
+  # /usr/share/{glib-*,qt[45]}/** r,
+  # /usr/share/plasma/look-and-feel/{,**} r,
   
   # Per-user Thunderbird configuration
   owner @{HOME}/.thunderbird/{,**} rw,
