@@ -5,6 +5,7 @@
 #include <tunables/global>
 
 # NOTE: By default, there is only write access to the download & log directory.
+
 # Downloads & Logs directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{LOGS_DIR}=@{HOME}/logs
@@ -82,8 +83,8 @@ profile konversation /usr/bin/konversation {
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* m,        # Compiled libraries
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny owner /**/* mx,      # Compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

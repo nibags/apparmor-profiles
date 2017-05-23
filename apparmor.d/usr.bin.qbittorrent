@@ -1,14 +1,18 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 17, 2017
+# Last change: May 22, 2017
 
-# NOTE: This profile is more restrictive than
-# the one provided in <abstractions/ubuntu-bittorrent-clients>.
-# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# NOTE:
+#  - This profile is more restrictive than the one provided
+#    in <abstractions/ubuntu-bittorrent-clients>.
+#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
-# NOTE: By default, there is only write access to the torrent directory.
+#  - Important: Check & change the torrents directory
+#    according to qBittorrent configuration.
+#  - By default, there is only write access to the torrent directory.
+
 # Torrents directory. Modify according to qBittorrent configuration.
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
@@ -59,14 +63,14 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.config/trashrc r, # rw
 	# owner @{HOME}/.local/share/RecentDocuments/*.desktop rw,  # Used, but not essential
 	
-	deny /run/udev/data/** r,
-	deny /{media,mnt}/** rwklmx,       # Block access to mounted drives
-	deny /dev/{video,audio}* rwlkmx, # Block cameras & microphones
+	deny /run/udev/data/** rwklmx,
+	deny /{media,mnt,srv,net}/** rwklmx, # Block access to mounted drives & other directories
+	deny /dev/{video,audio}* rwlkmx,        # Block cameras & microphones
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,     # Python imports
 	audit deny owner /**/* mx,        # Compiled libraries & executables
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny /home/** mx,
 	
 	# Binaries
 	/usr/bin/qbittorrent ixr,

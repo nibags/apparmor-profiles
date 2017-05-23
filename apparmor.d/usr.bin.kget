@@ -1,10 +1,11 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 17, 2017
+# Last change: May 22, 2017
 
 #include <tunables/global>
 
 # NOTE: By default, there is only write access to the download directory.
+
 # Downloads directory:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
@@ -34,8 +35,9 @@ profile kget /usr/bin/kget {
 	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
 	owner @{HOME}/.kde{,4}/share/config/kget* rw,
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.kde{,4}/share/config/{kdeglobals,kio*} rk,
-	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* rk, 
+	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
+	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rk, 
+	owner @{HOME}/.kde{,4}/share/config/{konquerorrc,kioslaverc}{,*.new} w,
 	owner @{HOME}/.config/Trolltech.conf rk,
 	
 	/{,**/} r,  # Read only directories
@@ -62,7 +64,7 @@ profile kget /usr/bin/kget {
 	
 	# Temp files
 	owner /var/tmp/kdecache-*/** rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,kget*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,kget*,kdeinit*} rwk,
 	owner /tmp/{,.}kget*.lock rwk,
 	
 	deny /{sys,dev}/** rwklmx,
@@ -70,8 +72,8 @@ profile kget /usr/bin/kget {
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* m,        # Compiled libraries
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny owner /**/* mx,      # Compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

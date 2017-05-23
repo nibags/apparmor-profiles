@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 17, 2017
+# Last change: May 23, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -29,9 +29,10 @@ profile vlc /usr/bin/vlc {
 	/{,**/,**} r,
 	
 	# Write access in Home directory and mounted drives
-	@{HOME}/{,**} rw,
-	/media/*/{**^Windows,windows} rw,  # All mounted units, except those labeled Windows/windows
-	/media/*/{Windows,windows}/Users/*/** rw,  # Only user directories in Windows
+	owner @{HOME}/{,**} rw,
+	owner /{mnt,srv,net}/** rw,
+	/media/*/** rw,
+	deny /media/*/{Windows,windows}/{Program*,Windows}/** w,
 	
 	# VLC configuration
 	owner @{HOME}/.local/share/vlc/{,**} rwk,
@@ -86,6 +87,6 @@ profile vlc /usr/bin/vlc {
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* m,        # Compiled libraries
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny owner /**/* mx,      # Compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net}/** mx,
 }

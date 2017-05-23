@@ -1,14 +1,18 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 17 24, 2017
+# Last change: May 22, 2017
 
-# NOTE: This profile is more restrictive than
-# the one provided in <abstractions/ubuntu-bittorrent-clients>.
-# This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# NOTE:
+#  - This profile is more restrictive than
+#    the one provided in <abstractions/ubuntu-bittorrent-clients>.
+#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 #include <tunables/global>
 
-# NOTE: By default, there is only write access to the torrent directory.
+#  - Important: Check & change the torrents directory
+#    according to KTorrent configuration.
+#  - By default, there is only write access to the torrent directory.
+
 # Torrents directory. Modify according to KTorrent configuration.
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
@@ -46,13 +50,13 @@ profile ktorrent /usr/bin/ktorrent {
 	owner @{HOME}/.kde{,4}/socket-* rwkl,
 	
 	deny /run/udev/data/** rwklmx,
-	deny /{media,mnt}/** rwklmx,        # Mounted drives
-	deny /dev/{video,audio}* rwlkmx,  # Cameras & microphones
+	deny /{media,mnt,srv,net}/** rwklmx,  # Mounted drives & other directories
+	deny /dev/{video,audio}* rwlkmx,         # Cameras & microphones
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,     # Python imports
 	audit deny owner /**/* mx,        # Compiled libraries & executables
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny /home/** mx,
 	
 	# Binaries
 	/usr/bin/ktorrent rix,

@@ -1,19 +1,19 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 16, 2017
+# Last change: May 23, 2017
 
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+# NOTE:
+#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+#  - By default, full write access is granted to the owner of the
+#    directories: /home, /media, /mnt, /srv, /net.
+#    View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
 #include <tunables/global>
 
 @{CHROM_LIBDIR}=/usr/lib{,64}/chromium-browser
 
-# NOTE: By default, full write access is granted to the owner of the
-# (sub) directories: /home, /media, /mnt, /srv, /net.
-# View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
-
-# Downloads & Desktop directories
+# Downloads & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
@@ -158,9 +158,11 @@
   owner @{DOWNLOADS_DIR}/ r,
   owner @{DOWNLOADS_DIR}/** rw,
   
-  audit deny owner /**/* m,
-  deny @{HOME}/** m,
-  deny /{media,mnt,srv,net}/** m,
+  # Block binary execution and mapping of compiled libraries
+  audit deny /{media,mnt,srv,net}/** mx,
+  audit deny @{HOME}/{*,[^.]**} m,
+  audit deny @{HOME}/** x,
+  audit deny owner /**/* x,
 
   # For migration
   # owner @{HOME}/.mozilla/firefox/profiles.ini r,

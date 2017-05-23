@@ -1,10 +1,11 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 17, 2017
+# Last change: May 22, 2017
 
-# NOTE: This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
-# By default the Internet connection is blocked and 
-# there are no write accesses in the Home directory.
+# NOTE:
+#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+#  - By default the Internet connection is blocked and 
+#    there are no write accesses in the Home directory.
 
 #include <tunables/global>
 
@@ -62,9 +63,9 @@ profile bomi /usr/bin/bomi {
 	deny /run/udev/data/{,**} rwklmx,
 	
 	# Dangerous files
-	audit deny owner /**/*.py* r,   # python imports
-	audit deny owner /**/* m,        # compiled libraries
-	deny /{home,media,mnt,srv,net}/** mx,
+	audit deny owner /**/*.py* r,   # Python imports
+	audit deny owner /**/* mx,      # Compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	dbus (send)
 		bus=system

@@ -1,20 +1,23 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 16, 2017
+# Last change: May 23, 2017
 # This AppArmor profile is based on the Firefox profile
-# by Jamie Strandboge <jamie@canonical.com>
+#      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
-# by Simon Deziel <simon.deziel at gmail_com>
+#      by Simon Deziel <simon.deziel at gmail_com>
 
-# NOTE: This profile was designed with the intention of working
-# correctly in the KDE Plasma 5 desktop environment.
+# NOTE:
+#  - Important: Check & change the user download & desktop directories.
+#  - By default, there is only write access to the download & desktop directories.
+#  - This profile was designed with the intention of working
+#    correctly in the KDE Plasma 5 desktop environment.
+#    This profile is tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
 #include <tunables/global>
 
-# Thunderbird directory
+# Thunderbird directory:
 @{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
 
-# NOTE: By default, there is only write access to the download & desktop directory.
 # Download & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
@@ -81,6 +84,13 @@
   owner @{DESKTOP_DIR}/** rw,
   owner @{DOWNLOADS_DIR}/ r,
   owner @{DOWNLOADS_DIR}/** rw,
+  
+  # Block binary execution and mapping of compiled libraries
+  audit deny /{media,mnt,srv,net}/** mx,
+  audit deny @{HOME}/{*,[^.]**} m,
+  audit deny @{HOME}/.{cache,config,local}/** m,
+  audit deny @{HOME}/** x,
+  audit deny owner /**/* x,
   
   # Required for LVM setups
   /sys/devices/virtual/block/dm-[0-9]*/uevent r,
@@ -173,11 +183,14 @@
   @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/pci[0-9]*/**/uevent r,
   /sys/devices/platform/**/uevent r,
-  /sys/devices/pci*/**/{busnum,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/{uevent,busnum,idVendor,idProduct} r,
   /dev/tty r,
   @{PROC}/[0-9]*/net/arp r,
+  
+  # Required for GNOME 3
+  /sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+  /run/systemd/journal/socket w,
   
   /etc/mtab r,
   /etc/fstab r,
@@ -197,7 +210,7 @@
   # Needed for container to work in xul builds
   /usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
-  # so browsing directories works
+  # So browsing directories works
   / r,
   /**/ r,
   

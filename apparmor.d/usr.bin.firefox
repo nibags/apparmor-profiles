@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 16, 2017
+# Last change: May 23, 2017
 
 #include <tunables/global>
 
@@ -9,10 +9,10 @@
 @{MOZ_LIBDIR}=/usr/lib{,64}/firefox
 
 # NOTE: By default, full write access is granted to the owner of the
-# (sub) directories: /home, /media, /mnt, /srv, /net.
+# directories: /home, /media, /mnt, /srv, /net.
 # View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
-# Downloads & Desktop directories
+# Downloads & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
@@ -172,14 +172,12 @@
   # Needed for container to work in xul builds
   /usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
-  # allow access to documentation and other files the user may want to look
+  # Allow access to documentation and other files the user may want to look
   # at in /usr and /opt
-  /usr/ r,
-  /usr/** r,
-  /opt/ r,
-  /opt/** r,
+  /usr/{,**} r,
+  /opt/{,**} r,
 
-  # so browsing directories works
+  # So browsing directories works
   / r,
   /**/ r,
 
@@ -190,11 +188,14 @@
   owner @{DOWNLOADS_DIR}/ r,
   owner @{DOWNLOADS_DIR}/** rw,
   
-  audit deny owner /**/* m,
-  deny @{HOME}/** m,
-  deny /{media,mnt,srv,net}/** m,
+  # Block binary execution and mapping of compiled libraries
+  audit deny /{media,mnt,srv,net}/** mx,
+  audit deny @{HOME}/{*,[^.]**} m,
+  audit deny @{HOME}/.{cache,config,local}/** m,
+  audit deny @{HOME}/** x,
+  audit deny owner /**/* x,
   
-  # per-user firefox configuration
+  # Per-user firefox configuration
   owner @{HOME}/.{firefox,mozilla}/ rw,
   owner @{HOME}/.{firefox,mozilla}/** rw,
   owner @{HOME}/.{firefox,mozilla}/**/*.{db,parentlock,sqlite}* k,
