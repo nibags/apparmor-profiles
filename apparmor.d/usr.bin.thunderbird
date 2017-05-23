@@ -11,7 +11,7 @@
 #  - By default, there is only write access to the download & desktop directories.
 #  - This profile was designed with the intention of working
 #    correctly in the KDE Plasma 5 desktop environment.
-#  - For this profile to work correctly in GNOME 3 & Unity,
+#  - For this profile to work correctly in GNOME 3,
 #    it is necessary to uncomment some lines. Please check!
 
 #include <tunables/global>
@@ -39,10 +39,8 @@
   #include <abstractions/p11-kit>
   #include <abstractions/private-files>
   #include <abstractions/ssl_certs>
-  
-  # WARNING: Required for Unity
-  # #include <abstractions/ubuntu-unity7-base>
-  # #include <abstractions/ubuntu-unity7-launcher>
+  #include <abstractions/ubuntu-unity7-base>
+  #include <abstractions/ubuntu-unity7-launcher>
   
   # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
   #include <abstractions/open-browser>
