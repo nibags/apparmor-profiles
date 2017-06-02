@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 23, 2017
+# Last change: June 01, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -25,20 +25,45 @@ profile vlc /usr/bin/vlc {
 	# Needed to open links (only for some browsers).
 	#include <abstractions/open-browser>
 	
-	# Full reading access
-	/{,**/,**} r,
+	/{,**/} r,   # Read all directories
 	
-	# Write access in Home directory and mounted drives
-	owner @{HOME}/{,**} rw,
-	owner /{mnt,srv,net}/** rw,
-	/media/*/** rw,
-	deny /media/*/{Windows,windows}/{Program*,Windows}/** w,
+	owner /**/* r,
+	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	
+	# Write access in Home directory, mounted drives and others directories
+	owner @{HOME}/** rw,
+	owner /{media,mnt,srv,net}/** rw,
+	deny /media/*/[Ww]indows/{Program*,Windows}/** w,
 	
 	# VLC configuration
 	owner @{HOME}/.local/share/vlc/{,**} rwk,
 	owner @{HOME}/.config/vlc/{,**} rwk,
-	owner @{HOME}/.config/vlcrc rwk,
+	owner @{HOME}/.config/vlcrc{,.lock} rwk,
 	owner @{HOME}/.cache/vlc/{,**} rwk,
+	
+	# Block compiled libraries & executables
+	audit deny owner /**/* mx,
+	audit deny /{home,media,mnt,srv,net,cdrom}/** mx,
+	
+	/usr/share/** r,
+	
+	/etc/vdpau_wrapper.cfg r,
+	/etc/anacrontab r,
+	/etc/adduser.conf r,
+	/etc/appstream.conf r,
+	/etc/bash.bashrc r,
+	/etc/bash_completion r,
+	/etc/udev/udev.conf r,
+	/etc/nsswitch.conf r,
+	/etc/fstab r,
+	#/etc/passwd r,
+	/etc/pulse/*.conf r,
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	
+	/sys/devices/**/uevent r,
+	/sys/devices/pci[0-9]*/**/config r,
+	/sys/devices/system/**/meminfo r,
 	
 	# Libraries and binaries
 	/usr/bin/vlc ixr,
@@ -49,19 +74,23 @@ profile vlc /usr/bin/vlc {
 	
 	# Device access
 	/dev/ati/{,**} rwk,
-	/dev/{fb,video,audio}* rwk,
+	/dev/{fb,video,audio}* rk,
 	/dev/bus/{,**} rwk,
 	/dev/shm/{,**} rwk,
+	/dev/{sg,sr}* rk,
 	
 	# Temporal files & sockets
 	owner /var/tmp/kdecache-*/* rwk,
 	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
 	owner /run/user/[0-9]*/vlc* rwk,
-	owner /{dev,run,var/run}/shm/pulse-shm* k,
+	owner /{dev,run,var/run}/shm/pulse-shm* rk,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
-	/run/dbus/system_bus_socket w,
-	/run/systemd/journal/socket w, 
+	/run/dbus/system_bus_socket rw,
+	/run/systemd/journal/socket rw, 
+	
+	deny /run/udev/data/{,**} rwklmx,
+	audit deny owner /**/*.py* r,   # Block Python imports
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined,addr=@/tmp/ibus/dbus-*),
 	signal (send) set=(term) peer=unconfined,
@@ -75,6 +104,19 @@ profile vlc /usr/bin/vlc {
 		path=/org/freedesktop/NetworkManager,
 	
 	dbus (send)
+		bus=system
+		path=/org/freedesktop/UPower
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.UPower),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/{block_devices,drives}
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.UDisks2),
+	
+	dbus (send)
 		bus=session
 		peer=(name=org.a11y.Bus),
 	dbus (receive)
@@ -82,11 +124,4 @@ profile vlc /usr/bin/vlc {
 		interface=org.a11y.atspi**,
 	dbus (receive, send)
 		bus=accessibility,
-	
-	deny /run/udev/data/{,**} rwklmx,
-	
-	# Dangerous files
-	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* mx,      # Compiled libraries & executables
-	audit deny /{home,media,mnt,srv,net}/** mx,
 }

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: June 01, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -25,15 +25,38 @@ profile bomi /usr/bin/bomi {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	#include <abstractions/confidential-deny>
 	
-	# Full reading access
-	/{,**/,**} r,
+	# Only reading access in Home directory and mounted drives
+	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	owner /**/{,*} r,
+	
+	# Block compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net,cdrom}/** mx,
+	audit deny owner /**/* mx,
 	
 	# Bomi configuration & cache
 	owner @{HOME}/.config/xylosper/ rwk,
 	owner @{HOME}/.config/xylosper/bomi/{,**} rwk,
 	owner @{HOME}/.cache/xylosper/ rwk,
 	owner @{HOME}/.cache/xylosper/bomi/{,**} rwk,
-	owner @{HOME}/.cache/icon-cache.kcache w,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.config/QtProject.conf rw,
+	owner @{HOME}/.config/bomirc{,.lock} rwk,
+	
+	/usr/share/** r,
+	
+	/etc/directfbrc* r,
+	/etc/udev/udev.conf r,
+	/etc/nsswitch.conf r,
+	/etc/fstab r,
+	/etc/passwd r,
+	/etc/pulse/*.conf r,
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	
+	/sys/**/ r,
+	/sys/devices/**/uevent r,
+	/sys/devices/pci[0-9]*/**/config r,
+	/sys/devices/system/**/meminfo r,
 	
 	# Libraries and binaries
 	/usr/bin/bomi ixr,
@@ -43,10 +66,8 @@ profile bomi /usr/bin/bomi {
 	
 	# Device access
 	/dev/ati/{,**} rwk,
-	/dev/fb* rwk,
-	/dev/bus/{,**} rw,
 	/dev/shm/{,**} rwk,
-	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	
 	# Temporal files and sockets
 	owner /var/tmp/kdecache-*/* rwk,
@@ -54,18 +75,15 @@ profile bomi /usr/bin/bomi {
 	owner /run/user/[0-9]*/pulse/ r,
 	owner /run/user/[0-9]*/ksocket-*/{,**} rwkl,
 	owner /run/user/[0-9]*/bomi* rwkl,
-	owner /{dev,run,var/run}/shm/pulse-shm* k,
+	owner /{dev,run,var/run}/shm/pulse-shm* rk,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
-	/run/systemd/journal/socket w,
-	/run/dbus/system_bus_socket w,
-	#/etc/{,directfbrc*} r,
+	/run/systemd/journal/socket rw,
+	/run/dbus/system_bus_socket rw,
 	
 	deny /run/udev/data/{,**} rwklmx,
+	audit deny owner /**/*.py* r,  # Block Python imports
 	
-	# Dangerous files
-	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* mx,      # Compiled libraries & executables
-	audit deny /{home,media,mnt,srv,net}/** mx,
+	signal (send) set=(term) peer=unconfined,
 	
 	dbus (send)
 		bus=system
