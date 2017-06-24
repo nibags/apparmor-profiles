@@ -1,0 +1,58 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: June 23, 2017
+
+#include <tunables/global>
+
+profile mpv /usr/bin/mpv {
+	#include <abstractions/audio>
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/kde>
+	#include <abstractions/dbus-session-strict>
+	#include <abstractions/X>
+	#include <abstractions/consoles>
+	
+	# Block network connection
+	#include <abstractions/block-networking>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include <abstractions/confidential-deny>
+	
+	# Only reading access in Home directory and mounted drives
+	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	owner /**/{,*} r,
+	
+	# Block compiled libraries & executables
+	audit deny /{home,media,mnt,srv,net,cdrom}/** mx,
+	audit deny owner /**/* mx,
+	
+	# Configuration
+	owner @{HOME}/.config/mpv/{,**} rwk,
+	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
+		
+	/etc/udev/udev.conf r,
+	/etc/vdpau_wrapper.cfg r,
+	/etc/pulse/*.conf r,  # Revise
+	
+	/sys/**/ r,
+	/sys/devices/**/uevent r,
+	/sys/devices/system/**/meminfo r,
+	/sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+	
+	# Device access
+	/dev/ati/{,**} r,
+	/dev/dri/{,**} r,
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	
+	# Binaries and libraries
+	/usr/bin/mpv ixr,
+	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
+	/bin/{grep,hostname,mv,sed,which} Pixr,
+	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
+	
+	deny /run/udev/data/{,**} rwklmx,
+	audit deny owner /**/*.py* r,  # Block Python imports
+	audit deny /{home,media,mnt,srv,net,cdrom}/**.py* r,
+}

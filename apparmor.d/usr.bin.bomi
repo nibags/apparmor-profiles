@@ -82,6 +82,7 @@ profile bomi /usr/bin/bomi {
 	
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,  # Block Python imports
+	audit deny /{home,media,mnt,srv,net,cdrom}/**.py* r,
 	
 	signal (send) set=(term) peer=unconfined,
 	

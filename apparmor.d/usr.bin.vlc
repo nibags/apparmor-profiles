@@ -91,6 +91,7 @@ profile vlc /usr/bin/vlc {
 	
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,   # Block Python imports
+	audit deny /{home,media,mnt,srv,net,cdrom}/**.py* r,
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined,addr=@/tmp/ibus/dbus-*),
 	signal (send) set=(term) peer=unconfined,
