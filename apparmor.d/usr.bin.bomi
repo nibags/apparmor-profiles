@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: June 01, 2017
+# Last change: July 01, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -8,6 +8,9 @@
 #    there are no write accesses in the Home directory.
 
 #include <tunables/global>
+
+# Directories where multimedia and data are stored
+@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
 
 profile bomi /usr/bin/bomi {
 	#include <abstractions/audio>
@@ -26,11 +29,11 @@ profile bomi /usr/bin/bomi {
 	#include <abstractions/confidential-deny>
 	
 	# Only reading access in Home directory and mounted drives
-	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	/@{DATA_DIR}/{,**} r,
 	owner /**/{,*} r,
 	
 	# Block compiled libraries & executables
-	audit deny /{home,media,mnt,srv,net,cdrom}/** mx,
+	audit deny /@{DATA_DIR}/** mx,
 	audit deny owner /**/* mx,
 	
 	# Bomi configuration & cache
@@ -82,7 +85,7 @@ profile bomi /usr/bin/bomi {
 	
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,  # Block Python imports
-	audit deny /{home,media,mnt,srv,net,cdrom}/**.py* r,
+	audit deny /@{DATA_DIR}/**.py* r,
 	
 	signal (send) set=(term) peer=unconfined,
 	

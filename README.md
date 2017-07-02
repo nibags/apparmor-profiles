@@ -1,9 +1,9 @@
 
 # AppArmor Security Profiles for some applications
 
-Author: Nibaldo González (<nibgonz@gmail.com>)
+Author: Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
 
-Last Change: June 23, 2017
+Last Change: July 02, 2017
 
 ## Description:
 

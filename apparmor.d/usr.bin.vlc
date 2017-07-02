@@ -6,6 +6,9 @@
 
 #include <tunables/global>
 
+# Directories where multimedia and data are stored
+@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
+
 profile vlc /usr/bin/vlc {
 	#include <abstractions/audio>
 	#include <abstractions/base>
@@ -28,7 +31,7 @@ profile vlc /usr/bin/vlc {
 	/{,**/} r,   # Read all directories
 	
 	owner /**/* r,
-	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	/@{DATA_DIR}/{,**} r,
 	
 	# Write access in Home directory, mounted drives and others directories
 	owner @{HOME}/** rw,
@@ -43,7 +46,7 @@ profile vlc /usr/bin/vlc {
 	
 	# Block compiled libraries & executables
 	audit deny owner /**/* mx,
-	audit deny /{home,media,mnt,srv,net,cdrom}/** mx,
+	audit deny /@{DATA_DIR}/** mx,
 	
 	/usr/share/** r,
 	
@@ -91,7 +94,7 @@ profile vlc /usr/bin/vlc {
 	
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,   # Block Python imports
-	audit deny /{home,media,mnt,srv,net,cdrom}/**.py* r,
+	audit deny /@{DATA_DIR}/**.py* r,
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined,addr=@/tmp/ibus/dbus-*),
 	signal (send) set=(term) peer=unconfined,
