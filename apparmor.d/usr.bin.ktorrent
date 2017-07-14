@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: July 13, 2017
 
 # NOTE:
 #  - This profile is more restrictive than
@@ -48,16 +48,17 @@ profile ktorrent /usr/bin/ktorrent {
 	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
 	owner @{HOME}/.kde{,4}/socket-* rwkl,
+	owner @{HOME}/.kde{,4}/share/config/kconf_updaterc r,
+	owner @{HOME}/.kde/share/config/phonondevicesrc r,
 	
 	deny /run/udev/data/** rwklmx,
-	deny /{media,mnt,srv,net}/** rwklmx,  # Mounted drives & other directories
-	deny /dev/{video,audio}* rwlkmx,         # Cameras & microphones
+	deny /{media,mnt,srv,net,cdrom}/** rwklmx,  # Mounted drives & other directories
+	audit deny /dev/{video,audio}* rwlkmx,           # Cameras & microphones
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,     # Python imports
 	audit deny owner /**/* mx,        # Compiled libraries & executables
-	audit deny /home/** mx,
-	
+		
 	# Binaries
 	/usr/bin/ktorrent rix,
 	/bin/dash Pixr,
@@ -68,6 +69,10 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,
 	/usr/bin/gvfs-open ixr,
+	/usr/bin/kbuildsycoca4 ixr,
+	
+	# Allow exec of libexec applications
+	/usr/lib{,64}/** Pixr,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -78,31 +83,28 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/share/kde4/apps/kde*/** r,
 	/usr/share/GeoIP/* r,
 	
-	/etc/machine-id r,
-	#/etc/fstab r,  # Used, but not essential
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
-	
-	# Allow exec of libexec applications
-	/usr/lib{,64}/** Pixr,
+	#/etc/fstab r,  # Used, but not essential
+	/etc/machine-id r,
+	/etc/udev/udev.conf r,
+	/etc/pulse/client.conf r,
+	/etc/timezone r,
 	
 	/proc/*/mounts r,
-	/etc/udev/udev.conf r,
 	/run/dbus/system_bus_socket rw,
 	/sys/devices/**/uevent r,
-	# /sys/devices/{system,platform,cpu,power, software,breakpoint,uncore_*,cstate_*,intel_*,pci[0-9]*,pnp[0-9]*}/{,**/}uevent r,
 	
 	# Temp files
-	owner /run/user/[0-9]*/ksocket-*/{,ktorrent*,kdeinit*,klauncher*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,ktorrent*,kdeinit*,klauncher*,kio_http_cache_*} rwk,
 	owner /tmp/{,.}ktorrent*.lock rwk,
 	owner /tmp/kde-*/{,**} rwk,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	
-	# For multimedia support
-	#/{,var/}run/user/*/pulse/ r,
-	#/{run,dev}/shm/pulse-shm* rw,
-	#owner /{,var/}run/user/*/pulse/ w,
-	#owner /{run,dev}/shm/pulse-shm* k,
+	/{,var/}run/user/*/pulse/ r,
+	/{run,dev}/shm/pulse-shm* r,
+	owner /{,var/}run/user/*/pulse/ w,
+	owner /{run,dev}/shm/pulse-shm* k,
 	
 	signal (send) set=(term) peer=unconfined,
 	
@@ -133,4 +135,11 @@ profile ktorrent /usr/bin/ktorrent {
 		interface=org.freedesktop.DBus.Properties
 		member={GetAll,Get,PropertiesChanged}
 		peer=(name=org.freedesktop.UDisks2 label=unconfined),
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }
