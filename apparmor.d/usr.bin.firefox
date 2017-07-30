@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 25, 2017
+# Last change: July 30, 2017
 
 #include <tunables/global>
 
@@ -154,9 +154,8 @@
   @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/pci[0-9]*/**/uevent r,
+  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,idVendor,idProduct} r,
   /sys/devices/platform/**/uevent r,
-  /sys/devices/pci*/**/{busnum,idVendor,idProduct} r,
   #/dev/tty r,  # Required for some extensions
 
   /etc/mtab r,

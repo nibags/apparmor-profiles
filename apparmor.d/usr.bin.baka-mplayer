@@ -1,0 +1,139 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: July 30, 2017
+
+# NOTE: By default, the internet connection is blocked.
+
+#include <tunables/global>
+
+# Directories where videos and data are stored
+@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
+
+profile baka-mplayer /usr/bin/baka-mplayer {
+	#include <abstractions/audio>
+	#include <abstractions/base>
+	#include <abstractions/fonts>
+	#include <abstractions/kde>
+	#include <abstractions/dbus-session-strict>
+	#include <abstractions/X>
+	#include <abstractions/consoles>
+	
+	# Block network connection:
+	#include <abstractions/block-networking>
+	# Allow network connection:
+	# #include <abstractions/nameservice>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	#include<abstractions/confidential-deny>
+	
+	# Needed to open links (only for some Web browsers).
+	#include <abstractions/open-browser>
+	
+	# Only reading access in Home directory, mounted drives and others directories
+	@{DATA_DIR}/{,**} r,
+	owner /**/{,*} r,
+	
+	# Block compiled libraries & executables
+	audit deny @{DATA_DIR}/** mx,
+	audit deny owner /**/* mx,
+	
+	# Configuration
+	owner @{HOME}/.config/{baka-mplayer*,bakamplayer*} rwk,
+	owner @{HOME}/.config/mpv/{,**} rwk,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.config/QtProject.conf rw,
+	owner @{HOME}/.config/QtProject.conf.* rwk,
+	owner @{HOME}/.config/kdeglobals rw,
+	owner @{HOME}/.config/kdeglobals.* rwk,
+	owner @{HOME}/.config/.* rwk,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop* rwk,
+	owner @{HOME}/.local/share/RecentDocuments/.* wk,
+	
+	/usr/share/** r,
+	
+	/etc/directfbrc* r,
+	/etc/udev/udev.conf r,
+	/etc/vdpau_wrapper.cfg r,
+	/etc/nsswitch.conf r,
+	/etc/fstab r,
+	/etc/passwd r,
+	/etc/pulse/*.conf r,
+	/etc/ssl/openssl.cnf r,
+	/etc/ssl/{certs,ssl}/ r,
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	
+	/sys/**/ r,
+	/sys/devices/**/uevent r,
+	/sys/devices/system/**/meminfo r,
+	/sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+	
+	# Device access
+	/dev/ati/{,**} r,
+	/dev/dri/{,**} r,
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	
+	# Binaries and libraries
+	/usr/bin/baka-mplayer ixr,
+	/usr/bin/{mpv,dbus-send,xdg-screensaver,xset} Pixr,
+	/bin/{grep,hostname,mv,sed,which} ixr,
+	/usr/bin/kdeinit{4,5} ixr,
+	/usr/bin/{xdg-open,kde-open,kde-open5,gnome-open,gvfs-open} ixr,
+	/usr/bin/kdialog ixr,
+	/usr/lib/x86_64-linux-gnu/libexec/kf5/* Pixr,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so rm,
+	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
+	
+	# Temporal files and sockets
+	owner /run/user/[0-9]*/baka-mplayer*-socket rwkl,
+	owner /var/tmp/kdecache-*/* rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,**} rwkl,
+	/run/systemd/journal/socket rw,
+	/run/dbus/system_bus_socket rw,
+	
+	deny /run/udev/data/{,**} rwklmx,
+	audit deny owner /**/*.py* r,  # Block Python imports
+	audit deny @{DATA_DIR}/**.py* r,
+	
+	signal (send) set=(term) peer=unconfined,
+	
+	dbus (send)
+		bus=session
+		interface=org.kde.KSlaveLauncher
+		member=requestSlave,
+	dbus (send)
+		bus=session
+		interface=org.kde.KLauncher,
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/DBus
+		interface=org.freedesktop.DBus
+		member={Hello,AddMatch,RemoveMatch,GetNameOwner,NameHasOwner}
+		peer=(name=org.freedesktop.DBus),
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UPower
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.UPower label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/{block_devices,block_devices,drives}{,/*}
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect
+		peer=(name=org.freedesktop.UDisks2),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/{block_devices,drives}/*
+		interface=org.freedesktop.DBus.Properties
+		member={Get,GetAll}
+		peer=(name=org.freedesktop.UDisks2),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/drives/*
+		interface=org.freedesktop.DBus.Properties
+		member=PropertiesChanged,
+}

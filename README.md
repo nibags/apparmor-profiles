@@ -3,11 +3,12 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
 
-Last Change: July 13, 2017
+Last Change: July 30, 2017
 
 ## Description:
 
 AppArmor security profiles for:
+* Baka-MPlayer
 * bomi
 * Chromium
 * Firefox
