@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 23, 2017
+# Last change: July 30, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -84,6 +84,8 @@
   owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
   owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
   
+  owner @{HOME}/.config/gtk-3.0/* r,
+  
   @{PROC}/[0-9]*/fd/ r,
   @{PROC}/filesystems r,
   @{PROC}/ r,
@@ -99,6 +101,7 @@
 
   /etc/udev/udev.conf r,
   /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq r,
+  /sys/devices/pci[0-9]*/**/{revision,config} r,
   /sys/devices/pci[0-9]*/**/class r,
   /sys/devices/pci[0-9]*/**/device r,
   /sys/devices/pci[0-9]*/**/irq r,

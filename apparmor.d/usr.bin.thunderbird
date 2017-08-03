@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 25, 2017
+# Last change: July 30, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -140,6 +140,7 @@
   
   /etc/fonts/** r,
   /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/icons/hicolor/icon-theme.cache r,
   
   /etc/timezone r,
   /etc/wildmidi/wildmidi.cfg r,
@@ -189,7 +190,7 @@
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
   /sys/devices/platform/**/uevent r,
-  /sys/devices/pci[0-9]*/**/{uevent,busnum,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,vendor,idVendor,idProduct} r,
   /dev/tty r,
   @{PROC}/[0-9]*/net/arp r,
   

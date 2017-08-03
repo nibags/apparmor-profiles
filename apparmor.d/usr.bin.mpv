@@ -38,7 +38,8 @@ profile mpv /usr/bin/mpv {
 	# Configuration
 	owner @{HOME}/.config/mpv/{,**} rwk,
 	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
-		
+	
+	/etc/mpv/{,**} r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
 	

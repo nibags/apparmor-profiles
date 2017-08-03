@@ -77,9 +77,12 @@
   /etc/xfce4/defaults.list r,
   /usr/share/xubuntu/applications/defaults.list r,
   /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/icons/** r,
   owner /tmp/** m,
   owner /var/tmp/** m,
   owner /{,var/}run/shm/shmfd-* rw,
@@ -154,7 +157,7 @@
   @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,vendor,idVendor,idProduct} r,
   /sys/devices/platform/**/uevent r,
   #/dev/tty r,  # Required for some extensions
 

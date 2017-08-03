@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: July 30, 2017
 
 #include <tunables/global>
 
@@ -39,7 +39,7 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.config/org.kde.gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
 	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,khelpcenter,.}* rwk,
-	owner @{HOME}/.config/.[A-Z0-9]* rwk,
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/baloo/index-lock rwk,
 	owner @{HOME}/.cache/khelpcenter/**lock rwk,
 	

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: July 30, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -87,7 +87,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/{,**/} r,  # Read only directories, not files
 	
 	/usr/share/knotifications5/* r,
-	/usr/share/qt5/translations/qt_*.qm r,
+	/usr/share/qt5/** r,
 	/usr/share/plasma/** r,
 	/usr/share/color-schemes/{,**} r,
 	/usr/share/sounds/{,**} r,
@@ -104,9 +104,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	
 	/proc/*/mounts r,
 	/sys/devices/**/uevent r,
-	#/sys/devices/{pci[0-9]*,pnp[0-9]*}/**/uevent r,
-	#/sys/devices/cpu/{,**/}uevent r,
-	#/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
+	/sys/devices/pci[0-9]*/**/{config,revision,busnum,vendor,idVendor,idProduct} r,
 	
 	# Temporal files & sockets
 	owner /tmp/{,.}qBittorrent*.lock rwkl,
