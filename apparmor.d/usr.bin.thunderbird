@@ -97,7 +97,6 @@
   /sys/devices/virtual/block/dm-[0-9]*/uevent r,
   
   # WARNING: Required for GNOME 3
-  # /sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
   # /run/systemd/journal/socket w,
 
   # For networking
@@ -139,8 +138,6 @@
      member=Launched,
   
   /etc/fonts/** r,
-  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/icons/hicolor/icon-theme.cache r,
   
   /etc/timezone r,
   /etc/wildmidi/wildmidi.cfg r,
@@ -190,7 +187,7 @@
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
   /sys/devices/platform/**/uevent r,
-  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,vendor,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
   /dev/tty r,
   @{PROC}/[0-9]*/net/arp r,
   
@@ -213,14 +210,9 @@
   /usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
   # So browsing directories works
-  / r,
-  /**/ r,
+  /{,**/} r,
   
   /usr/share/** r,
-  # Replicated rules:
-  # /usr/share/applications/*.list r,
-  # /usr/share/{glib-*,qt[45]}/** r,
-  # /usr/share/plasma/look-and-feel/{,**} r,
   
   # Per-user Thunderbird configuration
   owner @{HOME}/.thunderbird/{,**} rw,
@@ -237,6 +229,7 @@
   
   owner @{HOME}/.config/kdeglobals r,
   owner @{HOME}/.config/kwalletrc r,
+  owner @{HOME}/.config/klanguageoverridesrc r,
   owner @{HOME}/.gtkrc-2.0 r,
   owner @{HOME}/.gtkrc-2.0-kde4 r,
   owner @{HOME}/.config/user-dirs.dirs r,
@@ -249,10 +242,11 @@
   owner @{HOME}/.local/share/icons/ r,
   owner @{HOME}/.local/share/icons/hicolor/* r,
   owner @{HOME}/.local/share/icons/hicolor/*/apps/{,*} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/* r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/** r,
+  
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
   
   dbus (send)
        bus=session

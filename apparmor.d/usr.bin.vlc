@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: June 01, 2017
+# Last change: August 06, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -72,7 +72,7 @@ profile vlc /usr/bin/vlc {
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
-	/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/vlc/** mr,
+	/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/vlc/** mr,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat.* w,
 	
 	# Device access

@@ -43,14 +43,16 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.config/QtProject/{,**} rw,
 	owner @{HOME}/.config/QtProject.conf{,.*} rwk,
 	owner @{HOME}/.config/qBittorrentrc* rwk,
-	owner @{HOME}/.config/.[^d]* rwk,
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	
 	# Local configuration
-	owner @{HOME}/.config/kdeglobals r, # rw
-	owner @{HOME}/.config/kdeglobals.* rw,
+	owner @{HOME}/.config/kdeglobals rw,
+	owner @{HOME}/.config/kdeglobals.* rwk,
 	owner @{HOME}/.config/kio* r,
 	owner @{HOME}/.config/kdebugrc rw,
 	owner @{HOME}/.config/breezerc r,
+	owner @{HOME}/.config/klanguageoverridesrc r,
+	owner @{HOME}/.config/trashrc rw,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.cache/ksycoca5_* r,
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* r,
@@ -60,8 +62,8 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.kde{,4}/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.config/trashrc r, # rw
-	# owner @{HOME}/.local/share/RecentDocuments/*.desktop rw,  # Used, but not essential
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop.lock rwk,
+	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
 	
 	deny /run/udev/data/** rwklmx,
 	deny /{media,mnt,srv,net}/** rwklmx, # Block access to mounted drives & other directories

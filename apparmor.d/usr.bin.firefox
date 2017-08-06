@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: July 30, 2017
+# Last change: August 06, 2017
 
 #include <tunables/global>
 
@@ -78,11 +78,11 @@
   /usr/share/xubuntu/applications/defaults.list r,
   /var/lib/snapd/desktop/applications/mimeinfo.cache r,
   /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/** r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/** r,
   owner /tmp/** m,
   owner /var/tmp/** m,
   owner /{,var/}run/shm/shmfd-* rw,
@@ -112,6 +112,8 @@
     member=GetAll
     peer=(name=org.freedesktop.UPower label=unconfined),
     
+  ptrace (trace) peer=@{profile_name},
+  
   /sys/devices/system/node/node[0-9]*/meminfo r,
   @{PROC}/[0-9]*/net/arp r,
 
@@ -157,7 +159,7 @@
   @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/pci[0-9]*/**/{uevent,config,revision,busnum,vendor,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
   /sys/devices/platform/**/uevent r,
   #/dev/tty r,  # Required for some extensions
 
@@ -185,8 +187,7 @@
   /opt/{,**} r,
 
   # So browsing directories works
-  / r,
-  /**/ r,
+  /{,**/} r,
 
   # Downloads and Desktop folders
   owner @{HOME}/ r,
@@ -255,6 +256,8 @@
   /usr/bin/mkfifo Uxr,  # investigate
   /bin/ps Uxr,
   /bin/uname Uxr,
+  
+  #/usr/bin/ffmpeg Pix,  # ??
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {
@@ -272,7 +275,7 @@
     # Python version correction
     /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] r,  # Mask required: "m"
+    /usr/bin/python3.[0-5] mr,  # Mask required: "m"
 
     # file_inherit
     deny /tmp/gtalkplugin.log w,

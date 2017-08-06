@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: July 30, 2017
+# Last change: August 06, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -16,14 +16,14 @@
 #      /usr/lib/i386-linux-gnu/opera/  [Ubuntu, Debian] [32 bits]
 #      /usr/lib/opera/  [Arch Linux]
 #      /usr/lib64/opera/  [OpenSUSE, Fedora] [64 bits]
-# For general use: /usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera
-@{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera
+# For general use: /usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera
+@{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera
 
 # Download & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
-/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
+/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus>
@@ -59,8 +59,6 @@
   /etc/ssl/openssl.cnf r,
   /etc/lsb-release r,
   /proc/[0-9]*/environ r,
-  /sys/devices/pci[0-9]*/**/idVendor r,
-  /sys/devices/pci[0-9]*/**/idProduct r,
   /sys/devices/virtual/tty/tty[0-9]/active r,
   /sys/devices/**/uevent r,
   
@@ -79,11 +77,9 @@
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
   
   /var/lib/snapd/desktop/applications/mimeinfo.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/applications/mimeinfo.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/{index.theme,icon-theme.cache} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/hicolor/*/apps/{,*} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/icons/ r,
-  
+  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
+  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
+  owner @{HOME}/.local/share/flatpak/exports/share/** r,
   owner @{HOME}/.config/gtk-3.0/* r,
   
   @{PROC}/[0-9]*/fd/ r,
@@ -101,27 +97,17 @@
 
   /etc/udev/udev.conf r,
   /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq r,
-  /sys/devices/pci[0-9]*/**/{revision,config} r,
+  /sys/devices/pci[0-9]*/**/{device,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/descriptors r,
   /sys/devices/pci[0-9]*/**/class r,
-  /sys/devices/pci[0-9]*/**/device r,
   /sys/devices/pci[0-9]*/**/irq r,
   /sys/devices/pci[0-9]*/**/resource r,
-  /sys/devices/pci[0-9]*/**/vendor r,
   /sys/devices/pci[0-9]*/**/removable r,
   /sys/devices/pci[0-9]*/**/block/**/size r,
   /sys/devices/virtual/block/**/removable r,
   /sys/devices/virtual/block/**/size r,
   # This is requested, but doesn't seem to actually be needed so deny for now
   deny /run/udev/data/** r,
-  
-  # Replicated Rules
-  #/sys/devices/pci[0-9]*/**/uevent r,
-  #/sys/devices/virtual/block/**/uevent r, 
-  #/sys/devices/system/cpu/cpu[0-9]*/uevent r, 
-  #/sys/devices/pnp[0-9]*/*/uevent r,
-  #/sys/devices/LNXSYSTM:[0-9]*/{LNX*/,LNX*/**/,}uevent r,
-  #/sys/devices/{msr,cpu}/uevent r,
-  #/sys/devices/{system,platform,virtual}/*/{*/,}uevent r,
 
   # Needed for the crash reporter
   owner @{PROC}/[0-9]*/auxv r,
@@ -153,8 +139,7 @@
   ptrace (trace) peer=@{profile_name}//xdgsettings,
 
   # Make browsing directories work
-  / r,
-  /**/ r,
+  /{,**/} r,
 
   # Allow access to documentation and other files the user may want to look
   # at in /usr
