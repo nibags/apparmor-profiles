@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 12, 2017
+# Last change: August 09, 2017
 
 # Open Web browsers, needed to open links.
 # Only for Firefox, Opera, Chromium, Chrome & Vivaldi.
@@ -16,7 +16,7 @@
 
 # Opera
 # "/usr/bin/opera" is a link to: "/usr/lib{*,/*}/opera/opera"
-/usr/lib{,64,/x86_64-linux-gnu,i386-linux-gnu}/opera/opera PUx,
+/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera PUx,
 
 # Chromium
 # "/usr/bin/chromium-browser" is a script that executes: "/usr/lib{,64}/chromium-browser/chromium-browser"

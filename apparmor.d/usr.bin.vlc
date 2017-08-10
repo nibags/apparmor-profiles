@@ -65,7 +65,7 @@ profile vlc /usr/bin/vlc {
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/config r,
+	/sys/devices/pci[0-9]*/**/{config,revision} r,
 	/sys/devices/system/**/meminfo r,
 	
 	# Libraries and binaries

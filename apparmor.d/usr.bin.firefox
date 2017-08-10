@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 06, 2017
+# Last change: August 09, 2017
 
 #include <tunables/global>
 
@@ -34,6 +34,7 @@
   #include <abstractions/p11-kit>
   #include <abstractions/ubuntu-unity7-base>
   #include <abstractions/ubuntu-unity7-launcher>
+  #include <abstractions/open-some-applications>
 
   #include <abstractions/dbus-accessibility-strict>
   dbus (send)
@@ -221,6 +222,7 @@
   owner @{HOME}/.config/dconf/user w,
   owner /{,var/}run/user/*/dconf/user w,
   owner @{HOME}/.cache/thumbnails/** w,
+  owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
   #owner @{HOME}/.cache/icon-cache.kcache rw,
   dbus (send)
        bus=session

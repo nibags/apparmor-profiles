@@ -55,6 +55,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.config/trashrc rw,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.cache/ksycoca5_* r,
+	owner @{HOME}/.cache/qt_compose_cache_* rw,
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* r,
 	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc rw,
 	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
@@ -62,8 +63,8 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.kde{,4}/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop.lock rwk,
-	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
+	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	
 	deny /run/udev/data/** rwklmx,
 	deny /{media,mnt,srv,net}/** rwklmx, # Block access to mounted drives & other directories
@@ -106,7 +107,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	
 	/proc/*/mounts r,
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{config,revision,busnum,vendor,idVendor,idProduct} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,device,idProduct,idVendor,revision,vendor} r,
 	
 	# Temporal files & sockets
 	owner /tmp/{,.}qBittorrent*.lock rwkl,
@@ -124,15 +125,32 @@ profile qbittorrent /usr/bin/qbittorrent {
 	
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/NetworkManager
+		path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-1]*}
 		interface=org.freedesktop.DBus.Properties
 		member=GetAll
 		peer=(name=org.freedesktop.NetworkManager label=unconfined),
-		
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager/ActiveConnection/[0-9]*
+		interface=org.freedesktop.NetworkManager.Connection.Active
+		member=PropertiesChanged,
 	dbus (send)
 		bus=system
 		path=/org/freedesktop/UPower
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
 		peer=(name=org.freedesktop.UPower label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.NetworkManager
+		member=GetDevices
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager/Settings
+		interface=org.freedesktop.NetworkManager.Settings
+		member=ListConnections
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }
+

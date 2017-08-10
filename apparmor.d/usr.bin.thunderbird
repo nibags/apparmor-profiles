@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: July 30, 2017
+# Last change: August 09, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -233,7 +233,7 @@
   owner @{HOME}/.gtkrc-2.0 r,
   owner @{HOME}/.gtkrc-2.0-kde4 r,
   owner @{HOME}/.config/user-dirs.dirs r,
-  owner @{HOME}/.config/mimeapps.list r,
+  owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
@@ -280,6 +280,12 @@
   /bin/uname Uxr,
 
   /usr/bin/lsb_release Cxr -> lsb_release,
+  
+  # Some applications
+  /usr/bin/okular Px,
+  /usr/bin/gwenview Px,
+  /usr/lib{,64}/libreoffice/program/{soffice,scalc,sdraw,simpress,swriter} PUx,
+  /usr/bin/{calligrasheets,calligrastage,calligrawords} PUx,
   
   # Support for GPG
   /usr/bin/gpg Cx -> gpg,

@@ -1,0 +1,28 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: August 09, 2017
+
+# Open Some Applications
+
+# Document and image viewers
+/usr/bin/gwenview Px,
+/usr/bin/okular Px,
+
+# Office
+#/usr/lib{,64}/libreoffice/program/{soffice,scalc,sdraw,simpress,swriter} PUx,
+#/usr/bin/{calligrasheets,calligrastage,calligrawords} PUx,
+
+# Media players
+/usr/bin/baka-mplayer Px,
+/usr/bin/bomi Px,
+/usr/bin/mpv Px,
+/usr/bin/vlc Px,
+
+# Messenger
+/usr/bin/konversation Px,
+/home/*/.TelegramDesktop/bin/Telegram Px,
+
+# Download clients and torrents
+/usr/bin/kget Px,
+/usr/bin/ktorrent Px,
+/usr/bin/qbittorrent Px,
