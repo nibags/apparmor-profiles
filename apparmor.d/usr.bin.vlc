@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 06, 2017
+# Last change: August 11, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -30,13 +30,13 @@ profile vlc /usr/bin/vlc {
 	
 	/{,**/} r,   # Read all directories
 	
-	owner /**/* r,
+	# Read access in Home directory, mounted drives and networks
 	/@{DATA_DIR}/{,**} r,
+	deny /media/*/[Ww]indows/{Program*,Windows}/{,**} w,
 	
-	# Write access in Home directory, mounted drives and others directories
-	owner @{HOME}/** rw,
-	owner /{media,mnt,srv,net}/** rw,
-	deny /media/*/[Ww]indows/{Program*,Windows}/** w,
+	# Block compiled libraries & executables
+	audit deny owner /**/* mx,
+	audit deny /@{DATA_DIR}/** mx,
 	
 	# VLC configuration
 	owner @{HOME}/.local/share/vlc/{,**} rwk,
@@ -44,11 +44,29 @@ profile vlc /usr/bin/vlc {
 	owner @{HOME}/.config/vlcrc{,.lock} rwk,
 	owner @{HOME}/.cache/vlc/{,**} rwk,
 	
-	# Block compiled libraries & executables
-	audit deny owner /**/* mx,
-	audit deny /@{DATA_DIR}/** mx,
+	# Local configuration
+	owner @{HOME}/.config/QtProject/{,**} rw,
+	owner @{HOME}/.config/QtProject.conf{,.*} rwk,
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,	
+	owner @{HOME}/.config/kdeglobals rw,
+	owner @{HOME}/.config/kdeglobals.* rwk,
+	owner @{HOME}/.config/kio* r,
+	owner @{HOME}/.config/kdebugrc rw,
+	owner @{HOME}/.config/breezerc r,
+	owner @{HOME}/.config/klanguageoverridesrc r,
+	owner @{HOME}/.config/trashrc rw,
+	owner @{HOME}/.config/ibus/ rw,
+	owner @{HOME}/.config/ibus/bus/{,*} rw,
+	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
+	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.cache/icon-cache.kcache rwk,
+	owner @{HOME}/.cache/ksycoca5_* rwk,
+	owner @{HOME}/.cache/qt_compose_cache_* rw,
 	
 	/usr/share/** r,
+	/var/lib/flatpak/exports/share/icons/** r,
+	owner @{HOME}/.local/share/flatpak/exports/share/icons/** r,
 	
 	/etc/vdpau_wrapper.cfg r,
 	/etc/anacrontab r,
@@ -63,38 +81,36 @@ profile vlc /usr/bin/vlc {
 	/etc/pulse/*.conf r,
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
+	@{PROC}/sys/vm/overcommit_memory r,
 	
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{config,revision} r,
+	/sys/devices/pci[0-9]*/**/{config,revision,vendor,device,busnum,subsystem_device,subsystem_vendor,idVendor,idProduct} r,
 	/sys/devices/system/**/meminfo r,
 	
 	# Libraries and binaries
 	/usr/bin/vlc ixr,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/{,**} Pixr,
-	/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/vlc/** mr,
-	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat.* w,
+	/usr/lib{,64}/libvlc*.so{,.*} m,
+	/usr/lib{,64}/vlc/**.so{,.*} m,
+	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
 	
 	# Device access
-	/dev/ati/{,**} rwk,
-	/dev/{fb,video,audio}* rk,
-	/dev/bus/{,**} rwk,
-	/dev/shm/{,**} rwk,
-	/dev/{sg,sr}* rk,
+	/dev/{ati,dri}/{,**} r,
+	/dev/{fb,video,audio}* r,
+	/dev/{sg,sr}* r,
 	
 	# Temporal files & sockets
-	owner /var/tmp/kdecache-*/* rwk,
-	owner /run/user/[0-9]*/pulse/{,*} rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
 	owner /run/user/[0-9]*/vlc* rwk,
-	owner /{dev,run,var/run}/shm/pulse-shm* rk,
-	/{dev,run,var/run}/shm/pulse-shm* rw,
+	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/run/dbus/system_bus_socket rw,
 	/run/systemd/journal/socket rw, 
 	
 	deny /run/udev/data/{,**} rwklmx,
-	audit deny owner /**/*.py* r,   # Block Python imports
-	audit deny /@{DATA_DIR}/**.py* r,
+	audit deny owner /**/*.py* rw,   # Block Python imports
+	audit deny /@{DATA_DIR}/**.py* rw,
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined,addr=@/tmp/ibus/dbus-*),
 	signal (send) set=(term) peer=unconfined,
@@ -115,10 +131,21 @@ profile vlc /usr/bin/vlc {
 		peer=(name=org.freedesktop.UPower),
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/UDisks2/{block_devices,drives}
+		path=/org/freedesktop/UDisks2/{block_devices,drives}{,/*}
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
 		peer=(name=org.freedesktop.UDisks2),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/{block_devices,drives}/*
+		interface=org.freedesktop.DBus.Properties
+		member={Get,GetAll}
+		peer=(name=org.freedesktop.UDisks2),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/UDisks2/drives/*
+		interface=org.freedesktop.DBus.Properties
+		member=PropertiesChanged,
 	
 	dbus (send)
 		bus=session
@@ -128,4 +155,126 @@ profile vlc /usr/bin/vlc {
 		interface=org.a11y.atspi**,
 	dbus (receive, send)
 		bus=accessibility,
+	
+	# Files supported
+	
+	# Audio
+	/**/*.3[gG][aA] rw,
+	/**/*.669 rw,
+	/**/*.[aA]52 rw,
+	/**/*.[aA][aA][cC] rw,
+	/**/*.[aA][cC]3 rw,
+	/**/*.[aA][dD][tT] rw,
+	/**/*.[aA][dD][tT][sS] rw,
+	/**/*.[aA][iI][fF] rw,
+	/**/*.[aA][iI][fF][cC] rw,
+	/**/*.[aA][iI][fF][fF] rw,
+	/**/*.[aA][uU] rw,
+	/**/*.[aA][mM][rR] rw,
+	/**/*.[aA][oO][bB] rw,
+	/**/*.[aA][pP][eE] rw,
+	/**/*.[cC][aA][fF] rw,
+	/**/*.[cC][dD][aA] rw,
+	/**/*.[dD][tT][sS] rw,
+	/**/*.[fF][lL][aA][cC] rw,
+	/**/*.[iI][tT] rw,
+	/**/*.[mM]4[aA] rw,
+	/**/*.[mM]4[pP] rw,
+	/**/*.[mM][iI][dD] rw,
+	/**/*.[mM][kK][aA] rw,
+	/**/*.[mM][lL][pP] rw,
+	/**/*.[mM][oO][dD] rw,
+	/**/*.[mM][pP][123] rw,
+	/**/*.[mM][pP][cC] rw,
+	/**/*.[mM][pP][gG][aA] rw,
+	/**/*.[oO][gG][aA] rw,
+	/**/*.[oO][mM][aA] rw,
+	/**/*.[oO][pP][uU][sS] rw,
+	/**/*.[qQ][cC][pP] rw,
+	/**/*.[rR][aA] rw,
+	/**/*.[rR][mM][iI] rw,
+	/**/*.[sS][nN][dD] rw,
+	/**/*.[sS]3[mM] rw,
+	/**/*.[sS][pP][xX] rw,
+	/**/*.[tT][tT][aA] rw,
+	/**/*.[vV][oO][cC] rw,
+	/**/*.[vV][qQ][fF] rw,
+	/**/*.[wW]64 rw,
+	/**/*.[wW][aA][vV] rw,
+	/**/*.[wW][mM][aA] rw,
+	/**/*.[wW][vV] rw,
+	/**/*.[xX][aA] rw,
+	/**/*.[wW][mM] rw,
+
+	# Video
+	/**/*.3[gG]2 rw,
+	/**/*.3[gG][pP] rw,
+	/**/*.3[gG][pP]2 rw,
+	/**/*.3[gG][pP][pP] rw,
+	/**/*.[aA][mM][vV] rw,
+	/**/*.[aA][sS][fF] rw,
+	/**/*.[aA][vV][iI] rw,
+	/**/*.[bB][iI][kK] rw,
+	/**/*.[dD][iI][vV][xX] rw,
+	/**/*.[dD][rR][cC] rw,
+	/**/*.[dD][vV] rw,
+	/**/*.[fF]4[vV] rw,
+	/**/*.[fF][lL][vV] rw,
+	/**/*.[gG][vV][iI] rw,
+	/**/*.[gG][xX][fF] rw,
+	/**/*.[mM]1[vV] rw,
+	/**/*.[mM]2[tT] rw,
+	/**/*.[mM]2[vV] rw,
+	/**/*.[mM]2[tT][sS] rw,
+	/**/*.[mM]4[vV] rw,
+	/**/*.[mM][kK][vV] rw,
+	/**/*.[mM][oO][vV] rw,
+	/**/*.[mM][pP]2[vV] rw,
+	/**/*.[mM][pP]4 rw,
+	/**/*.[mM][pP]4[vV] rw,
+	/**/*.[mM][pP][aA] rw,
+	/**/*.[mM][pP][eE] rw,
+	/**/*.[mM][pP][eE][gG] rw,
+	/**/*.[mM][pP][eE][gG][124] rw,
+	/**/*.[mM][pP][gG] rw,
+	/**/*.[mM][pP][vV]2 rw,
+	/**/*.[mM][tT][sS] rw,
+	/**/*.[mM][tT][vV] rw,
+	/**/*.[mM][xX][fF] rw,
+	/**/*.[nN][sS][vV] rw,
+	/**/*.[nN][uU][vV] rw,
+	/**/*.[oO][gG][gG] rw,
+	/**/*.[oO][gG][mM] rw,
+	/**/*.[oO][gG][xX] rw,
+	/**/*.[oO][gG][vV] rw,
+	/**/*.[rR][eE][cC] rw,
+	/**/*.[rR][mM] rw,
+	/**/*.[rR][mM][vV][bB] rw,
+	/**/*.[rR][pP][lL] rw,
+	/**/*.[tT][hH][pP] rw,
+	/**/*.[tT][oO][dD] rw,
+	/**/*.[tT][sS] rw,
+	/**/*.[tT][tT][sS] rw,
+	/**/*.[vV][oO][bB] rw,
+	/**/*.[vV][rR][oO] rw,
+	/**/*.[wW][eE][bB][mM] rw,
+	/**/*.[wW][mM][vV] rw,
+	/**/*.[xX][eE][sS][cC] rw,
+
+	# Others
+	/**/*.[aA][sS][xX] rw,
+	/**/*.[bB]4[sS] rw,
+	/**/*.[cC][uU][eE] rw,
+	/**/*.[iI][fF][oO] rw,
+	/**/*.[mM]3[uU] rw,
+	/**/*.[mM]3[uU]8 rw,
+	/**/*.[pP][lL][sS] rw,
+	/**/*.[rR][aA][mM] rw,
+	/**/*.[sS][dD][pP] rw,
+	/**/*.[vV][lL][cC] rw,
+	/**/*.[wW][vV][xX] rw,
+	/**/*.[xX][sS][pP][fF] rw,
+	/**/*.[vV][lL][tT] rw,
+	/**/*.[wW][sS][zZ] rw,
+	/**/*.[sS][rR][tT] rw,
 }

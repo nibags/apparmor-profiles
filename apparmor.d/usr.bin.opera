@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: August 11, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -17,13 +17,14 @@
 #      /usr/lib/opera/  [Arch Linux]
 #      /usr/lib64/opera/  [OpenSUSE, Fedora] [64 bits]
 # For general use: /usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera
-@{OPERA_LIBDIR}=/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera
+# This directory is used for Ubuntu and OpenSUSE (64 bit):
+@{OPERA_LIBDIR}=/usr/lib{64,/x86_64-linux-gnu}/opera
 
 # Download & Desktop directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
-/usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera flags=(attach_disconnected) {
+/usr/lib{64,/x86_64-linux-gnu}/opera/opera flags=(attach_disconnected) {
   #include <abstractions/audio>
   #include <abstractions/cups-client>
   #include <abstractions/dbus>
@@ -82,7 +83,6 @@
   /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
   /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
   owner @{HOME}/.local/share/flatpak/exports/share/** r,
-  owner @{HOME}/.config/gtk-3.0/* r,
   
   @{PROC}/[0-9]*/fd/ r,
   @{PROC}/filesystems r,
@@ -183,6 +183,8 @@
   owner @{HOME}/.config/opera/ rw,
   owner @{HOME}/.config/opera/** rwk,
   owner @{HOME}/.config/opera/**/Cache/* mr,
+  owner @{HOME}/.config/gtk-3.0/* r,
+  owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
   
   @{OPERA_LIBDIR}/opera_autoupdate ixrk,
   @{OPERA_LIBDIR}/opera_crashreporter ixr,

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: August 10, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -175,6 +175,8 @@
   owner @{HOME}/.config/vivaldi/** rwk,
   owner @{HOME}/.config/vivaldi/**/Cache/* mr,
   owner @{HOME}/.config/vivaldi/{,**/}Dictionaries/*.bdic mr,
+  owner @{HOME}/.config/gtk-3.0/* r,
+  owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
 
   # Allow transitions to ourself and our sandbox
   @{VIVALDI_LIBDIR}/vivaldi-bin ix,

@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: August 10, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -28,7 +28,6 @@
   #include <abstractions/ibus>
   #include <abstractions/nameservice>
   #include <abstractions/user-tmp>
-  #include <abstractions/open-some-applications>
 
   # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if
   # you want access to productivity applications, adjust the following file
@@ -181,6 +180,8 @@
   owner @{HOME}/.config/chromium/**/Cache/* mr,
   owner @{HOME}/.config/chromium/Dictionaries/*.bdic mr,
   owner @{HOME}/.config/chromium/**/Dictionaries/*.bdic mr,
+  owner @{HOME}/.config/gtk-3.0/* r,
+  owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
 
   # Allow transitions to ourself and our sandbox
   @{CHROM_LIBDIR}/chromium-browser ix,
