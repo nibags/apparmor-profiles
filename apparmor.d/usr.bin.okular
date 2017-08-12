@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 05, 2017
+# Last change: August 11, 2017
 
 #include <tunables/global>
 
@@ -26,13 +26,48 @@ profile okular /usr/bin/okular {
 	#include <abstractions/open-browser>
 	#include <abstractions/open-email>
 	
-	# Full reading access
-	/{,**/,**} r,
+	/{,**/} r, # Read only directories
 	
 	# Write access in Home directory and mounted drives
-	@{HOME}/** rw,
-	/media/**.{[oO][kK][uU][lL][aA][rR],[tT][xX][tT],[pP][dD][fF]} rw,
-	owner /**.{[oO][kK][uU][lL][aA][rR],[tT][xX][tT],[pP][dD][fF]} rw,
+	/{home,media,mnt,srv,net}/** r,
+	owner @{HOME}/** rw,
+	owner /{media,mnt,srv,net}/** rw,
+	
+	# Files supported:
+	/**/*.[pP][dD][fF] rw, # pdf
+	/**/*.[oO][kK][uU][lL][aA][rR] rw, # okular
+	/**/*.[tT][xX][tT] rw, # txt
+	
+	/**/*.[bB][mM][pP] r, # bmp
+	/**/*.[bBgGxX][zZ] r, # bz, gz, xz
+	/**/*.[fF][bB][23]{,.[zZ][iI][pP]} r, # fb2, fb3
+	/**/*.[cC][bB][rRzZtTaA7] r, # cbr, cbz, cbt, cba, cb7
+	/**/*.[cC][hH][mM] r, # chm
+	/**/*.[dD][dD][sS] r, # dds
+	/**/*.[dD][jJ][vV][uU] r, # djvu
+	/**/*.[dD][vV][iI] r, # dvi
+	/**/*.[eE][pP][uU][bB] r, # epub
+	/**/*.[fF][aA][xX] r, # fax
+	/**/*.[fF][dD][fF] r, # fdf
+	/**/*.[gG][iI][fF] r, # gif
+	/**/*.[hH][tT][mM][lL] r, # html
+	/**/*.[iI][cC][oObB] r, # ico, icb
+	/**/*.[iI][cC][nN][sS] r, # icns
+	/**/*.[jJ][pP]{,[eE]}[gG] r, # jpg, jpeg
+	/**/*.[mM][oO][bB][iI] r, # mobi
+	/**/*.[oO][dD][tT] r, # odt
+	/**/*.[pP][cC][xX] r, # pcx
+	/**/*.[pP][iI][cC] r, # pic
+	/**/*.[pP][bBgGpP][mM] r, # pbm, pgm, ppm
+	/**/*.[pP][nN][gGmM] r, # png, pnm
+	/**/*.{,[eE]}[pP][sS] r, # ps, eps
+	/**/*.[rR][dD][fF] r, # rdf
+	/**/*.[rR][sS][sS] r, # rss
+	/**/*.[sS][vV][gG]{,[zZ]} r, # svg, svgz
+	/**/*.[tT][iI][fF]{,[fF]} r, # tif, tiff
+	/**/*.[wW][bB][mM][pP] r, # wbmp
+	/**/*.[wW][eE][bB][pP] r, # webp
+	/**/*.[xX][bBpP][sSmM] r, # xbm, xps, xpm
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,
@@ -47,14 +82,23 @@ profile okular /usr/bin/okular {
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.cache/khelpcenter/**lock rwk,
 	
+	/usr/share/** r,
+	/var/lib/flatpak/exports/share/** r,
+	
+	/etc/nsswitch.conf r,
+	/etc/fstab r,
+	/etc/passwd r,
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
+	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
+	
 	# Libraries and binaries
 	/usr/bin/okular ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
-	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/okular*.so Pixrm,
-	allow /usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
-	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
 	
 	# Temporal files and sockets
 	owner /tmp/*lock rwk,
@@ -68,11 +112,15 @@ profile okular /usr/bin/okular {
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	/run/dbus/system_bus_socket w,
 	
-	deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	deny /run/udev/data/{,**} rwlkmx,
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	
-	audit deny owner /**/*.py* r,   # Block python imports
-	audit deny owner /**/* mx,      # Block compiled libraries & executables
+	# Block python imports
+	audit deny owner /**/*.py* r,
+	audit deny /{home,media,mnt,srv,net}/**.py* r,
+	
+	# Block compiled libraries & executables
+	audit deny owner /**/* mx,
 	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 05, 2017
+# Last change: August 11, 2017
 
 #include <tunables/global>
 
@@ -30,9 +30,26 @@ profile gwenview /usr/bin/gwenview {
 	/{,**/,**} r,
 	
 	# Write access in Home directory and mounted drives
-	@{HOME}/{,**} rw,
-	/{media,mnt}/** rw,
-	owner /{srv,net}/** rw,
+	owner @{HOME}/** rw,
+	owner /{media,mnt,srv,net}/** rw,
+	
+	# Files supported
+	/**/*.[bB][mM][pP] rw, # bmp
+	/**/*.[jJ][pP]2 rw, # jp2
+	/**/*.[jJ][pP]{,[eE]}[gG] rw, # jpeg, jpg
+	/**/*.[pP][nN][gG] rw, # png
+	/**/*.[tT][iI][fF]{,[fF]} rw, # tif, tiff
+	/**/*.[iI][cC][oObB] rw, # ico, icb
+	/**/*.[wW][bB][mM][pP] rw, # wbmp
+	/**/*.[wW][eE][bB][pP] rw, # webp
+	/**/*.[dD][dD][sS] rw, # dds
+	/**/*.[eE][pP][sS] rw, # eps
+	/**/*.[iI][cC][nN][sS] rw, # icns
+	/**/*.[pP][cC][xX] rw, # pcx
+	/**/*.[pP][iI][cC] rw, # pic
+	/**/*.[pP][bBgGpP][mM] rw, # pbm, pgm, ppm
+	/**/*.[rR][gG][bB] rw, # rgb
+	/**/*.[xX][bBpP][mM] rw, # xbm, xpm
 	
 	# Gwenview configuration
 	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
@@ -65,10 +82,14 @@ profile gwenview /usr/bin/gwenview {
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	
 	deny /run/udev/data/{,**} rwlkmx,
-	deny /dev/{video,audio}* rwlkmx,  # Block Cameras & Microphones
+	audit deny /dev/{video,audio}* rwlkmx,  # Block Cameras & Microphones
 	
-	audit deny owner /**/*.py* r,   # Block python imports
-	audit deny owner /**/* mx,      # Block compiled libraries & executables
+	# Block python imports
+	audit deny owner /**/*.py* r,
+	audit deny /{home,media,mnt,srv,net}/**.py* r,
+	
+	# Block compiled libraries & executables
+	audit deny owner /**/* mx,
 	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
