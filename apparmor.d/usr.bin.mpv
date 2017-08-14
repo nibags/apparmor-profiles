@@ -1,31 +1,33 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 11, 2017
+# Last change: August 13, 2017
 
 # NOTE: By default, the internet connection is blocked.
+# To allow video streaming, uncomment the library import:
+# <abstractions/nameservice> and remove: <abstractions/block-networking>
 
-#include <tunables/global>
+include <tunables/global>
 
 # Directories where videos and data are stored
 @{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
 
 profile mpv /usr/bin/mpv {
-	#include <abstractions/audio>
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/kde>
-	#include <abstractions/dbus-session-strict>
-	#include <abstractions/X>
-	#include <abstractions/consoles>
+	include <abstractions/audio>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/kde>
+	include <abstractions/dbus-session-strict>
+	include <abstractions/X>
+	include <abstractions/consoles>
 	
 	# Block network connection:
-	#include <abstractions/block-networking>
-	# Allow network connection:
-	# #include <abstractions/nameservice>
+	include <abstractions/block-networking>
+	# Allow network connection (uncomment this line):
+	## include <abstractions/nameservice>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Only reading access in Home directory, mounted drives and others directories
 	@{DATA_DIR}/{,**} r,
@@ -41,6 +43,7 @@ profile mpv /usr/bin/mpv {
 	/etc/mpv/{,**} r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
+	/etc/nsswitch.conf r,
 	
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
@@ -54,6 +57,7 @@ profile mpv /usr/bin/mpv {
 	
 	# Binaries and libraries
 	/usr/bin/mpv ixr,
+	/usr{,/local}/bin/youtube-dl Pxr,
 	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} Pixr,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
@@ -100,7 +104,7 @@ profile mpv /usr/bin/mpv {
 	/**/*.[mM][pP][24][vV] r, # mp2v, mp4v
 	/**/*.[mM][pP][4aAeEgG] r, # mp4, mpa, mpe, mpg
 	/**/*.[mM][pP][eE][gG]{,[124]} r, # mpeg, mpeg1, mpeg2, mpeg4
-	/**/*.[mM][pP][vV]2 r, # mpv2
+	/**/*.[mM][pP][vV]{,2} r, # mpv, mpv2
 	/**/*.[mM][tT][sSvV] r, # mts, mtv
 	/**/*.[mM][xX][fF] r, # mxf
 	/**/*.[nN][sSuU][vV] r, # nsv, nuv
@@ -116,7 +120,6 @@ profile mpv /usr/bin/mpv {
 	# Others
 	/**/*.[aA][sS][xX] r, # asx
 	/**/*.[mM]3[uU]{,8} r, # m3u, m3u8
-	/**/*.[mM][pP][vV] r, # mpv
 	/**/*.[pP][lL][sS] r, # pls
 	/**/*.[sS][rR][tT] r, # srt
 }

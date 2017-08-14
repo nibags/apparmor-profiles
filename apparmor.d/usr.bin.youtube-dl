@@ -1,0 +1,47 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: August 13, 2017
+
+include <tunables/global>
+
+profile youtube_dl /usr{,/local}/bin/youtube-dl {
+	include <abstractions/base>
+	include <abstractions/python>
+	include <abstractions/nameservice>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	include <abstractions/confidential-deny>
+	
+	# Binaries
+	/usr{,/local}/bin/youtube-dl ixr,
+	/usr/bin/gcc-* ixr,
+	/bin/{dash,stty} ixr,
+	/sbin/ldconfig{,.real} ixr,
+	/usr/lib/gcc/** ixr,
+	
+	# Python
+	/usr/bin/python{2.[4-7],3.[0-5]} mr,
+	/usr{,/local}/lib{,32,64}/python{,[23],2.[4-7],3.[0-5]}/dist-packages/youtube_dl/{,**} r,
+	deny /usr/lib{,64}/python{,[23],2.[4-7],3.[0-5]}/**.pyc{,.[0-9]*} w,
+	
+	/usr/local/bin/ r,
+	/etc/mime.types r,
+	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	@{PROC}/[0-9]*/fd/ r,
+	
+	# Temporal files and sockets
+	owner @{HOME}/[a-zA-Z0-9]* rw,
+	owner /{,var/}tmp/[a-zA-Z0-9]* rw,
+	owner /run/user/[0-9]*/*.slave-socket rwk,
+	
+	# Block compiled libraries & executables from untrusted sources
+	audit deny owner /**/* mx,
+	
+	# Block Python imports from untrusted sources
+	audit deny owner /**/**.py* rw,
+	audit deny /{home,root,var,run,tmp}/**.py* rwmx,
+	
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	deny /run/udev/data/{,**} rwklmx,
+}

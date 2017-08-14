@@ -1,34 +1,32 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 11, 2017
+# Last change: August 13, 2017
 
-# NOTE: By default, the internet connection is blocked.
-
-#include <tunables/global>
+include <tunables/global>
 
 # Directories where videos and data are stored
 @{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
 
 profile baka-mplayer /usr/bin/baka-mplayer {
-	#include <abstractions/audio>
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/kde>
-	#include <abstractions/dbus-session-strict>
-	#include <abstractions/X>
-	#include <abstractions/consoles>
+	include <abstractions/audio>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/kde>
+	include <abstractions/dbus-session-strict>
+	include <abstractions/X>
+	include <abstractions/consoles>
 	
 	# Block network connection:
-	#include <abstractions/block-networking>
+	## include <abstractions/block-networking>
 	# Allow network connection:
-	# #include <abstractions/nameservice>
+	include <abstractions/nameservice>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include<abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some Web browsers).
-	#include <abstractions/open-browser>
+	include <abstractions/open-browser>
 	
 	# Only reading access in Home directory, mounted drives and others directories
 	@{DATA_DIR}/{,**} r,
@@ -77,6 +75,7 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	
 	# Binaries and libraries
 	/usr/bin/baka-mplayer ixr,
+	/usr{,/local}/bin/youtube-dl Pxr,
 	/usr/bin/{mpv,dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} ixr,
 	/usr/bin/kdeinit{4,5} ixr,
@@ -132,9 +131,34 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 		interface=org.freedesktop.DBus.Properties
 		member={Get,GetAll}
 		peer=(name=org.freedesktop.UDisks2),
-	dbus (send)
+	dbus (send receive)
 		bus=system
 		path=/org/freedesktop/UDisks2/drives/*
 		interface=org.freedesktop.DBus.Properties
 		member=PropertiesChanged,
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-9]*,/Devices/[0-9]*}
+		interface=org.freedesktop.DBus.Properties
+		member=GetAll
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.NetworkManager
+		member=GetDevices
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager/Settings
+		interface=org.freedesktop.NetworkManager.Settings
+		member=ListConnections
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager/Settings/[0-9]*
+		interface=org.freedesktop.NetworkManager.Settings.Connection
+		member=GetSettings
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }

@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
 
-Last Change: August 11, 2017
+Last Change: August 13, 2017
 
 ## Description:
 
@@ -24,6 +24,7 @@ AppArmor security profiles for:
 * Thunderbird
 * Vivaldi
 * VLC
+* youtube-dl
 
 
 These are designed to work on KDE Plasma 5. 
