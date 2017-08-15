@@ -4,29 +4,29 @@
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
-#include <tunables/global>
+include <tunables/global>
 
 # Directories where multimedia and data are stored
 @{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
 
 profile vlc /usr/bin/vlc {
-	#include <abstractions/audio>
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/kde>
-	#include <abstractions/dbus-strict>
-	#include <abstractions/dbus-accessibility-strict>
-	#include <abstractions/dbus-session>
-	#include <abstractions/nameservice>
-	#include <abstractions/X>
-	#include <abstractions/consoles>
+	include <abstractions/audio>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/kde>
+	include <abstractions/dbus-strict>
+	include <abstractions/dbus-accessibility-strict>
+	include <abstractions/dbus-session>
+	include <abstractions/nameservice>
+	include <abstractions/X>
+	include <abstractions/consoles>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some browsers).
-	#include <abstractions/open-browser>
+	include <abstractions/open-browser>
 	
 	/{,**/} r,   # Read all directories
 	
@@ -112,7 +112,8 @@ profile vlc /usr/bin/vlc {
 	audit deny owner /**/*.py* rw,   # Block Python imports
 	audit deny /@{DATA_DIR}/**.py* rw,
 	
-	unix (connect, receive, send) type=(stream) peer=(label=unconfined,addr=@/tmp/ibus/dbus-*),
+	unix (connect, receive, send) type=(stream) peer=(label=unconfined addr=@/tmp/ibus/dbus-*),
+	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 	signal (send) set=(term) peer=unconfined,
 	
 	dbus (send)

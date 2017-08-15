@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 10, 2017
+# Last change: August 14, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -47,6 +47,7 @@
   owner @{PROC}/[0-9]*/gid_map w,
   owner @{PROC}/[0-9]*/uid_map w,
   @{PROC}/sys/net/ipv4/tcp_fastopen r,
+  @{PROC}/vmstat r,
   
   /usr/bin/xdg-desktop-menu ixr,
   /usr/bin/xdg-icon-resource ixr,
@@ -60,6 +61,13 @@
   /proc/[0-9]*/environ r,
   /sys/devices/virtual/tty/tty[0-9]/active r,
   /sys/devices/**/uevent r,
+  
+  /bin/mkdir ixr,
+  /bin/touch ixr,
+  /usr/bin/cut ixr,
+  /usr/bin/basename ixr,
+  /bin/rm ixr,
+  /bin/readlink ixr,
   
   # Networking
   network inet stream,

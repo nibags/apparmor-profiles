@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 10, 2017
+# Last change: August 14, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -51,6 +51,7 @@
   /dev/video[0-9]* r,
   @{PROC}/[0-9]*/task/[0-9]*/status r,
   @{PROC}/[0-9]*/stat r,
+  @{PROC}/vmstat r,
   /sys/devices/system/cpu/cpu*/policy[0-9]*/cpuinfo_max_freq r,
   /etc/ssl/openssl.cnf r,
   /etc/lsb-release r,
@@ -162,6 +163,7 @@
   /usr/bin/kde-open{,5} ixr,
   /usr/bin/gvfs-open ixr,
   /usr/bin/kdialog ixr,
+  /usr/bin/xdg-desktop-menu ixr,
   # TODO: xfce
 
   # Chromium Policies
@@ -249,7 +251,7 @@
 	# NOTE: Fix when outputting new version of Python
     /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] r, # m
+    /usr/bin/python3.[0-5] mr, # m
 	
 	/usr/share/distro-info/*.csv r,
   }

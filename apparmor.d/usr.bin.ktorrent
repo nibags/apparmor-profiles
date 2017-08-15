@@ -1,13 +1,13 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: July 13, 2017
+# Last change: August 14, 2017
 
 # NOTE:
 #  - This profile is more restrictive than
 #    the one provided in <abstractions/ubuntu-bittorrent-clients>.
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
-#include <tunables/global>
+include <tunables/global>
 
 #  - Important: Check & change the torrents directory
 #    according to KTorrent configuration.
@@ -17,20 +17,20 @@
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
 profile ktorrent /usr/bin/ktorrent {
-	#include <abstractions/base>
-	#include <abstractions/dbus-strict>
-	#include <abstractions/dbus-session>
-	#include <abstractions/fonts>
-	#include <abstractions/nameservice>
-	#include <abstractions/X>
-	#include <abstractions/kde>
+	include <abstractions/base>
+	include <abstractions/dbus-strict>
+	include <abstractions/dbus-session>
+	include <abstractions/fonts>
+	include <abstractions/nameservice>
+	include <abstractions/X>
+	include <abstractions/kde>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some browsers).
-	#include <abstractions/open-browser>
+	include <abstractions/open-browser>
 	
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
@@ -49,7 +49,8 @@ profile ktorrent /usr/bin/ktorrent {
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
 	owner @{HOME}/.kde{,4}/socket-* rwkl,
 	owner @{HOME}/.kde{,4}/share/config/kconf_updaterc r,
-	owner @{HOME}/.kde/share/config/phonondevicesrc r,
+	owner @{HOME}/.kde{,4}/share/config/phonondevicesrc r,
+	owner @{HOME}/.config/menus/applications-kmenuedit.menu r,
 	
 	deny /run/udev/data/** rwklmx,
 	deny /{media,mnt,srv,net,cdrom}/** rwklmx,  # Mounted drives & other directories
@@ -60,19 +61,23 @@ profile ktorrent /usr/bin/ktorrent {
 	audit deny owner /**/* mx,        # Compiled libraries & executables
 		
 	# Binaries
-	/usr/bin/ktorrent rix,
+	/usr/bin/ktorrent ixr,
 	/bin/dash Pixr,
-	/usr/bin/kdeinit{4,5} rix,
-	/usr/bin/kde-open{,5} rix,
-	/usr/bin/kde4-config rix,
+	/usr/bin/kdeinit{4,5} ixr,
+	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/kde4-config ixr,
 	/usr/bin/kdialog ixr,
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kbuildsycoca4 ixr,
+	/usr/bin/knotify4 ixr,
 	
-	# Allow exec of libexec applications
-	/usr/lib{,64}/** Pixr,
+	/usr/bin/* Px,
+	
+	# Libraries
+	/usr/lib{,64}/libktorrent.so.* mr,
+	/usr/lib{,64}/kde4/*.so mr, # ktinfowidgetplugin.so
 	
 	/{,**/} r,  # Read only directories
 	
@@ -81,17 +86,23 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/share/kde4/services/{,**} r,
 	/usr/share/kde4/servicetypes/* r,
 	/usr/share/kde4/apps/kde*/** r,
-	/usr/share/GeoIP/* r,
+	/usr/share/GeoIP/* r,	
+	/usr/share/desktop-directories/kde-*.directory r,
+	
+	/var/lib/snapd/desktop/applications/* r,
+	/var/lib/flatpak/app/**/export/share/applications/* r,
+	/var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
 	
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
-	#/etc/fstab r,  # Used, but not essential
+	/etc/xdg/Trolltech.conf k,
+	# /etc/fstab r,  # Used, but not essential
 	/etc/machine-id r,
 	/etc/udev/udev.conf r,
 	/etc/pulse/client.conf r,
 	/etc/timezone r,
 	
-	/proc/*/mounts r,
+	@{PROC}/*/mounts r,
 	/run/dbus/system_bus_socket rw,
 	/sys/devices/**/uevent r,
 	
@@ -101,12 +112,8 @@ profile ktorrent /usr/bin/ktorrent {
 	owner /tmp/kde-*/{,**} rwk,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	
-	/{,var/}run/user/*/pulse/ r,
-	/{run,dev}/shm/pulse-shm* r,
-	owner /{,var/}run/user/*/pulse/ w,
-	owner /{run,dev}/shm/pulse-shm* k,
-	
 	signal (send) set=(term) peer=unconfined,
+	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 	
 	dbus (send)
 		bus=system
@@ -141,5 +148,11 @@ profile ktorrent /usr/bin/ktorrent {
 		path=/org/freedesktop/NetworkManager
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.NetworkManager
+		member={Introspect,state}
 		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }

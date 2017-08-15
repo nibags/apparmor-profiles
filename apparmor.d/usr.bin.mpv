@@ -66,6 +66,8 @@ profile mpv /usr/bin/mpv {
 	audit deny owner /**/*.py* r,  # Block Python imports
 	audit deny @{DATA_DIR}/**.py* r,
 	
+	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
+	
 	# Common supported files:
 	
 	# Audio

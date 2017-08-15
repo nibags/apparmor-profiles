@@ -1,13 +1,13 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: July 30, 2017
+# Last change: August 14, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
 #    in <abstractions/ubuntu-bittorrent-clients>.
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
-#include <tunables/global>
+include <tunables/global>
 
 #  - Important: Check & change the torrents directory
 #    according to qBittorrent configuration.
@@ -17,20 +17,20 @@
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
 profile qbittorrent /usr/bin/qbittorrent {
-	#include <abstractions/base>
-	#include <abstractions/dbus-strict>
-	#include <abstractions/dbus-session>
-	#include <abstractions/fonts>
-	#include <abstractions/nameservice>
-	#include <abstractions/X>
-	#include <abstractions/kde>
+	include <abstractions/base>
+	include <abstractions/dbus-strict>
+	include <abstractions/dbus-session>
+	include <abstractions/fonts>
+	include <abstractions/nameservice>
+	include <abstractions/X>
+	include <abstractions/kde>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some browsers).
-	#include <abstractions/open-browser>
+	include <abstractions/open-browser>
 	
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
@@ -67,8 +67,8 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	
 	deny /run/udev/data/** rwklmx,
-	deny /{media,mnt,srv,net}/** rwklmx, # Block access to mounted drives & other directories
-	deny /dev/{video,audio}* rwlkmx,        # Block cameras & microphones
+	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
+	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,     # Python imports
@@ -84,8 +84,10 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
 	
-	# Allow exec of libexec applications
-	/usr/lib{,64}/** Pixr,
+	/usr/bin/* Px,
+	
+	# Libraries
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so mr,
 	
 	/{,**/} r,  # Read only directories, not files
 	
@@ -105,9 +107,9 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/etc/udev/udev.conf r,
 	/dev/tty r,
 	
-	/proc/*/mounts r,
+	@{PROC}/*/mounts r,
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{busnum,config,device,idProduct,idVendor,revision,vendor} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,device,idProduct,idVendor,revision,subsystem_device,subsystem_vendor,vendor} r,
 	
 	# Temporal files & sockets
 	owner /tmp/{,.}qBittorrent*.lock rwkl,
@@ -125,7 +127,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-1]*}
+		path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-9]*,/Devices/[0-9]*}
 		interface=org.freedesktop.DBus.Properties
 		member=GetAll
 		peer=(name=org.freedesktop.NetworkManager label=unconfined),
@@ -151,6 +153,12 @@ profile qbittorrent /usr/bin/qbittorrent {
 		path=/org/freedesktop/NetworkManager/Settings
 		interface=org.freedesktop.NetworkManager.Settings
 		member=ListConnections
+		peer=(name=org.freedesktop.NetworkManager label=unconfined),
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager/Settings/[0-9]*
+		interface=org.freedesktop.NetworkManager.Settings.Connection
+		member=GetSettings
 		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }
 
