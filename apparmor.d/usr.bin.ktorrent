@@ -24,6 +24,7 @@ profile ktorrent /usr/bin/ktorrent {
 	include <abstractions/nameservice>
 	include <abstractions/X>
 	include <abstractions/kde>
+	include <abstractions/ubuntu-helpers>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -62,7 +63,7 @@ profile ktorrent /usr/bin/ktorrent {
 		
 	# Binaries
 	/usr/bin/ktorrent ixr,
-	/bin/dash Pixr,
+	/bin/dash ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/kde4-config ixr,
@@ -72,6 +73,7 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kbuildsycoca4 ixr,
 	/usr/bin/knotify4 ixr,
+	/usr/bin/khelpcenter Cxr -> sanitized_helper,
 	
 	/usr/bin/* Px,
 	

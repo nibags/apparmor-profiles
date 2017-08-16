@@ -1,79 +1,87 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: August 14, 2017
 
-#include <tunables/global>
+include <tunables/global>
 
-# NOTE: By default, there is only write access to the download directory.
+# NOTE: By default, there is only write access to the download directories.
 
-# Downloads directory:
+# Downloads directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile kget /usr/bin/kget {
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/dbus>
-	#include <abstractions/dbus-accessibility>
-	#include <abstractions/dbus-session>
-	#include <abstractions/nameservice>
-	#include <abstractions/X>
-	#include <abstractions/kde>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/dbus>
+	include <abstractions/dbus-accessibility>
+	include <abstractions/dbus-session>
+	include <abstractions/nameservice>
+	include <abstractions/X>
+	include <abstractions/kde>
+	include <abstractions/ubuntu-helpers>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some Web browsers/e-mail clients).
-	#include <abstractions/open-browser>
-	#include <abstractions/open-email>
-	
+	include <abstractions/open-browser>
+	include <abstractions/open-email>
+		
 	# Downloads & Home directories
 	owner @{DOWNLOADS_DIR}/** rw,
 	owner @{HOME}/{,**} r,
 	
 	# KGet configuration
-	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
-	owner @{HOME}/.kde{,4}/share/config/kget* rw,
-	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
-	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rk, 
-	owner @{HOME}/.kde{,4}/share/config/{konquerorrc,kioslaverc}{,*.new} w,
-	owner @{HOME}/.config/Trolltech.conf rk,
+	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rwk,
+	owner @{HOME}/.kde{,4}/share/config/kget* rwk,
+	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rwk, 
+	owner @{HOME}/.local/share/user-places.xbel{,.*} rwk,
+	owner @{HOME}/.config/Trolltech.conf k,
 	
 	/{,**/} r,  # Read only directories
 	
 	# Binaries
 	/usr/bin/kget ixr,
-	/bin/dash Pixr,
+	/bin/dash ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/{gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde4-config ixr,
-	/usr/bin/xdg-open ixr,
-	/usr/bin/gnome-open ixr,
-	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
+	/usr/bin/kbuildsycoca4 ixr,
+	/usr/bin/knotify4 ixr,
+	
+	/usr/bin/{gwenview,okular,baka-mplayer,bomi,mpv,vlc} Px,
+	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	/usr/bin/* Cx -> sanitized_helper,
 	
 	# Allow exec of libexec applications
 	/usr/lib{,64}/** Pixr,
 	
 	/usr/share/** r,
-	/proc/*/mounts r,
+	/var/lib/flatpak/exports/share/** r,
+	@{PROC}/*/{mounts,maps} r,
 	/etc/udev/udev.conf r,
 	/etc/fstab r,
+	/etc/udev/udev.conf r,
+	/etc/timezone r,
+	/etc/xdg/Trolltech.conf rk,
+	/sys/devices/**/uevent r,
+	
+	# Temporal files and sockets
+	owner /{,var/}tmp/kdecache-*/** rwk,
+	owner /{,var/}tmp/{,.}kget*.lock rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,kget*,kdeinit*,klauncher*,kio*,*.slave-socket} rwk,
 	/run/dbus/system_bus_socket rw,
-	
-	# Temp files
-	owner /var/tmp/kdecache-*/** rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,kget*,kdeinit*} rwk,
-	owner /tmp/{,.}kget*.lock rwk,
-	
-	deny /{sys,dev}/** rwklmx,
-	deny /run/udev/data/{,**} rwklmx,
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,   # Python imports
 	audit deny owner /**/* mx,      # Compiled libraries & executables
 	audit deny /{home,media,mnt,srv,net}/** mx,
+	
+	deny /run/udev/data/{,**} rwklmx,
+	audit deny /dev/{audio,video}* rwklmx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

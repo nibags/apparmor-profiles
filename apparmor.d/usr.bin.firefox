@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 11, 2017
+# Last change: August 14, 2017
 
 #include <tunables/global>
 
@@ -195,6 +195,9 @@
   owner @{DESKTOP_DIR}/** rw,
   owner @{DOWNLOADS_DIR}/ r,
   owner @{DOWNLOADS_DIR}/** rw,
+  
+  owner @{HOME}/{*,[^.]*/**}.{[jJ][sS][oO][nN],[hH][tT][mM][lL]} rw,  # To back up bookmarks
+  owner @{HOME}/dwhelper/{,**} rw,
   
   # Replicated in "/etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files"
   #@{HOME}/** r,

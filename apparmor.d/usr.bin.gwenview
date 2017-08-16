@@ -1,26 +1,27 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 11, 2017
+# Last change: August 14, 2017
 
-#include <tunables/global>
+include <tunables/global>
 
 profile gwenview /usr/bin/gwenview {
-	#include <abstractions/base>
-	#include <abstractions/dbus>
-	#include <abstractions/dbus-session>
-	#include <abstractions/dbus-accessibility>
-	#include <abstractions/fonts>
-	#include <abstractions/X>
-	#include <abstractions/kde>
-	#include <abstractions/consoles>
-	#include <abstractions/cups-client>
+	include <abstractions/base>
+	include <abstractions/dbus>
+	include <abstractions/dbus-session>
+	include <abstractions/dbus-accessibility>
+	include <abstractions/fonts>
+	include <abstractions/X>
+	include <abstractions/kde>
+	include <abstractions/consoles>
+	include <abstractions/cups-client>
+	include <abstractions/ubuntu-helpers>
 	
 	# Block network connection
-	#include <abstractions/block-networking>
+	include <abstractions/block-networking>
 	
 	# Needed to open links (only for some Web browsers/e-mail clients).
-	#include <abstractions/open-browser>
-	#include <abstractions/open-email>
+	include <abstractions/open-browser>
+	include <abstractions/open-email>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -55,16 +56,16 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.config/org.kde.gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
-	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,khelpcenter,.}* rwk,
+	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,.}* rwk,
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/baloo/index-lock rwk,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop{,.lock} rwk,
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
-	owner @{HOME}/.cache/khelpcenter/**lock rwk,
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/plasma-discover PUx,
+	/usr/bin/khelpcenter Cxr -> sanitized_helper,
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
@@ -80,6 +81,8 @@ profile gwenview /usr/bin/gwenview {
 	owner /run/user/[0-9]*/kdeinit5* rwk,
 	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
+	
+	/dev/snd/control* rw,
 	
 	deny /run/udev/data/{,**} rwlkmx,
 	audit deny /dev/{video,audio}* rwlkmx,  # Block Cameras & Microphones

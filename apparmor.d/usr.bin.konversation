@@ -1,8 +1,8 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 05, 2017
+# Last change: August 14, 2017
 
-#include <tunables/global>
+include <tunables/global>
 
 # NOTE: By default, there is only write access to the download & log directory.
 
@@ -11,22 +11,23 @@
 @{LOGS_DIR}=@{HOME}/logs
 
 profile konversation /usr/bin/konversation {
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/dbus>
-	#include <abstractions/dbus-accessibility>
-	#include <abstractions/dbus-session>
-	#include <abstractions/nameservice>
-	#include <abstractions/X>
-	#include <abstractions/audio>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/dbus>
+	include <abstractions/dbus-accessibility>
+	include <abstractions/dbus-session>
+	include <abstractions/nameservice>
+	include <abstractions/X>
+	include <abstractions/audio>
+	include <abstractions/ubuntu-helpers>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	#include <abstractions/confidential-deny>
+	include <abstractions/confidential-deny>
 	
 	# Needed to open links (only for some Web browsers/e-mail clients).
-	#include <abstractions/open-browser>
-	#include <abstractions/open-email>
+	include <abstractions/open-browser>
+	include <abstractions/open-email>
 	
 	# Write access to the download & log directory
 	owner @{DOWNLOADS_DIR}/** rw,  # Downloads directory
@@ -35,25 +36,23 @@ profile konversation /usr/bin/konversation {
 	
 	# Konversation Configuration
 	owner @{HOME}/.Xauthority r,
-	owner @{HOME}/.config/** r,
-	owner @{HOME}/.config/kdeglobals rk,
-	owner @{HOME}/.config/*{rc,.dirs} rk,
-	owner @{HOME}/.config/kde.org/* rk,
-	owner @{HOME}/.config/session/** rwk,
-	owner @{HOME}/.config/k*.lock rwk,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/konversation* rwk,
-	owner @{HOME}/.kde{,4}/share/config/konversation* rwk,
-	owner @{HOME}/.kde{,4}/share/apps/kabc/std.vcf rwk,
-	owner @{HOME}/.kde{,4}/share/config/kresources/contact/* rwk,
+	owner @{HOME}/.config/* rk,
+	owner @{HOME}/.config/konversation* w,
+	owner @{HOME}/.config/{k*.lock,.[a-zA-Z0-9]*} w,
+	owner @{HOME}/.config/{KDE,kde,kde.org}/{,**} rk,
+	owner @{HOME}/.config/session/{,**} rwk,
+	owner @{HOME}/.kde{,4}/** r,
+	owner @{HOME}/.kde{,4}/share/config/konversation* wk,
 	owner @{HOME}/.local/share/{,**} r,
-	owner @{HOME}/.local/share/konversation/{,**} rwk,
-	owner @{HOME}/.local/share/RecentDocuments/{*.desktop*,.[a-zA-Z0-9]*} rwk,
+	owner @{HOME}/.local/share/konversation/{,**} wk,
+	owner @{HOME}/.local/share/**/konversation/{,**} wk,
+	owner @{HOME}/.local/share/RecentDocuments/{*.desktop*,.[a-zA-Z0-9]*} wk,
 	owner @{HOME}/.cache/* rwk,
-	owner @{HOME}/.cache/khelpcenter/{,**} rwk,
+	owner @{HOME}/.cache/konversation/{,**} rwk,
 	
 	# Binaries
 	/usr/bin/konversation ixr,
+	/usr/bin/khelpcenter Cxr -> sanitized_helper,
 	/usr/bin/* Pixr,
 	
 	# Allow exec of libexec applications
@@ -64,22 +63,22 @@ profile konversation /usr/bin/konversation {
 	/etc/udev/** r,
 	/etc/machine-id r,
 	/etc/ssl/openssl.cnf r,
+	/etc/timezone r,
 	
-	/proc/sys/kernel/core_pattern r,
-	/sys/devices/** r,
-	/sys/bus/** r,
-	/sys/class/** r,
-	/run/udev/** r,
+	@{PROC}/sys/kernel/core_pattern r,
+	/sys/{bus,class,devices,udev}/** r,
+	/dev/tty r,
+	/dev/{ati,dri}/{,**} r,
 	
 	# Temp files
-	owner /var/tmp/kdecache-*/** rwk,
-	owner /tmp/kde-*/** rwk,
+	owner /{,var/}tmp/kdecache-*/** rwk,
+	owner /{,var/}tmp/kde-*/** rwk,
 	owner /tmp/{,.}k*.{lock,tmp} rwk,
 	owner /run/user/[0-9]*/k*-socket rwk,
 	
-	deny /dev/** rwklmx,  # Block device access
 	deny /run/udev/data/{,**} rwklmx,
-	deny /usr/lib*/vlc/plugins/plugins.dat.* rwklmx,
+	audit deny /dev/{audio,video}* rwklmx,
+	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
 	
 	# Dangerous files
 	audit deny owner /**/*.py* r,   # Python imports
