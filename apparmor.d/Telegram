@@ -1,32 +1,33 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: May 22, 2017
+# Last change: August 17, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
 #  - This profile is only tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 #  - By default, there is only write access to the download directory.
 
-#include <tunables/global>
+include <tunables/global>
 
 # Download directory:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
 profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
-	#include <abstractions/base>
-	#include <abstractions/fonts>
-	#include <abstractions/nameservice>
-	#include <abstractions/kde>
-	#include <abstractions/gnome>
-	#include <abstractions/X>
-	#include <abstractions/audio>
-	#include <abstractions/dbus-strict>
-	#include <abstractions/dbus-session>
-	#include <abstractions/dbus-accessibility-strict>
-	#include <abstractions/ibus>
+	include <abstractions/base>
+	include <abstractions/fonts>
+	include <abstractions/nameservice>
+	include <abstractions/kde>
+	include <abstractions/gnome>
+	include <abstractions/X>
+	include <abstractions/audio>
+	include <abstractions/dbus-strict>
+	include <abstractions/dbus-session>
+	include <abstractions/dbus-accessibility-strict>
+	include <abstractions/ibus>
+	include <abstractions/flatpak-snap>
 	
 	# Needed to open links (only for some browsers).
-	#include <abstractions/open-browser>
+	include <abstractions/open-browser>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.

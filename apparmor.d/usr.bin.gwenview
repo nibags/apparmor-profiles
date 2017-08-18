@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 17, 2017
 
 include <tunables/global>
 
@@ -15,6 +15,10 @@ profile gwenview /usr/bin/gwenview {
 	include <abstractions/consoles>
 	include <abstractions/cups-client>
 	include <abstractions/ubuntu-helpers>
+	include <abstractions/flatpak-snap>
+	
+	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	include <abstractions/general-security>
 	
 	# Block network connection
 	include <abstractions/block-networking>
@@ -71,6 +75,8 @@ profile gwenview /usr/bin/gwenview {
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
+	/dev/snd/control* rw,
+	
 	# Temporal files
 	owner /var/tmp/kdecache-*/* rwk,
 	owner /tmp/* rwk,
@@ -81,19 +87,6 @@ profile gwenview /usr/bin/gwenview {
 	owner /run/user/[0-9]*/kdeinit5* rwk,
 	owner /run/user/[0-9]*/pulse/{,*} rwk,
 	/{dev,run,var/run}/shm/pulse-shm* rwk,
-	
-	/dev/snd/control* rw,
-	
-	deny /run/udev/data/{,**} rwlkmx,
-	audit deny /dev/{video,audio}* rwlkmx,  # Block Cameras & Microphones
-	
-	# Block python imports
-	audit deny owner /**/*.py* r,
-	audit deny /{home,media,mnt,srv,net}/**.py* r,
-	
-	# Block compiled libraries & executables
-	audit deny owner /**/* mx,
-	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }

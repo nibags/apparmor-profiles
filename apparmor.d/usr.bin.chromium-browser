@@ -28,6 +28,7 @@
   #include <abstractions/ibus>
   #include <abstractions/nameservice>
   #include <abstractions/user-tmp>
+  #include <abstractions/flatpak-snap>
 
   # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if
   # you want access to productivity applications, adjust the following file
@@ -82,11 +83,6 @@
   /etc/xdg/xubuntu/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-  
-  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/** r,
 
   @{PROC}/[0-9]*/fd/ r,
   @{PROC}/filesystems r,

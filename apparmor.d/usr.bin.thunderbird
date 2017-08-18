@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: August 17, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -41,6 +41,7 @@
   #include <abstractions/ssl_certs>
   #include <abstractions/ubuntu-unity7-base>
   #include <abstractions/ubuntu-unity7-launcher>
+  #include <abstractions/flatpak-snap>
   
   # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
   #include <abstractions/open-browser>
@@ -242,11 +243,6 @@
   owner @{HOME}/.local/share/icons/ r,
   owner @{HOME}/.local/share/icons/hicolor/* r,
   owner @{HOME}/.local/share/icons/hicolor/*/apps/{,*} r,
-  owner @{HOME}/.local/share/flatpak/exports/share/** r,
-  
-  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
   
   dbus (send)
        bus=session

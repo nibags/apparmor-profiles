@@ -20,6 +20,7 @@ profile bomi /usr/bin/bomi {
 	#include <abstractions/dbus-session>
 	#include <abstractions/X>
 	#include <abstractions/consoles>
+	#include <abstractions/flatpak-snap>
 	
 	# Block network connection
 	#include <abstractions/block-networking>

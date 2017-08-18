@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 17, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -24,6 +24,10 @@ profile qbittorrent /usr/bin/qbittorrent {
 	include <abstractions/nameservice>
 	include <abstractions/X>
 	include <abstractions/kde>
+	include <abstractions/flatpak-snap>
+	
+	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	include <abstractions/general-security>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -66,15 +70,8 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	
-	deny /run/udev/data/** rwklmx,
 	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
-	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-	
-	# Dangerous files
-	audit deny owner /**/*.py* r,     # Python imports
-	audit deny owner /**/* mx,        # Compiled libraries & executables
-	audit deny /home/** mx,
-	
+		
 	# Binaries
 	/usr/bin/qbittorrent ixr,
 	/usr/bin/kdeinit{4,5} ixr,

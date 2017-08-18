@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 17, 2017
 
 #include <tunables/global>
 
@@ -34,6 +34,7 @@
   #include <abstractions/p11-kit>
   #include <abstractions/ubuntu-unity7-base>
   #include <abstractions/ubuntu-unity7-launcher>
+  #include <abstractions/flatpak-snap>
 
   #include <abstractions/dbus-accessibility-strict>
   dbus (send)
@@ -75,11 +76,7 @@
   /etc/mailcap r,
   /etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
   /etc/xfce4/defaults.list r,
-  /usr/share/xubuntu/applications/defaults.list r,
-  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/applications/mimeinfo.cache r,
-  /var/lib/flatpak/exports/share/icons/*/icon-theme.cache r,
-  owner @{HOME}/.local/share/flatpak/exports/share/** r,
+  /usr/share/xubuntu/applications/defaults.list r,  
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
@@ -224,8 +221,10 @@
   owner @{HOME}/.config/dconf/user w,
   owner /{,var/}run/user/*/dconf/user w,
   owner @{HOME}/.cache/thumbnails/** w,
-  owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
+  owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]*} rwk,
+   owner @{HOME}/.local/share/mime/packages/*-extension-{,?}html.xml{,.[a-zA-Z0-9]*} rwk,
   #owner @{HOME}/.cache/icon-cache.kcache rw,
+  
   dbus (send)
        bus=session
        path=/org/gnome/GConf/Server
@@ -261,7 +260,12 @@
   /bin/ps Uxr,
   /bin/uname Uxr,
   
-  #/usr/bin/ffmpeg Pix,  # ??
+  #/usr/bin/ffmpeg Pix,  # Used by some extensions that download and convert video
+  
+  # Required to make Firefox the default browser
+  #/usr/bin/update-mime-database{,.real} ix,
+  #/usr/bin/dpkg-trigger ix,
+  #/var/lib/dpkg/triggers/Unincorp r,
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {

@@ -1,11 +1,8 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 13, 2017
+# Last change: August 17, 2017
 
 include <tunables/global>
-
-# Directories where videos and data are stored
-@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
 
 profile baka-mplayer /usr/bin/baka-mplayer {
 	include <abstractions/audio>
@@ -15,6 +12,10 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	include <abstractions/dbus-session-strict>
 	include <abstractions/X>
 	include <abstractions/consoles>
+	include <abstractions/flatpak-snap>
+	
+	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	include <abstractions/general-security>
 	
 	# Block network connection:
 	## include <abstractions/block-networking>
@@ -29,12 +30,8 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	include <abstractions/open-browser>
 	
 	# Only reading access in Home directory, mounted drives and others directories
-	@{DATA_DIR}/{,**} r,
+	/{home,media,mnt,srv,net,cdrom}/{,**} r,
 	owner /**/{,*} r,
-	
-	# Block compiled libraries & executables
-	audit deny @{DATA_DIR}/** mx,
-	audit deny owner /**/* mx,
 	
 	# Configuration
 	owner @{HOME}/.config/{baka-mplayer*,bakamplayer*} rwk,
@@ -71,7 +68,6 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	# Device access
 	/dev/ati/{,**} r,
 	/dev/dri/{,**} r,
-	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	
 	# Binaries and libraries
 	/usr/bin/baka-mplayer ixr,
@@ -91,10 +87,6 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	owner /run/user/[0-9]*/ksocket-*/{,**} rwkl,
 	/run/systemd/journal/socket rw,
 	/run/dbus/system_bus_socket rw,
-	
-	deny /run/udev/data/{,**} rwklmx,
-	audit deny owner /**/*.py* r,  # Block Python imports
-	audit deny @{DATA_DIR}/**.py* r,
 	
 	signal (send) set=(term) peer=unconfined,
 	

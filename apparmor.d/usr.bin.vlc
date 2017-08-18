@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 11, 2017
+# Last change: August 17, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -20,6 +20,7 @@ profile vlc /usr/bin/vlc {
 	include <abstractions/nameservice>
 	include <abstractions/X>
 	include <abstractions/consoles>
+	include <abstractions/flatpak-snap>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -65,8 +66,6 @@ profile vlc /usr/bin/vlc {
 	owner @{HOME}/.cache/qt_compose_cache_* rw,
 	
 	/usr/share/** r,
-	/var/lib/flatpak/exports/share/icons/** r,
-	owner @{HOME}/.local/share/flatpak/exports/share/icons/** r,
 	
 	/etc/vdpau_wrapper.cfg r,
 	/etc/anacrontab r,

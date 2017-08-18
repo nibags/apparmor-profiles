@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 17, 2017
 
 include <tunables/global>
 
@@ -18,7 +18,10 @@ profile kget /usr/bin/kget {
 	include <abstractions/nameservice>
 	include <abstractions/X>
 	include <abstractions/kde>
-	include <abstractions/ubuntu-helpers>
+	include <abstractions/flatpak-snap>
+	
+	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	include <abstractions/general-security>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -60,13 +63,17 @@ profile kget /usr/bin/kget {
 	/usr/lib{,64}/** Pixr,
 	
 	/usr/share/** r,
-	/var/lib/flatpak/exports/share/** r,
-	@{PROC}/*/{mounts,maps} r,
+	
 	/etc/udev/udev.conf r,
 	/etc/fstab r,
 	/etc/udev/udev.conf r,
+	/etc/pulse/*.conf r,
 	/etc/timezone r,
+	/etc/xdg/{,**} r,
+	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/etc/xdg/Trolltech.conf rk,
+	
+	@{PROC}/*/{mounts,maps} r,
 	/sys/devices/**/uevent r,
 	
 	# Temporal files and sockets
@@ -74,14 +81,8 @@ profile kget /usr/bin/kget {
 	owner /{,var/}tmp/{,.}kget*.lock rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,kget*,kdeinit*,klauncher*,kio*,*.slave-socket} rwk,
 	/run/dbus/system_bus_socket rw,
-	
-	# Dangerous files
-	audit deny owner /**/*.py* r,   # Python imports
-	audit deny owner /**/* mx,      # Compiled libraries & executables
-	audit deny /{home,media,mnt,srv,net}/** mx,
-	
-	deny /run/udev/data/{,**} rwklmx,
-	audit deny /dev/{audio,video}* rwklmx,
+	/{dev,run,var/run}/shm/pulse-shm* rw,
+	owner /{dev,run,var/run}/shm/pulse-shm* k,
 	
 	signal (send) set=(term) peer=unconfined,
 }

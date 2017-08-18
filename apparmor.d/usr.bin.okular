@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 17, 2017
 
 include <tunables/global>
 
@@ -15,6 +15,10 @@ profile okular /usr/bin/okular {
 	include <abstractions/consoles>
 	include <abstractions/cups-client>
 	include <abstractions/ubuntu-helpers>
+	include <abstractions/flatpak-snap>
+	
+	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	include <abstractions/general-security>
 	
 	# Block network connection
 	include <abstractions/block-networking>
@@ -83,7 +87,6 @@ profile okular /usr/bin/okular {
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	
 	/usr/share/** r,
-	/var/lib/flatpak/exports/share/** r,
 	
 	/etc/nsswitch.conf r,
 	/etc/fstab r,
@@ -113,17 +116,6 @@ profile okular /usr/bin/okular {
 	owner /run/user/[0-9]*/kdeinit5* rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
 	/run/dbus/system_bus_socket w,
-	
-	deny /run/udev/data/{,**} rwlkmx,
-	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-	
-	# Block python imports
-	audit deny owner /**/*.py* r,
-	audit deny /{home,media,mnt,srv,net}/**.py* r,
-	
-	# Block compiled libraries & executables
-	audit deny owner /**/* mx,
-	audit deny /{home,media,mnt,srv,net}/** mx,
 	
 	signal (send) set=(term) peer=unconfined,
 }
