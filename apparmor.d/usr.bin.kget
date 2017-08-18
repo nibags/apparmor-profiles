@@ -18,6 +18,7 @@ profile kget /usr/bin/kget {
 	include <abstractions/nameservice>
 	include <abstractions/X>
 	include <abstractions/kde>
+	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
@@ -41,6 +42,9 @@ profile kget /usr/bin/kget {
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rwk, 
 	owner @{HOME}/.local/share/user-places.xbel{,.*} rwk,
 	owner @{HOME}/.config/Trolltech.conf k,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
+	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -56,6 +60,8 @@ profile kget /usr/bin/kget {
 	/usr/bin/knotify4 ixr,
 	
 	/usr/bin/{gwenview,okular,baka-mplayer,bomi,mpv,vlc} Px,
+	/usr/bin/{konversation,ktorrent,qbittorrent,youtube-dl} Px,
+	/usr/bin/{dolphin,konsole} PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
 	/usr/bin/* Cx -> sanitized_helper,
 	
@@ -79,10 +85,14 @@ profile kget /usr/bin/kget {
 	# Temporal files and sockets
 	owner /{,var/}tmp/kdecache-*/** rwk,
 	owner /{,var/}tmp/{,.}kget*.lock rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,kget*,kdeinit*,klauncher*,kio*,*.slave-socket} rwk,
+	owner /run/user/[0-9]*/{,ksocket-*/}{,kget*,kdeinit*,klauncher*,kio*,*.slave-socket} rwk,
+	owner /run/user/[0-9]*/pulse/{,**} rwk,
 	/run/dbus/system_bus_socket rw,
 	/{dev,run,var/run}/shm/pulse-shm* rw,
 	owner /{dev,run,var/run}/shm/pulse-shm* k,
+	
+	/dev/tty r,
+	/dev/snd/control* r,
 	
 	signal (send) set=(term) peer=unconfined,
 }

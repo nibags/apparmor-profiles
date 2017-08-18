@@ -70,6 +70,7 @@ profile ktorrent /usr/bin/ktorrent {
 	/usr/bin/kbuildsycoca4 ixr,
 	/usr/bin/knotify4 ixr,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	/usr/bin/dolphin PUx,
 	
 	/usr/bin/* Px,
 	

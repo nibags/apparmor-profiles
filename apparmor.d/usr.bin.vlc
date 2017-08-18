@@ -32,7 +32,7 @@ profile vlc /usr/bin/vlc {
 	/{,**/} r,   # Read all directories
 	
 	# Read access in Home directory, mounted drives and networks
-	/@{DATA_DIR}/{,**} r,
+	@{DATA_DIR}/{,**} r,
 	deny /media/*/[Ww]indows/{Program*,Windows}/{,**} w,
 	
 	# Block compiled libraries & executables
