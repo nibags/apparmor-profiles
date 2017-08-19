@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: August 19, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -14,7 +14,7 @@
 #  - For this profile to work correctly in GNOME 3,
 #    it is necessary to uncomment some lines. Please check!
 
-#include <tunables/global>
+include <tunables/global>
 
 # Thunderbird directory:
 @{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
@@ -24,31 +24,34 @@
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
 /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
-  #include <abstractions/audio>
-  #include <abstractions/aspell>
-  #include <abstractions/cups-client>
-  #include <abstractions/dbus-strict>
-  #include <abstractions/dbus-session-strict>
-  #include <abstractions/fonts>
-  #include <abstractions/dconf>
-  #include <abstractions/gnome>
-  #include <abstractions/kde>
-  #include <abstractions/ibus>
-  #include <abstractions/nameservice>
-  #include <abstractions/openssl>
-  #include <abstractions/p11-kit>
-  #include <abstractions/private-files>
-  #include <abstractions/ssl_certs>
-  #include <abstractions/ubuntu-unity7-base>
-  #include <abstractions/ubuntu-unity7-launcher>
-  #include <abstractions/flatpak-snap>
+  include <abstractions/audio>
+  include <abstractions/aspell>
+  include <abstractions/cups-client>
+  include <abstractions/dbus-strict>
+  include <abstractions/dbus-session-strict>
+  include <abstractions/fonts>
+  include <abstractions/dconf>
+  include <abstractions/gnome>
+  include <abstractions/kde>
+  include <abstractions/ibus>
+  include <abstractions/nameservice>
+  include <abstractions/openssl>
+  include <abstractions/p11-kit>
+  include <abstractions/private-files>
+  include <abstractions/ssl_certs>
+  include <abstractions/ubuntu-unity7-base>
+  include <abstractions/ubuntu-unity7-launcher>
+  include <abstractions/flatpak-snap>
   
   # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
-  #include <abstractions/open-browser>
-  #  #include <abstractions/ubuntu-helpers>
-  #  #include <abstractions/ubuntu-browsers>
+  include <abstractions/open-browser>
+  ##  include <abstractions/ubuntu-helpers>
+  ##  include <abstractions/ubuntu-browsers>
   
-  #include <abstractions/dbus-accessibility-strict>
+  # Required to open downloaded files.
+  include <abstractions/open-some-applications>
+  
+  include <abstractions/dbus-accessibility-strict>
   dbus (send)
        bus=session
        peer=(name=org.a11y.Bus),
@@ -277,12 +280,6 @@
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   
-  # Some applications
-  /usr/bin/okular Px,
-  /usr/bin/gwenview Px,
-  /usr/lib{,64}/libreoffice/program/{soffice,scalc,sdraw,simpress,swriter} PUx,
-  /usr/bin/{calligrasheets,calligrastage,calligrawords} PUx,
-  
   # Support for GPG
   /usr/bin/gpg Cx -> gpg,
   /usr/bin/gpg2 Cx -> gpg2,
@@ -293,8 +290,8 @@
   deny @{HOME}/.gnupg/gpg-agent.conf w,
   
   profile lsb_release {
-    #include <abstractions/base>
-    #include <abstractions/python>
+    include <abstractions/base>
+    include <abstractions/python>
     /usr/bin/lsb_release r,
     /bin/dash ixr,
     /usr/bin/dpkg-query ixr,
@@ -313,11 +310,11 @@
   }
   
   profile gpg {
-    #include <abstractions/base>
+    include <abstractions/base>
 
     # Required to import keys from keyservers
-    #include <abstractions/nameservice>
-    #include <abstractions/p11-kit>
+    include <abstractions/nameservice>
+    include <abstractions/p11-kit>
 
     # For smartcards?
     /dev/bus/usb/ r,
@@ -348,11 +345,11 @@
   }
   
   profile gpg2 {
-    #include <abstractions/base>
+    include <abstractions/base>
 
     # Required to import keys from keyservers
-    #include <abstractions/nameservice>
-    #include <abstractions/p11-kit>
+    include <abstractions/nameservice>
+    include <abstractions/p11-kit>
     /usr/lib{,64}/gnupg2/gpg2keys_hkp ix,
 
     # For smartcards?
@@ -393,8 +390,8 @@
   }
 
   # Site-specific additions and overrides. See local/README for details.
-  # #include <local/usr.bin.thunderbird>
+  ## include <local/usr.bin.thunderbird>
   
   # Addons
-  # #include <abstractions/ubuntu-browsers.d/firefox>
+  ## include <abstractions/ubuntu-browsers.d/firefox>
 }

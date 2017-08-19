@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: August 19, 2017
 
 # NOTE:
 #  - This profile is more restrictive than
@@ -34,8 +34,12 @@ profile ktorrent /usr/bin/ktorrent {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for some browsers).
+	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
+	include <abstractions/open-email>
+	
+	# Required to open downloaded files.
+	include <abstractions/open-some-applications>
 	
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
@@ -58,21 +62,19 @@ profile ktorrent /usr/bin/ktorrent {
 	owner @{HOME}/.config/menus/applications-kmenuedit.menu r,
 		
 	# Binaries
-	/usr/bin/ktorrent ixr,
+	/usr/bin/ktorrent r,
 	/bin/dash ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
-	/usr/bin/kde4-config ixr,
 	/usr/bin/kdialog ixr,
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kbuildsycoca4 ixr,
 	/usr/bin/knotify4 ixr,
+	/usr/bin/kde4-config Cxr -> sanitized_helper,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
-	/usr/bin/dolphin PUx,
-	
-	/usr/bin/* Px,
+	/usr/bin/pulseaudio Pix,
 	
 	# Libexec
 	/usr/lib{,64}/kde4/libexec/{,**} r,

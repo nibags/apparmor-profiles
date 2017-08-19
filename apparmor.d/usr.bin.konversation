@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 18, 2017
+# Last change: August 19, 2017
 
 include <tunables/global>
 
@@ -58,6 +58,7 @@ profile konversation /usr/bin/konversation {
 	# Binaries
 	/usr/bin/konversation ixr,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	/usr/bin/dolphin PUx,
 	/usr/bin/* Pixr,
 	
 	# Allow exec of libexec applications

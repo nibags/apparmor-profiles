@@ -3,7 +3,7 @@
 
 Author: Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
 
-Last Change: August 17, 2017
+Last Change: August 19, 2017
 
 ## Description:
 
@@ -28,7 +28,7 @@ AppArmor security profiles for:
 
 
 These are designed to work on KDE Plasma 5. 
-All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5.9. 
+All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5. 
 The VLC, Telegram, Thunderbird & mpv profiles were also tested in GNOME 3.
 
 If you use Ubuntu, please install the packages 

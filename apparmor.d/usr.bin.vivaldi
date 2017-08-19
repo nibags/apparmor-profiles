@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 19, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -9,7 +9,7 @@
 #  - By default, there is only write access to the download & desktop directory.
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
-#include <tunables/global>
+include <tunables/global>
 
 # Vivaldi directory:
 @{VIVALDI_LIBDIR}=/opt/vivaldi
@@ -19,21 +19,24 @@
 @{DESKTOP_DIR}=@{HOME}/Escritorio
 
 /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
-  #include <abstractions/audio>
-  #include <abstractions/cups-client>
-  #include <abstractions/dbus>
-  #include <abstractions/dbus-session>
-  #include <abstractions/gnome>
-  #include <abstractions/kde>
-  #include <abstractions/ibus>
-  #include <abstractions/nameservice>
-  #include <abstractions/user-tmp>
-  #include <abstractions/open-some-applications>
-  #include <abstractions/flatpak-snap>
+  include <abstractions/audio>
+  include <abstractions/cups-client>
+  include <abstractions/dbus>
+  include <abstractions/dbus-session>
+  include <abstractions/gnome>
+  include <abstractions/kde>
+  include <abstractions/ibus>
+  include <abstractions/nameservice>
+  include <abstractions/user-tmp>
+  include <abstractions/open-some-applications>
+  include <abstractions/flatpak-snap>
+  
+  # Required to open downloaded files.
+  include <abstractions/open-some-applications>
   
   # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if you
   # want access to productivity applications, adjust the following file accordingly.
-  # #include <abstractions/ubuntu-browsers.d/chromium-browser>
+  ## include <abstractions/ubuntu-browsers.d/chromium-browser>
 	
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -194,8 +197,8 @@
   owner @{HOME}/.config/dconf/user r,
 
   profile xdgsettings {
-    #include <abstractions/bash>
-    #include <abstractions/gnome>
+    include <abstractions/bash>
+    include <abstractions/gnome>
 	  
 	@{HOME}/.config/kdeglobals rk,
 	@{HOME}/.cache/ksycoca5_* r,
@@ -234,8 +237,8 @@
   }
 
   profile lsb_release {
-    #include <abstractions/base>
-    #include <abstractions/python>
+    include <abstractions/base>
+    include <abstractions/python>
     /usr/bin/lsb_release r,
     /bin/dash ixr,
     /usr/bin/dpkg-query ixr,
@@ -253,7 +256,7 @@
   }
 
   # Site-specific additions and overrides. See local/README for details.
-  #include <local/usr.bin.chromium-browser>
+  include <local/usr.bin.chromium-browser>
 
 profile vivaldi_sandbox {
     # Be fanatical since it is setuid root and don't use an abstraction

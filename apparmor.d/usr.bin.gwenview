@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: August 19, 2017
 
 include <tunables/global>
 
@@ -69,7 +69,9 @@ profile gwenview /usr/bin/gwenview {
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/plasma-discover PUx,
+	/usr/bin/dolphin PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	
 	/usr/bin/* Pixr,
 	/usr/lib{,64}/** Pixr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,

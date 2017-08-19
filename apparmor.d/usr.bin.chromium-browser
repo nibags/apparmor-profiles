@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 14, 2017
+# Last change: August 19, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -9,7 +9,7 @@
 #    directories: /home, /media, /mnt, /srv, /net.
 #    View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
-#include <tunables/global>
+include <tunables/global>
 
 @{CHROM_LIBDIR}=/usr/lib{,64}/chromium-browser
 
@@ -19,22 +19,23 @@
 
 # We need 'flags=(attach_disconnected)' in newer chromium versions
 /usr/lib{,64}/chromium-browser/chromium-browser flags=(attach_disconnected) {
-  #include <abstractions/audio>
-  #include <abstractions/cups-client>
-  #include <abstractions/dbus>
-  #include <abstractions/dbus-session>
-  #include <abstractions/gnome>
-  #include <abstractions/kde>
-  #include <abstractions/ibus>
-  #include <abstractions/nameservice>
-  #include <abstractions/user-tmp>
-  #include <abstractions/flatpak-snap>
+  include <abstractions/audio>
+  include <abstractions/cups-client>
+  include <abstractions/dbus>
+  include <abstractions/dbus-session>
+  include <abstractions/gnome>
+  include <abstractions/kde>
+  include <abstractions/ibus>
+  include <abstractions/nameservice>
+  include <abstractions/user-tmp>
+  include <abstractions/flatpak-snap>
 
   # This include specifies which ubuntu-browsers.d abstractions to use. Eg, if
   # you want access to productivity applications, adjust the following file
   # accordingly.
-  #include <abstractions/ubuntu-browsers.d/chromium-browser>
-	
+  include <abstractions/ubuntu-browsers.d/chromium-browser>
+  include <abstractions/open-messaging>
+  
   # Deny directories with sensitive data. View in: /etc/apparmor.d/tunables/confidential
   deny @{CONFIDENTIAL_EXCEPT_CHROME} rwklmx,
   
@@ -206,8 +207,8 @@
   owner @{HOME}/.config/dconf/user r,
 
   profile xdgsettings {
-    #include <abstractions/bash>
-    #include <abstractions/gnome>
+    include <abstractions/bash>
+    include <abstractions/gnome>
 	
 	# Modifications
 	@{HOME}/.config/kdeglobals rk, 
@@ -247,8 +248,8 @@
   }
 
   profile lsb_release {
-    #include <abstractions/base>
-    #include <abstractions/python>
+    include <abstractions/base>
+    include <abstractions/python>
     /usr/bin/lsb_release r,
     /bin/dash ixr,
     /usr/bin/dpkg-query ixr,
@@ -267,7 +268,7 @@
 
 
   # Site-specific additions and overrides. See local/README for details.
-  #include <local/usr.bin.chromium-browser>
+  include <local/usr.bin.chromium-browser>
 
 profile chromium_browser_sandbox {
     # Be fanatical since it is setuid root and don't use an abstraction

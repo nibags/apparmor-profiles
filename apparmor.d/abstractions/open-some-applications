@@ -1,16 +1,12 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: August 19, 2017
 
-# Open Some Applications
+# Applications with AppArmor Profile:
 
 # Document and image viewers
 /usr/bin/gwenview Px,
 /usr/bin/okular Px,
-
-# Office
-#/usr/lib{,64}/libreoffice/program/{soffice,scalc,sdraw,simpress,swriter} PUx,
-#/usr/bin/{calligrasheets,calligrastage,calligrawords} PUx,
 
 # Media players
 /usr/bin/baka-mplayer Px,
@@ -25,4 +21,63 @@
 # Download clients and torrents
 /usr/bin/kget Px,
 /usr/bin/ktorrent Px,
-/usr/bin/qbittorrent Px,
+/usr/bin/qbittorrent Px, 
+
+# Others Applications:
+
+# File manager
+/usr/bin/dolphin Cx -> sanitized_helper,
+
+# Archivers
+/usr/bin/ark Cx -> sanitized_helper,
+/usr/bin/file-roller Cx -> sanitized_helper,
+/usr/bin/xarchiver Cx -> sanitized_helper,
+
+
+# Office
+/usr/bin/libreoffice Cx -> sanitized_helper,
+/usr/bin/localc Cx -> sanitized_helper,
+/usr/bin/lodraw Cx -> sanitized_helper,
+/usr/bin/loimpress Cx -> sanitized_helper,
+/usr/bin/lowriter Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/soffice Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/scalc Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/sdraw Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/simpress Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/swriter Cx -> sanitized_helper,
+/usr/bin/calligrasheets Cx -> sanitized_helper,
+/usr/bin/calligrastage Cx -> sanitized_helper,
+/usr/bin/calligrawords Cx -> sanitized_helper,
+
+# PDF viewers
+/usr/bin/evince Cx -> sanitized_helper,
+
+# Image and scanners
+/usr/bin/eog Cx -> sanitized_helper,
+/usr/bin/shotwell Cx -> sanitized_helper,
+/usr/bin/digikam Cx -> sanitized_helper,
+/usr/bin/f-spot Cx -> sanitized_helper,
+/usr/bin/gimp* Cx -> sanitized_helper,
+/usr/bin/inkscape Cx -> sanitized_helper,
+/usr/bin/krita Cx -> sanitized_helper,
+/usr/bin/clamscan Cx -> sanitized_helper,
+
+# Multimedia
+/usr/bin/amarok Cx -> sanitized_helper,
+/usr/bin/clementine Cx -> sanitized_helper,
+/usr/bin/subtitleeditor Cx -> sanitized_helper,
+
+# Text editors
+include <abstractions/ubuntu-browsers.d/text-editors>
+/usr/bin/kile Cx -> sanitized_helper,
+
+# Feed readers
+## include <abstractions/ubuntu-feed-readers>
+
+
+
+
+
+
+
+

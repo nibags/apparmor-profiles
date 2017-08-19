@@ -1,0 +1,5 @@
+# vim:syntax=apparmor
+
+/usr/bin/konversation Pxr,
+/usr/bin/Telegram Pxr,
+/home/*/.TelegramDesktop/bin/Telegram Pxr,

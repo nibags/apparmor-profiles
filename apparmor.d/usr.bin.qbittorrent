@@ -33,8 +33,12 @@ profile qbittorrent /usr/bin/qbittorrent {
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	include <abstractions/confidential-deny>
 	
-	# Needed to open links (only for some browsers).
+	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
+	include <abstractions/open-email>
+	
+	# Required to open downloaded files.
+	include <abstractions/open-some-applications>
 	
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
@@ -73,16 +77,14 @@ profile qbittorrent /usr/bin/qbittorrent {
 	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
 		
 	# Binaries
-	/usr/bin/qbittorrent ixr,
+	/usr/bin/qbittorrent r,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
-	
-	/usr/bin/* Px,
-	
+		
 	# Libraries
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so mr,
 	

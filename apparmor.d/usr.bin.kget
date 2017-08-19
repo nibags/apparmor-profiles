@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: August 19, 2017
 
 include <tunables/global>
 
@@ -31,6 +31,9 @@ profile kget /usr/bin/kget {
 	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
 	include <abstractions/open-email>
+	
+	# Required to open downloaded files.
+	include <abstractions/open-some-applications>
 		
 	# Downloads & Home directories
 	owner @{DOWNLOADS_DIR}/** rw,
@@ -49,21 +52,17 @@ profile kget /usr/bin/kget {
 	/{,**/} r,  # Read only directories
 	
 	# Binaries
-	/usr/bin/kget ixr,
+	/usr/bin/kget r,
 	/bin/dash ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/{gnome,gvfs,xdg}-open ixr,
-	/usr/bin/kde4-config ixr,
 	/usr/bin/kdialog ixr,
 	/usr/bin/kbuildsycoca4 ixr,
 	/usr/bin/knotify4 ixr,
-	
-	/usr/bin/{gwenview,okular,baka-mplayer,bomi,mpv,vlc} Px,
-	/usr/bin/{konversation,ktorrent,qbittorrent,youtube-dl} Px,
-	/usr/bin/{dolphin,konsole} PUx,
+	/usr/bin/kde4-config Cxr -> sanitized_helper,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
-	/usr/bin/* Cx -> sanitized_helper,
+	/usr/bin/pulseaudio Pixr,
 	
 	# Allow exec of libexec applications
 	/usr/lib{,64}/** Pixr,

@@ -1,9 +1,9 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: August 19, 2017
 
-#include <tunables/global>
+include <tunables/global>
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib{,64}/firefox
@@ -22,21 +22,22 @@
 # but not:
 #  /usr/lib/firefox/firefox.sh
 /usr/lib{,64}/firefox/firefox{,*[^s][^h]} {
-  #include <abstractions/audio>
-  #include <abstractions/cups-client>
-  #include <abstractions/dbus-strict>
-  #include <abstractions/dbus-session-strict>
-  #include <abstractions/dconf>
-  #include <abstractions/gnome>
-  #include <abstractions/ibus>
-  #include <abstractions/nameservice>
-  #include <abstractions/openssl>
-  #include <abstractions/p11-kit>
-  #include <abstractions/ubuntu-unity7-base>
-  #include <abstractions/ubuntu-unity7-launcher>
-  #include <abstractions/flatpak-snap>
+  include <abstractions/audio>
+  include <abstractions/cups-client>
+  include <abstractions/dbus-strict>
+  include <abstractions/dbus-session-strict>
+  include <abstractions/dconf>
+  include <abstractions/gnome>
+  include <abstractions/ibus>
+  include <abstractions/nameservice>
+  include <abstractions/openssl>
+  include <abstractions/p11-kit>
+  include <abstractions/ubuntu-unity7-base>
+  include <abstractions/ubuntu-unity7-launcher>
+  include <abstractions/flatpak-snap>
+  include <abstractions/open-messaging>
 
-  #include <abstractions/dbus-accessibility-strict>
+  include <abstractions/dbus-accessibility-strict>
   dbus (send)
        bus=session
        peer=(name=org.a11y.Bus),
@@ -269,8 +270,8 @@
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {
-    #include <abstractions/base>
-    #include <abstractions/python>
+    include <abstractions/base>
+    include <abstractions/python>
     /usr/bin/lsb_release r,
     /bin/dash ixr,
     /usr/bin/dpkg-query ixr,
@@ -290,8 +291,8 @@
   }
 
   # Addons
-  #include <abstractions/ubuntu-browsers.d/firefox>
+  include <abstractions/ubuntu-browsers.d/firefox>
 
   # Site-specific additions and overrides. See local/README for details.
-  #include <local/usr.bin.firefox>
+  include <local/usr.bin.firefox>
 }
