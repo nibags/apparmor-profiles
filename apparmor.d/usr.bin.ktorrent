@@ -16,7 +16,7 @@ include <tunables/global>
 # Torrents directory. Modify according to KTorrent configuration.
 @{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
 
-profile ktorrent /usr/bin/ktorrent {
+/usr/bin/ktorrent {
 	include <abstractions/base>
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>

@@ -26,7 +26,7 @@
 # Others Applications:
 
 # File manager
-/usr/bin/dolphin Cx -> sanitized_helper,
+/usr/bin/dolphin PUx,
 
 # Archivers
 /usr/bin/ark Cx -> sanitized_helper,
@@ -36,18 +36,9 @@
 
 # Office
 /usr/bin/libreoffice Cx -> sanitized_helper,
-/usr/bin/localc Cx -> sanitized_helper,
-/usr/bin/lodraw Cx -> sanitized_helper,
-/usr/bin/loimpress Cx -> sanitized_helper,
-/usr/bin/lowriter Cx -> sanitized_helper,
-/usr/lib{,64}/libreoffice/program/soffice Cx -> sanitized_helper,
-/usr/lib{,64}/libreoffice/program/scalc Cx -> sanitized_helper,
-/usr/lib{,64}/libreoffice/program/sdraw Cx -> sanitized_helper,
-/usr/lib{,64}/libreoffice/program/simpress Cx -> sanitized_helper,
-/usr/lib{,64}/libreoffice/program/swriter Cx -> sanitized_helper,
-/usr/bin/calligrasheets Cx -> sanitized_helper,
-/usr/bin/calligrastage Cx -> sanitized_helper,
-/usr/bin/calligrawords Cx -> sanitized_helper,
+/usr/bin/lo{calc,draw,impress,writer} Cx -> sanitized_helper,
+/usr/lib{,64}/libreoffice/program/s{office,calc,draw,impress,writer} PUx,
+/usr/bin/calligra{sheets,stage,words} Cx -> sanitized_helper,
 
 # PDF viewers
 /usr/bin/evince Cx -> sanitized_helper,

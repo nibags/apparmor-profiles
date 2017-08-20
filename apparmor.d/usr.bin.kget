@@ -9,7 +9,7 @@ include <tunables/global>
 # Downloads directories:
 @{DOWNLOADS_DIR}=@{HOME}/Descargas
 
-profile kget /usr/bin/kget {
+/usr/bin/kget {
 	include <abstractions/base>
 	include <abstractions/fonts>
 	include <abstractions/dbus>
