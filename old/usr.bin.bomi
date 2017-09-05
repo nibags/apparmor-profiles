@@ -70,6 +70,7 @@ profile bomi /usr/bin/bomi {
 	
 	# Device access
 	/dev/ati/{,**} rwk,
+	/dev/dri/{,**} rwk,
 	/dev/shm/{,**} rwk,
 	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: September 04, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -21,6 +21,7 @@ profile vlc /usr/bin/vlc {
 	include <abstractions/X>
 	include <abstractions/consoles>
 	include <abstractions/flatpak-snap>
+	include <abstractions/udisk-strict>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -122,30 +123,6 @@ profile vlc /usr/bin/vlc {
 	dbus (receive)
 		bus=system
 		path=/org/freedesktop/NetworkManager,
-	
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/UPower
-		interface=org.freedesktop.DBus.Introspectable
-		member=Introspect
-		peer=(name=org.freedesktop.UPower),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/UDisks2/{block_devices,drives}{,/*}
-		interface=org.freedesktop.DBus.Introspectable
-		member=Introspect
-		peer=(name=org.freedesktop.UDisks2),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/UDisks2/{block_devices,drives}/*
-		interface=org.freedesktop.DBus.Properties
-		member={Get,GetAll}
-		peer=(name=org.freedesktop.UDisks2),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/UDisks2/drives/*
-		interface=org.freedesktop.DBus.Properties
-		member=PropertiesChanged,
 	
 	dbus (send)
 		bus=session

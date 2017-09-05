@@ -1,0 +1,27 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: September 04, 2017
+
+dbus (send)
+	bus=system
+	path=/org/freedesktop/UPower
+	interface=org.freedesktop.DBus.Introspectable
+	member=Introspect
+	peer=(name=org.freedesktop.UPower label=unconfined),
+dbus (send)
+	bus=system
+	path=/org/freedesktop/UDisks2/{block_devices,block_devices,drives}{,/*}
+	interface=org.freedesktop.DBus.Introspectable
+	member=Introspect
+	peer=(name=org.freedesktop.UDisks2),
+dbus (send)
+	bus=system
+	path=/org/freedesktop/UDisks2/{block_devices,drives}/*
+	interface=org.freedesktop.DBus.Properties
+	member={Get,GetAll}
+	peer=(name=org.freedesktop.UDisks2),
+dbus (send receive)
+	bus=system
+	path=/org/freedesktop/UDisks2/drives/*
+	interface=org.freedesktop.DBus.Properties
+	member=PropertiesChanged,

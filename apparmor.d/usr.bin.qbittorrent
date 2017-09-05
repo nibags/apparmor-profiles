@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: September 04, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -22,9 +22,9 @@ include <tunables/global>
 	include <abstractions/dbus-session>
 	include <abstractions/fonts>
 	include <abstractions/nameservice>
-	include <abstractions/X>
 	include <abstractions/kde>
 	include <abstractions/flatpak-snap>
+	include <abstractions/networkmanager-strict>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
@@ -126,38 +126,9 @@ include <tunables/global>
 	
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-9]*,/Devices/[0-9]*}
-		interface=org.freedesktop.DBus.Properties
-		member=GetAll
-		peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	dbus (receive)
-		bus=system
-		path=/org/freedesktop/NetworkManager/ActiveConnection/[0-9]*
-		interface=org.freedesktop.NetworkManager.Connection.Active
-		member=PropertiesChanged,
-	dbus (send)
-		bus=system
 		path=/org/freedesktop/UPower
 		interface=org.freedesktop.DBus.Introspectable
 		member=Introspect
 		peer=(name=org.freedesktop.UPower label=unconfined),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/NetworkManager
-		interface=org.freedesktop.NetworkManager
-		member=GetDevices
-		peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/NetworkManager/Settings
-		interface=org.freedesktop.NetworkManager.Settings
-		member=ListConnections
-		peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/NetworkManager/Settings/[0-9]*
-		interface=org.freedesktop.NetworkManager.Settings.Connection
-		member=GetSettings
-		peer=(name=org.freedesktop.NetworkManager label=unconfined),
 }
 
