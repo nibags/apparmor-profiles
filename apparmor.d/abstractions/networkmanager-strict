@@ -1,18 +1,18 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 04, 2017
+# Last change: September 07, 2017
 
 dbus (send)
 	bus=system
 	path=/org/freedesktop/NetworkManager
 	interface=org.freedesktop.DBus.Properties
-	member=GetAll
+	member={GetAll,GetDevices}
 	peer=(name=org.freedesktop.NetworkManager label=unconfined),
 dbus (send)
 	bus=system
 	path=/org/freedesktop/NetworkManager
-	interface=org.freedesktop.DBus.Properties
-	member={GetAll,GetDevices}
+	interface=org.freedesktop.NetworkManager
+	member=GetDevices
 	peer=(name=org.freedesktop.NetworkManager label=unconfined),
 
 dbus (send)
@@ -27,13 +27,7 @@ dbus (send)
 	interface=org.freedesktop.NetworkManager.Settings.Connection
 	member=GetSettings
 	peer=(name=org.freedesktop.NetworkManager label=unconfined),
-	
-dbus (send)
-	bus=system
-	path=/org/freedesktop/NetworkManager
-	interface=org.freedesktop.NetworkManager
-	member=GetDevices
-	peer=(name=org.freedesktop.NetworkManager label=unconfined),
+
 dbus (send)
 	bus=system
 	path=/org/freedesktop/NetworkManager{,/ActiveConnection/[0-9]*,/Devices/[0-9]*}

@@ -1,22 +1,21 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 04, 2017
+# Last change: September 07, 2017
 
 # NOTE:
-#  - This profile is more restrictive than
-#    the one provided in <abstractions/ubuntu-bittorrent-clients>.
+# - This profile is made for KTorrent 5. It does not work 
+#   in older versions (with QT 4).
+#  - This profile is more restrictive than the one provided 
+#    in <abstractions/ubuntu-bittorrent-clients>.
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 include <tunables/global>
 
-#  - Important: Check & change the torrents directory
-#    according to KTorrent configuration.
-#  - By default, there is only write access to the torrent directory.
-
-# Torrents directory. Modify according to KTorrent configuration.
-@{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
-# KTorrent Local Configuration Files
-@{KTORRENT_CONF}=@{HOME}/.local/share/ktorrent
+# IMPORTANT: Modify according to KTorrent configuration:
+# Download directory
+@{DOWNLOAD_DIR} = @{HOME}/Descargas/Torrents
+# Torrents information directory
+@{TORRENT_INF_DIR} = @{HOME}/.local/share/ktorrent
 
 /usr/bin/ktorrent {
 	include <abstractions/base>
@@ -27,6 +26,7 @@ include <tunables/global>
 	include <abstractions/kde>
 	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
+	
 	include <abstractions/networkmanager-strict>
 	include <abstractions/udisk-strict>
 	
@@ -45,15 +45,16 @@ include <tunables/global>
 	include <abstractions/open-some-applications>
 	
 	# Access to Home
-	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory
+	owner @{DOWNLOAD_DIR}/{,**} rw,  # Just read/write in the download directory
 	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
 	
 	# KTorrent configuration
-	owner @{KTORRENT_CONF}/{,**} rwk,
+	owner @{TORRENT_INF_DIR}/{,**} rw,
 	owner @{HOME}/.kde/share/apps/ktorrent/{,**} rwk,
 	owner @{HOME}/.config/ktorrent* rwk,
 	owner @{HOME}/.cache/ktorrent/{,**} rwk,
 	owner @{HOME}/.local/share/kxmlgui5/ktorrent/{,**} rw,
+	owner @{HOME}/.local/share/kxmlgui5/ rw,
 	
 	# Local configuration
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
@@ -72,7 +73,6 @@ include <tunables/global>
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.cache/ksycoca5_* r,
 	owner @{HOME}/.cache/qt_compose_cache_* rw,
-	owner @{HOME}/.local/share/kxmlgui5/ rw,
 	owner @{HOME}/.local/share/user-places.xbel{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
