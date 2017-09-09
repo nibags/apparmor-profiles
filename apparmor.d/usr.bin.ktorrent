@@ -49,7 +49,7 @@ include <tunables/global>
 	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
 	
 	# KTorrent configuration
-	owner @{TORRENT_INF_DIR}/{,**} rw,
+	owner @{TORRENT_INF_DIR}/{,**} rwk,
 	owner @{HOME}/.kde/share/apps/ktorrent/{,**} rwk,
 	owner @{HOME}/.config/ktorrent* rwk,
 	owner @{HOME}/.cache/ktorrent/{,**} rwk,
@@ -86,10 +86,12 @@ include <tunables/global>
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/{gnome,gvfs,xdg}-open ixr,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	/usr/bin/pulseaudio Pixr,
 	
 	# Libraries
 	/usr/lib{,64}/libktorrent.so.* mr,
 	/usr/lib{64,/*-linux-gnu}/qt5/plugins/**.so mr,
+	deny /usr/lib{,64}/vlc/plugins/plugins.dat* w,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -102,6 +104,7 @@ include <tunables/global>
 	/usr/share/knotifications5/* r,
 	/usr/share/color-schemes/{,**} r,
 	/usr/share/sounds/{,**} r,
+	/usr/share/alsa/*.conf r,
 	
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
@@ -113,6 +116,7 @@ include <tunables/global>
 	/etc/pulse/client.conf r,
 	
 	/dev/tty r,
+	/dev/snd/controlC[0-9]* r,
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	@{PROC}/sys/kernel/core_pattern r,
@@ -123,6 +127,7 @@ include <tunables/global>
 	# Temp files
 	owner /run/user/[0-9]*/kioclient*.slave-socket rwk,
 	owner /run/user/[0-9]*/ktorrent*.slave-socket rwk,
+	owner /run/user/[0-9]*/pulse/native rwk,
 	
 	signal (send) set=(term) peer=unconfined,
 	unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper addr=none),
