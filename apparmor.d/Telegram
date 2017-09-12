@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: September 10, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
@@ -44,20 +44,24 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
 	
 	# Local configuration
-	owner @{HOME}/.local/share/flatpak/exports/share/{**,} r,
-	owner @{HOME}/.local/share/RecentDocuments/ r,
-	owner @{HOME}/.local/share/RecentDocuments/{.*,*.desktop,*.desktop.*} rw,
-	owner @{HOME}/.kde{,4}/share/config/kdeglobals rk,
 	owner @{HOME}/.config/* r,
 	owner @{HOME}/.config/{fontconfig,gtk-[0-9]*,kde.org,menus,pulse,session}/{**,} r,
-	owner @{HOME}/.config/kdeglobals rk,
 	owner @{HOME}/.config/gtk-[0-9]*/bookmarks rw,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
-	owner @{HOME}/.cache/icon-cache.kcache rwk,
-	owner @{HOME}/.cache/ksycoca[0-9]_* rk,
+	owner @{HOME}/.local/share/icons/{,**} rw,
 	deny @{HOME}/.local/share/recently-used.xbel r,
+	owner @{HOME}/.kde/share/config/kdeglobals rk,
+	owner @{HOME}/.kde/share/kde4/services/*.protocol rw,
 	
+	owner @{HOME}/.config/kdeglobals rk,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.cache/ksycoca5_* r,
+	owner @{HOME}/.cache/qt_compose_cache_* rw,
+	owner @{HOME}/.local/share/RecentDocuments/ r,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
+	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
+		
 	/usr/share/** r,
 	/etc/timezone r,
 	/etc/openal/alsoft.conf r,
@@ -79,6 +83,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny /dev/video* rwmlkx,  # Block cameras
 	
 	# Binaries & Helpers
+	/bin/dash Pixr,
 	/usr/bin/pulseaudio Pixr,
 	/usr/bin/xdg-open ixr,
 	/usr/bin/gnome-open ixr,

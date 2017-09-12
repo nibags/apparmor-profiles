@@ -42,10 +42,11 @@ include <tunables/global>
 	# KGet configuration
 	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rwk,
 	owner @{HOME}/.kde{,4}/share/config/kget* rwk,
+	
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rwk, 
-	owner @{HOME}/.local/share/user-places.xbel{,.*} rwk,
 	owner @{HOME}/.config/Trolltech.conf k,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
+	owner @{HOME}/.local/share/user-places.xbel{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	

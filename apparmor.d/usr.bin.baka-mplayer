@@ -38,11 +38,12 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	# Configuration
 	owner @{HOME}/.config/{baka-mplayer*,bakamplayer*} rwk,
 	owner @{HOME}/.config/mpv/{,**} rwk,
-	owner @{HOME}/.config/QtProject.conf rw,
-	owner @{HOME}/.config/QtProject.conf.* rwk,
-	owner @{HOME}/.config/kdeglobals rw,
-	owner @{HOME}/.config/kdeglobals.* rwk,
+	
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/kdeglobals rw,
+	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/QtProject.conf rw,
+	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop{,.lock} rwk,
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,

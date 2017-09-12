@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 04, 2017
+# Last change: September 10, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -48,31 +48,18 @@ include <tunables/global>
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/ rw,
-	owner @{HOME}/.config/QtProject/{,**} rw,
-	owner @{HOME}/.config/QtProject.conf{,.*} rwk,
 	owner @{HOME}/.config/qBittorrentrc* rwk,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	
 	# Local configuration
-	owner @{HOME}/.config/kdeglobals rw,
-	owner @{HOME}/.config/kdeglobals.* rwk,
+	include <abstractions/kde-user>
 	owner @{HOME}/.config/kio* r,
 	owner @{HOME}/.config/kdebugrc rw,
-	owner @{HOME}/.config/breezerc r,
-	owner @{HOME}/.config/klanguageoverridesrc r,
-	owner @{HOME}/.config/trashrc rw,
-	owner @{HOME}/.cache/icon-cache.kcache rw,
-	owner @{HOME}/.cache/ksycoca5_* r,
-	owner @{HOME}/.cache/qt_compose_cache_* rw,
-	owner @{HOME}/.kde{,4}/share/config/{kde,kio}* r,
-	owner @{HOME}/.kde{,4}/share/config/ktinfowidgetpluginrc rw,
-	owner @{HOME}/.kde{,4}/share/config/kcookiejarrc r,
-	owner @{HOME}/.kde{,4}/share/config/breezerc r,
-	owner @{HOME}/.kde{,4}/share/config/ktimezonedrc r,
-	owner @{HOME}/.kde{,4}/share/config/*.new rwk,
-	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
-	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.kde/share/config/{kde,kio}* r,
+	owner @{HOME}/.kde/share/config/ktinfowidgetpluginrc rw,
+	owner @{HOME}/.kde/share/config/kcookiejarrc r,
+	owner @{HOME}/.kde/share/config/breezerc r,
+	owner @{HOME}/.kde/share/config/ktimezonedrc r,
+	owner @{HOME}/.kde/share/config/*.new rwk,
 	
 	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
 		

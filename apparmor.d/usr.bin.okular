@@ -76,15 +76,16 @@ profile okular /usr/bin/okular {
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,
+	owner @{HOME}/.config/okularrc{,.lock} rwk,
+	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
+	owner @{HOME}/.config/session/{okular,.}* rwk,
+	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
+	owner @{HOME}/.kde/share/config/okularrc{,.lock} rwk,
+	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
+	
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop.lock rwk,
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
-	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
-	owner @{HOME}/.kde/share/config/okularrc{,.lock} rwk, # ix
-	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
-	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
-	owner @{HOME}/.config/okularrc{,.lock} rwk, # ix
-	owner @{HOME}/.config/session/{okular,.}* rwk,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	
 	/usr/share/** r,
 	

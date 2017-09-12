@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 04, 2017
+# Last change: September 10, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -47,24 +47,11 @@ profile vlc /usr/bin/vlc {
 	owner @{HOME}/.cache/vlc/{,**} rwk,
 	
 	# Local configuration
-	owner @{HOME}/.config/QtProject/{,**} rw,
-	owner @{HOME}/.config/QtProject.conf{,.*} rwk,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,	
-	owner @{HOME}/.config/kdeglobals rw,
-	owner @{HOME}/.config/kdeglobals.* rwk,
+	include <abstractions/kde-user>
 	owner @{HOME}/.config/kio* r,
 	owner @{HOME}/.config/kdebugrc rw,
-	owner @{HOME}/.config/breezerc r,
-	owner @{HOME}/.config/klanguageoverridesrc r,
-	owner @{HOME}/.config/trashrc rw,
 	owner @{HOME}/.config/ibus/ rw,
 	owner @{HOME}/.config/ibus/bus/{,*} rw,
-	owner @{HOME}/.local/share/user-places.xbel{,.*} rw,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
-	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.cache/icon-cache.kcache rwk,
-	owner @{HOME}/.cache/ksycoca5_* rwk,
-	owner @{HOME}/.cache/qt_compose_cache_* rw,
 	
 	/usr/share/** r,
 	
