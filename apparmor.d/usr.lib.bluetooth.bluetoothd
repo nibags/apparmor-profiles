@@ -31,22 +31,12 @@ include <tunables/global>
 		bus=system
 		name=org.bluez,
 	
+	dbus (receive)
+		bus=system
+		path=/org/bluez{,/**},
 	dbus (send)
 		bus=system
-		path=/org/freedesktop/DBus
-		interface=org.freedesktop.DBus
-		member={Hello,RequestName,AddMatch,RemoveMatch}
-		peer=(name=org.freedesktop.DBus),
-	
-	dbus (receive)
-		bus=system
-		path=/org/bluez{,/hci[0-9]**}
 		interface=org.bluez.*,
-	dbus (receive)
-		bus=system
-		path=/
-		interface=org.freedesktop.DBus.ObjectManager
-		member=GetManagedObjects,
 	
 	dbus (send)
 		bus=system
@@ -54,11 +44,29 @@ include <tunables/global>
 		interface=org.freedesktop.DBus.Properties
 		member=PropertiesChanged
 		peer=(name=org.freedesktop.DBus),
+	
+	dbus (send)
+		bus=system
+		path=/
+		interface=org.freedesktop.DBus.ObjectManager
+		member={InterfacesRemoved,InterfacesAdded},
 	dbus (receive)
 		bus=system
-		path=/org/bluez/hci[0-9]*
-		interface=org.freedesktop.DBus.Properties
-		member=Set,
+		path=/
+		interface=org.freedesktop.DBus.ObjectManager
+		member=GetManagedObjects,
+	
+	dbus (receive)
+		bus=system
+		path=/
+		interface=org.freedesktop.DBus.Introspectable
+		member=Introspect,
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/DBus
+		interface=org.freedesktop.DBus
+		member={Hello,RequestName,AddMatch,RemoveMatch}
+		peer=(name=org.freedesktop.DBus),
 	
 	deny /{home,root,media,mnt,srv,net}/** rwkl,
 	audit deny /{home,root,media,mnt,srv,net,cdrom,run,tmp}/** mx,
