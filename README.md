@@ -7,6 +7,7 @@ Author: Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
 
 AppArmor security profiles for:
 * Baka-MPlayer
+* Bluetooth Daemon
 * Chromium
 * Firefox
 * Gwenview

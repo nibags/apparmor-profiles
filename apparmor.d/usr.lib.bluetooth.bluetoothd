@@ -1,0 +1,70 @@
+# vim:syntax=apparmor
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: September 17, 2017
+
+include <tunables/global>
+
+/usr/lib{,32,64}/bluetooth/bluetoothd {
+	include <abstractions/base>
+	include <abstractions/dbus-session>
+	
+	network bluetooth,
+	network netlink raw,
+
+	capability net_admin,
+	capability net_bind_service,
+	
+	/usr/lib{,32,64}/bluetooth/bluetoothd ixmr,
+	/var/lib/bluetooth/** rwk,
+	/etc/bluetooth/** r,
+	/etc/udev/udev.conf r,
+	
+	/dev/rfkill rw,
+	/dev/uinput rw,
+	
+	/sys/devices/{,**} r,
+	/run/udev/{,**} r,
+	/run/systemd/notify w,
+	/run/dbus/system_bus_socket rw,
+	
+	dbus (bind)
+		bus=system
+		name=org.bluez,
+	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/DBus
+		interface=org.freedesktop.DBus
+		member={Hello,RequestName,AddMatch,RemoveMatch}
+		peer=(name=org.freedesktop.DBus),
+	
+	dbus (receive)
+		bus=system
+		path=/org/bluez{,/hci[0-9]**}
+		interface=org.bluez.*,
+	dbus (receive)
+		bus=system
+		path=/
+		interface=org.freedesktop.DBus.ObjectManager
+		member=GetManagedObjects,
+	
+	dbus (send)
+		bus=system
+		path=/org/bluez/hci[0-9]**
+		interface=org.freedesktop.DBus.Properties
+		member=PropertiesChanged
+		peer=(name=org.freedesktop.DBus),
+	dbus (receive)
+		bus=system
+		path=/org/bluez/hci[0-9]*
+		interface=org.freedesktop.DBus.Properties
+		member=Set,
+	
+	deny /{home,root,media,mnt,srv,net}/** rwkl,
+	audit deny /{home,root,media,mnt,srv,net,cdrom,run,tmp}/** mx,
+	audit deny /dev/{audio,video}* rwklmx,
+	
+	audit deny /boot/** rwklmx,
+	audit deny /var/log/** rwklmx,
+	audit deny /etc/apparmor.d/** rwklmx,
+}
