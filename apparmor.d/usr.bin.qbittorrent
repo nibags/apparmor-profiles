@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 10, 2017
+# Last change: October 10, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -25,6 +25,7 @@ include <tunables/global>
 	include <abstractions/kde>
 	include <abstractions/flatpak-snap>
 	include <abstractions/networkmanager-strict>
+	include <abstractions/wayland>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>

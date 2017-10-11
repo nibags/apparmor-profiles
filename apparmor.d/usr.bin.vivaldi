@@ -196,7 +196,7 @@ include <tunables/global>
   owner /{,var/}run/user/*/dconf/user rw,
   owner @{HOME}/.config/dconf/user r,
 
-  profile xdgsettings {
+  profile xdgsettings flags=(attach_disconnected) {
     include <abstractions/bash>
     include <abstractions/gnome>
 	  
@@ -236,7 +236,7 @@ include <tunables/global>
     owner @{HOME}/.local/share/applications/mimeapps.list* rw,
   }
 
-  profile lsb_release {
+  profile lsb_release flags=(attach_disconnected) {
     include <abstractions/base>
     include <abstractions/python>
     /usr/bin/lsb_release r,
@@ -258,7 +258,7 @@ include <tunables/global>
   # Site-specific additions and overrides. See local/README for details.
   include <local/usr.bin.chromium-browser>
 
-profile vivaldi_sandbox {
+profile vivaldi_sandbox flags=(attach_disconnected) {
     # Be fanatical since it is setuid root and don't use an abstraction
     /lib{,64}/libgcc_s.so* mr,
     /lib{,64,/@{multiarch}}/libgcc_s.so* mr,

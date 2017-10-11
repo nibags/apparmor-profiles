@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
+# Last change: October 10, 2017
 
 include <tunables/global>
 
@@ -16,6 +16,7 @@ profile gwenview /usr/bin/gwenview {
 	include <abstractions/cups-client>
 	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
+	include <abstractions/wayland>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>

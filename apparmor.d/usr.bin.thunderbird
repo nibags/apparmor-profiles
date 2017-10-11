@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
+# Last change: October 10, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -42,6 +42,7 @@ include <tunables/global>
   include <abstractions/ubuntu-unity7-base>
   include <abstractions/ubuntu-unity7-launcher>
   include <abstractions/flatpak-snap>
+  include <abstractions/wayland>
   
   # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
   include <abstractions/open-browser>

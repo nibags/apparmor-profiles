@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 10, 2017
+# Last change: October 10, 2017
 
 # NOTE:
 # - This profile is made for KTorrent 5. It does not work 
@@ -26,6 +26,7 @@ include <tunables/global>
 	include <abstractions/kde>
 	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
+	include <abstractions/wayland>
 	
 	include <abstractions/networkmanager-strict>
 	include <abstractions/udisk-strict>

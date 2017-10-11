@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 10, 2017
+# Last change: October 10, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
@@ -23,7 +23,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>
 	include <abstractions/dbus-accessibility-strict>
-	include <abstractions/ibus>
 	include <abstractions/flatpak-snap>
 	
 	# Needed to open links (only for some browsers).
@@ -67,11 +66,14 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	/etc/openal/alsoft.conf r,
 	/etc/pulse/*.conf r,
 	/etc/udev/udev.conf r,
+	/etc/lsb-release r,
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	
-	@{PROC}/[0-9]*/cmdline r,
+	@{PROC}/[0-9]*/{cmdline,environ,status} r,
 	@{PROC}/[0-9]*/fd/{,**} r,
+	@{PROC}/[0-9]*/auxv r,  # Wayland
+	@{PROC}/[0-9]*/task/{,**} r,
 	/run/systemd/journal/socket rw,
 	/run/dbus/system_bus_socket r,
 	/run/user/[0-9]*/bus r,
@@ -97,12 +99,10 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner /run/user/[0-9]*/*.slave-socket rwk,
 	
 	# For Networking
-	network inet stream,
-	network inet6 stream,
-	@{PROC}/[0-9]*/net/if_inet6 r,
-	@{PROC}/[0-9]*/net/ipv6_route r,
-	@{PROC}/[0-9]*/net/dev r,
-	@{PROC}/[0-9]*/net/wireless r,
+	#@{PROC}/[0-9]*/net/if_inet6 r,
+	#@{PROC}/[0-9]*/net/ipv6_route r,
+	#@{PROC}/[0-9]*/net/dev r,
+	#@{PROC}/[0-9]*/net/wireless r,
 	
 	# Block binary execution and mapping of compiled libraries
 	audit deny owner /**/* m,
@@ -116,6 +116,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny /var/cache/fontconfig/ w,
 	
 	ptrace (trace) peer=unconfined,
+	ptrace (trace) peer=Telegram,
 	
 	dbus (send)
 		bus=session

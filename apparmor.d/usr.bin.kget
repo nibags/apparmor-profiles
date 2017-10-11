@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
+# Last change: October 10, 2017
 
 include <tunables/global>
 
@@ -44,7 +44,10 @@ include <tunables/global>
 	owner @{HOME}/.kde{,4}/share/config/kget* rwk,
 	
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rwk, 
+	owner @{HOME}/.kde{,4}/share/apps/kconf_update/** rw,
+	owner @{HOME}/.kde{,4}/share/config/kconf_updaterc* rw,
 	owner @{HOME}/.config/Trolltech.conf k,
+	owner @{HOME}/.config/kde.org/libphonon.conf rk,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.local/share/user-places.xbel{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,

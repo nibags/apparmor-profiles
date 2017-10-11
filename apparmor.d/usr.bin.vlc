@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 10, 2017
+# Last change: October 10, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
@@ -43,7 +43,7 @@ profile vlc /usr/bin/vlc {
 	# VLC configuration
 	owner @{HOME}/.local/share/vlc/{,**} rwk,
 	owner @{HOME}/.config/vlc/{,**} rwk,
-	owner @{HOME}/.config/vlcrc{,.lock} rwk,
+	owner @{HOME}/.config/vlcrc{,.[a-zA-Z0-9]*} rwk,
 	owner @{HOME}/.cache/vlc/{,**} rwk,
 	
 	# Local configuration

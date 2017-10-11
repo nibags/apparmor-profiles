@@ -26,7 +26,7 @@ AppArmor security profiles for:
 
 
 These are designed to work on KDE Plasma 5. 
-All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5. 
+All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5 (in Xorg and Wayland)
 The VLC, Telegram, Thunderbird & mpv profiles were also tested in GNOME 3.
 
 If you use Ubuntu, please install the packages 

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
+# Last change: October 10, 2017
 
 include <tunables/global>
 
@@ -16,6 +16,7 @@ profile okular /usr/bin/okular {
 	include <abstractions/cups-client>
 	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
+	include <abstractions/wayland>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
@@ -84,6 +85,8 @@ profile okular /usr/bin/okular {
 	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
 	
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop.lock rwk,
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
 	

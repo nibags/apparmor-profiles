@@ -15,7 +15,7 @@ include <tunables/global>
 	capability net_bind_service,
 	
 	/usr/lib{,32,64}/bluetooth/bluetoothd ixmr,
-	/var/lib/bluetooth/** rwk,
+	/var/lib{,32,64}/bluetooth/** rwk,
 	/etc/bluetooth/** r,
 	/etc/udev/udev.conf r,
 	
