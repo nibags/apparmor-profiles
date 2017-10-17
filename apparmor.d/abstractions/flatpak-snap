@@ -1,11 +1,11 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: October 17, 2017
 
 # Flatpak
-/var/lib/flatpak/exports/share/{applications,icons}/{,**} r,
+/var/lib/flatpak/exports/share/** r,
 /var/lib/flatpak/app/**/export/share/applications/*.desktop r,
-owner @{HOME}/.local/share/flatpak/exports/share/{applications,icons}/{,**} r,
+owner @{HOME}/.local/share/flatpak/exports/share/** r,
 owner @{HOME}/.local/share/flatpak/app/**.desktop r,
 
 # Snap
