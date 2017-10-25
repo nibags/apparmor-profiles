@@ -17,11 +17,11 @@
 include <tunables/global>
 
 # Thunderbird directory:
-@{MOZ_LIBDIR}=/usr/lib{,64}/thunderbird
+@{MOZ_LIBDIR} = /usr/lib{,64}/thunderbird
 
 # Download & Desktop directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{DESKTOP_DIR}=@{HOME}/Escritorio
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
+@{DESKTOP_DIR} = @{HOME}/Escritorio
 
 /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
   include <abstractions/audio>
@@ -92,7 +92,7 @@ include <tunables/global>
   owner @{DOWNLOADS_DIR}/** rw,
   
   # Block binary execution and mapping of compiled libraries
-  audit deny /{media,mnt,srv,net}/** mx,
+  audit deny /{data,media,mnt,srv,net}/** mx,
   audit deny @{HOME}/{*,[^.]**} m,
   audit deny @{HOME}/.[^t]*/** m,
   audit deny @{HOME}/** x,

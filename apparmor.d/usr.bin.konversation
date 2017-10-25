@@ -7,8 +7,8 @@ include <tunables/global>
 # NOTE: By default, there is only write access to the download & log directory.
 
 # Downloads & Logs directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{LOGS_DIR}=@{HOME}/logs
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
+@{LOGS_DIR} = @{HOME}/logs
 
 profile konversation /usr/bin/konversation {
 	include <abstractions/base>
@@ -37,11 +37,10 @@ profile konversation /usr/bin/konversation {
 	
 	# Write access to the download & log directory
 	owner @{DOWNLOADS_DIR}/** rw,  # Downloads directory
-	owner @{LOGS_DIR}/{,**} rw,             # Logs directory
+	owner @{LOGS_DIR}/{,**} rw,    # Logs directory
 	owner @{HOME}/*.log rw,
 	
 	# Konversation Configuration
-	owner @{HOME}/.Xauthority r,
 	owner @{HOME}/.config/* rk,
 	owner @{HOME}/.config/konversation* w,
 	owner @{HOME}/.config/{k*.lock,.[a-zA-Z0-9]*} w,

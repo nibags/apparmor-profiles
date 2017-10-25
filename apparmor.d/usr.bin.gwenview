@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: October 25, 2017
 
 include <tunables/global>
 
@@ -37,7 +37,7 @@ profile gwenview /usr/bin/gwenview {
 	
 	# Write access in Home directory and mounted drives
 	owner @{HOME}/** rw,
-	owner /{media,mnt,srv,net}/** rw,
+	owner /{data,media,mnt,srv,net}/** rw,
 	
 	# Files supported
 	/**/*.[bB][mM][pP] rw, # bmp
@@ -63,20 +63,27 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
 	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,.}* rwk,
 	
+	deny owner @{HOME}/.config/autostart** w,
+	deny owner @{HOME}/.local/share/applications/** w,
+	deny owner @{HOME}/flatpak/[^e]** w,
+	deny owner @{HOME}/flatpak/exports/**.desktop w,
+	
+	## include <abstractions/kde-user>
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/baloo/index-lock rwk,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop{,.lock} rwk,
-	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
+	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* rwk,
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/dolphin PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
-	
 	/usr/bin/* Pixr,
-	/usr/lib{,64}/** Pixr,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so rm,
+	
+	/usr/lib{,64,/*-linux-gnu}/qt5/** r,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
+	/usr/lib{,64,/*-linux-gnu}/qt5/{bin,libexec}/** ix,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
 	/dev/snd/control* rw,

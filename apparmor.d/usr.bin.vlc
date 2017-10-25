@@ -1,13 +1,13 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: October 25, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
 
 include <tunables/global>
 
 # Directories where multimedia and data are stored
-@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
+@{DATA_DIR} = /{data,home,media,mnt,srv,net,cdrom}
 
 profile vlc /usr/bin/vlc {
 	include <abstractions/audio>
@@ -69,8 +69,8 @@ profile vlc /usr/bin/vlc {
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
-	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	@{PROC}/sys/vm/overcommit_memory r,
+	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{config,revision,vendor,device,busnum,subsystem_device,subsystem_vendor,idVendor,idProduct} r,
@@ -78,8 +78,13 @@ profile vlc /usr/bin/vlc {
 	
 	# Libraries and binaries
 	/usr/bin/vlc ixr,
-	/usr/bin/* Pixr,
-	/usr/lib{,64}/{,**} Pixr,
+	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
+	/usr/bin/{gnome,gvfs,xdg}-open ixr,
+	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/kdeinit{4,5} ixr,
+	/usr/bin/kdialog ixr,
+	
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64}/libvlc*.so{,.*} m,
 	/usr/lib{,64}/vlc/**.so{,.*} m,
 	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
@@ -100,7 +105,7 @@ profile vlc /usr/bin/vlc {
 	audit deny /@{DATA_DIR}/**.py* rw,
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined addr=@/tmp/ibus/dbus-*),
-	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
+	# unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 	signal (send) set=(term) peer=unconfined,
 	
 	dbus (send)
@@ -123,88 +128,87 @@ profile vlc /usr/bin/vlc {
 	# Files supported:
 	
 	# Audio
-	/**/*.3[gG][aA] rw, # 3ga
-	/**/*.669 rw, # 669
-	/**/*.[aA]{52,[aA][cC],[cC]3} rw, # a52, aac, ac3
-	/**/*.[aA][dD][tT]{,[sS]} rw, # adt, adts
-	/**/*.[aA][iI][fF]{,[cCfF]} rw, # aif, aifc, aiff	
-	/**/*.[aA][uU] rw, # au
-	/**/*.[aA][mM][rR] rw, # amr
-	/**/*.[aA][oO][bB] rw, # aob
-	/**/*.[aA][pP][eE] rw, # ape
-	/**/*.[cC][aA][fF] rw, #caf
-	/**/*.[cC][dD][aA] rw, # cda
-	/**/*.[dD][tT][sS] rw, # dts
-	/**/*.[fF][lL][aA][cC] rw, # flac
-	/**/*.[iI][tT] rw, # it
-	/**/*.[mM]4[aApP] rw, # m4a, m4p
-	/**/*.[mM][iIoO][dD] rw, # mid, mod
-	/**/*.[mM][kK][aA] rw, # mka
-	/**/*.[mM][lL][pP] rw, # mlp
-	/**/*.[mM][pP][123cC] rw, # mp1, mp2, mp3, mpc
-	/**/*.[mM][pP][gG][aA] rw, # mpga
-	/**/*.[oO][gGmM][aA] rw, # oga, oma
-	/**/*.[oO][pP][uU][sS] rw, # opus
-	/**/*.[qQ][cC][pP] rw, # qcp
-	/**/*.[rR][aA] rw, # ra
-	/**/*.[rR][mM][iI] rw, # rmi	
-	/**/*.[sS][nN][dD] rw, # snd
-	/**/*.[sS]3[mM] rw, # s3m
-	/**/*.[sS][pP][xX] rw, # spx
-	/**/*.[tT][tT][aA] rw, # tta
-	/**/*.[vV]{[oO][cC],[qQ][fF]} rw, # voc, vqf
-	/**/*.[wW]64 rw, # w64
-	/**/*.[wW]{,[aA]}[vV] rw, # wav, wv
-	/**/*.[wW][mM]{,[aA]} rw, # wm, wma
-	/**/*.[xX][aA] rw, # xa
-
+	/**.3[gG][aA] rw, # 3ga
+	/**.669 rw, # 669
+	/**.[aA]{52,[aA][cC],[cC]3} rw, # a52, aac, ac3
+	/**.[aA][dD][tT]{,[sS]} rw, # adt, adts
+	/**.[aA][iI][fF]{,[cCfF]} rw, # aif, aifc, aiff	
+	/**.[aA][uU] rw, # au
+	/**.[aA][mM][rR] rw, # amr
+	/**.[aA][oO][bB] rw, # aob
+	/**.[aA][pP][eE] rw, # ape
+	/**.[cC][aA][fF] rw, #caf
+	/**.[cC][dD][aA] rw, # cda
+	/**.[dD][tT][sS] rw, # dts
+	/**.[fF][lL][aA][cC] rw, # flac
+	/**.[iI][tT] rw, # it
+	/**.[mM]4[aApP] rw, # m4a, m4p
+	/**.[mM][iIoO][dD] rw, # mid, mod
+	/**.[mM][kK][aA] rw, # mka
+	/**.[mM][lL][pP] rw, # mlp
+	/**.[mM][pP][123cC] rw, # mp1, mp2, mp3, mpc
+	/**.[mM][pP][gG][aA] rw, # mpga
+	/**.[oO][gGmM][aA] rw, # oga, oma
+	/**.[oO][pP][uU][sS] rw, # opus
+	/**.[qQ][cC][pP] rw, # qcp
+	/**.[rR][aA] rw, # ra
+	/**.[rR][mM][iI] rw, # rmi	
+	/**.[sS][nN][dD] rw, # snd
+	/**.[sS]3[mM] rw, # s3m
+	/**.[sS][pP][xX] rw, # spx
+	/**.[tT][tT][aA] rw, # tta
+	/**.[vV]{[oO][cC],[qQ][fF]} rw, # voc, vqf
+	/**.[wW]64 rw, # w64
+	/**.[wW]{,[aA]}[vV] rw, # wav, wv
+	/**.[wW][mM]{,[aA]} rw, # wm, wma
+	/**.[xX][aA] rw, # xa
 	# Video
-	/**/*.3[gG]{[2pP],[pP][2pP]} rw, # 3g2, 3gp, 3gp2, 3gpp	
-	/**/*.[aA][mM][vV] rw, # amv
-	/**/*.[aA][sS][fF] rw, # asf
-	/**/*.[aA][vV][iI] rw,  # avi
-	/**/*.[bB][iI][kK] rw, # bik
-	/**/*.[dD][iI][vV][xX] rw, # divx
-	/**/*.[dD][rR][cC] rw, # drc
-	/**/*.[dD][vV] rw, # dv
-	/**/*.[fF][4lL][vV] rw, # f4v, flv
-	/**/*.[gG][vV][iI] rw, # gvi
-	/**/*.[gG][xX][fF] rw, # gxf
-	/**/*.[mM][124][vV] rw, # m1v, m2v, m4v
-	/**/*.[mM]2[tT]{,[sS]} rw, # m2t, m2ts
-	/**/*.[mM][kKoO][vV] rw, # mkv, mov
-	/**/*.[mM][pP][24][vV] rw, # mp2v, mp4v
-	/**/*.[mM][pP][4aAeEgG] rw, # mp4, mpa, mpe, mpg
-	/**/*.[mM][pP][eE][gG]{,[124]} rw, # mpeg, mpeg1, mpeg2, mpeg4
-	/**/*.[mM][pP][vV]2 rw, # mpv2
-	/**/*.[mM][tT][sSvV] rw, # mts, mtv
-	/**/*.[mM][xX][fF] rw, # mxf
-	/**/*.[nN][sSuU][vV] rw, # nsv, nuv
-	/**/*.[oO][gG][gGmMxXvV] rw, # ogg, ogm, ogx, ogv
-	/**/*.[rR][eE][cC] rw, # rec
-	/**/*.[rR][mM]{,[vV][bB]} rw, # rm, rmvb
-	/**/*.[rR][pP][lL] rw, # rpl
-	/**/*.[tT][hH][pP] rw, # thp
-	/**/*.[tT][oO][dD] rw, # tod
-	/**/*.[tT]{,[tT]}[sS] rw, # ts, tts
-	/**/*.[vV][oO][bB] rw, # vob
-	/**/*.[vV][rR][oO] rw, # vro
-	/**/*.[wW][eE][bB][mM] rw, # webm
-	/**/*.[wW][mM][vV] rw, # wmv
-	/**/*.[xX][eE][sS][cC] rw, # xesc
+	/**.3[gG]{[2pP],[pP][2pP]} rw, # 3g2, 3gp, 3gp2, 3gpp	
+	/**.[aA][mM][vV] rw, # amv
+	/**.[aA][sS][fF] rw, # asf
+	/**.[aA][vV][iI] rw,  # avi
+	/**.[bB][iI][kK] rw, # bik
+	/**.[dD][iI][vV][xX] rw, # divx
+	/**.[dD][rR][cC] rw, # drc
+	/**.[dD][vV] rw, # dv
+	/**.[fF][4lL][vV] rw, # f4v, flv
+	/**.[gG][vV][iI] rw, # gvi
+	/**.[gG][xX][fF] rw, # gxf
+	/**.[mM][124][vV] rw, # m1v, m2v, m4v
+	/**.[mM]2[tT]{,[sS]} rw, # m2t, m2ts
+	/**.[mM][kKoO][vV] rw, # mkv, mov
+	/**.[mM][pP][24][vV] rw, # mp2v, mp4v
+	/**.[mM][pP][4aAeEgG] rw, # mp4, mpa, mpe, mpg
+	/**.[mM][pP][eE][gG]{,[124]} rw, # mpeg, mpeg1, mpeg2, mpeg4
+	/**.[mM][pP][vV]2 rw, # mpv2
+	/**.[mM][tT][sSvV] rw, # mts, mtv
+	/**.[mM][xX][fF] rw, # mxf
+	/**.[nN][sSuU][vV] rw, # nsv, nuv
+	/**.[oO][gG][gGmMxXvV] rw, # ogg, ogm, ogx, ogv
+	/**.[rR][eE][cC] rw, # rec
+	/**.[rR][mM]{,[vV][bB]} rw, # rm, rmvb
+	/**.[rR][pP][lL] rw, # rpl
+	/**.[tT][hH][pP] rw, # thp
+	/**.[tT][oO][dD] rw, # tod
+	/**.[tT]{,[tT]}[sS] rw, # ts, tts
+	/**.[vV][oO][bB] rw, # vob
+	/**.[vV][rR][oO] rw, # vro
+	/**.[wW][eE][bB][mM] rw, # webm
+	/**.[wW][mM][vV] rw, # wmv
+	/**.[xX][eE][sS][cC] rw, # xesc
 
 	# Others
-	/**/*.[aA][sS][xX] rw, # asx
-	/**/*.[bB]4[sS] rw, # b4s
-	/**/*.[cC][uU][eE] rw, # cue
-	/**/*.[iI][fF][oO] rw, # ifo
-	/**/*.[mM]3[uU]{,8} rw, # m3u, m3u8
-	/**/*.[pP][lL][sS] rw, # pls
-	/**/*.[rR][aA][mM] rw, # ram
-	/**/*.[sS][dD][pP] rw, # sdp
-	/**/*.[sS][rR][tT] rw, # srt
-	/**/*.[vV][lL][cCtT] rw, # vlc, vlt
-	/**/*.[wW][vV][xX] rw, # wvx
-	/**/*.[xX][sS][pP][fF] rw, # xspf
-	/**/*.[wW][sS][zZ] rw, # wsz
+	/**.[aA][sS][xX] rw, # asx
+	/**.[bB]4[sS] rw, # b4s
+	/**.[cC][uU][eE] rw, # cue
+	/**.[iI][fF][oO] rw, # ifo
+	/**.[mM]3[uU]{,8} rw, # m3u, m3u8
+	/**.[pP][lL][sS] rw, # pls
+	/**.[rR][aA][mM] rw, # ram
+	/**.[sS][dD][pP] rw, # sdp
+	/**.[sS][rR][tT] rw, # srt
+	/**.[vV][lL][cCtT] rw, # vlc, vlt
+	/**.[wW][vV][xX] rw, # wvx
+	/**.[xX][sS][pP][fF] rw, # xspf
+	/**.[wW][sS][zZ] rw, # wsz
 }

@@ -11,11 +11,11 @@
 
 include <tunables/global>
 
-@{CHROM_LIBDIR}=/usr/lib{,64}/chromium-browser
+@{CHROM_LIBDIR} = /usr/lib{,64}/chromium-browser
 
 # Downloads & Desktop directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{DESKTOP_DIR}=@{HOME}/Escritorio
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
+@{DESKTOP_DIR} = @{HOME}/Escritorio
 
 # We need 'flags=(attach_disconnected)' in newer chromium versions
 /usr/lib{,64}/chromium-browser/chromium-browser flags=(attach_disconnected) {

@@ -10,7 +10,7 @@
 include <tunables/global>
 
 # Download directory:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
 
 profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	include <abstractions/base>
@@ -40,7 +40,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	
 	# Telegram directory
 	owner @{HOME}/.TelegramDesktop/{**,} rwkl,
-	owner @{HOME}/.TelegramDesktop/bin/* ixrwk,
+	owner @{HOME}/.TelegramDesktop/bin/* ix,
 	
 	# Local configuration
 	owner @{HOME}/.config/* r,

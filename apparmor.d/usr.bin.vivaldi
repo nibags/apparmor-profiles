@@ -12,11 +12,11 @@
 include <tunables/global>
 
 # Vivaldi directory:
-@{VIVALDI_LIBDIR}=/opt/vivaldi
+@{VIVALDI_LIBDIR} = /opt/vivaldi
 
 # Download & Desktop directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{DESKTOP_DIR}=@{HOME}/Escritorio
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
+@{DESKTOP_DIR} = @{HOME}/Escritorio
 
 /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
   include <abstractions/audio>
@@ -141,7 +141,7 @@ include <tunables/global>
   
    # Access to Home, removable medias & other folders
   @{HOME}/{,[^.]**} r,
-  /{media,mnt,srv,net}/** r,
+  /{data,media,mnt,srv,net}/** r,
 
   # Downloads and Desktop folders
   owner @{HOME}/ r,
@@ -151,7 +151,7 @@ include <tunables/global>
   owner @{DOWNLOADS_DIR}/** rw,
   
   # Block binary execution and mapping of compiled libraries
-  audit deny /{media,mnt,srv,net}/** mx,
+  audit deny /{data,media,mnt,srv,net}/** mx,
   audit deny @{HOME}/{*,[^.]**} m,
   audit deny @{HOME}/** x,
   audit deny owner /**/* x,

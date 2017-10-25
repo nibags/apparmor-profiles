@@ -9,7 +9,7 @@
 include <tunables/global>
 
 # Directories where videos and data are stored
-@{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}
+@{DATA_DIR} = /{data,home,media,mnt,srv,net,cdrom}
 
 profile mpv /usr/bin/mpv {
 	include <abstractions/audio>

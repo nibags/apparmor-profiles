@@ -14,7 +14,7 @@ include <tunables/global>
 #  - By default, there is only write access to the torrent directory.
 
 # Torrents directory. Modify according to qBittorrent configuration.
-@{TORRENTS_DIR}=@{HOME}/Descargas/Torrents
+@{TORRENTS_DIR} = @{HOME}/Descargas/Torrents
 
 /usr/bin/qbittorrent {
 	include <abstractions/base>

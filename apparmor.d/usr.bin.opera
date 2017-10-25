@@ -18,11 +18,11 @@ include <tunables/global>
 #      /usr/lib64/opera/  [OpenSUSE, Fedora] [64 bits]
 # For general use: /usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera
 # This directory is used for Ubuntu and OpenSUSE (64 bit):
-@{OPERA_LIBDIR}=/usr/lib{64,/x86_64-linux-gnu}/opera
+@{OPERA_LIBDIR} = /usr/lib{64,/x86_64-linux-gnu}/opera
 
 # Download & Desktop directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{DESKTOP_DIR}=@{HOME}/Escritorio
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
+@{DESKTOP_DIR} = @{HOME}/Escritorio
 
 /usr/lib{64,/x86_64-linux-gnu}/opera/opera flags=(attach_disconnected) {
   include <abstractions/audio>

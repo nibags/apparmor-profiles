@@ -33,7 +33,7 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	include <abstractions/open-browser>
 	
 	# Only reading access in Home directory, mounted drives and others directories
-	/{home,media,mnt,srv,net,cdrom}/{,**} r,
+	/{data,home,media,mnt,srv,net,cdrom}/{,**} r,
 	owner /**/{,*} r,
 	
 	# Configuration

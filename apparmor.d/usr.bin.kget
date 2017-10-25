@@ -7,7 +7,7 @@ include <tunables/global>
 # NOTE: By default, there is only write access to the download directories.
 
 # Downloads directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
+@{DOWNLOADS_DIR} = @{HOME}/Descargas
 
 /usr/bin/kget {
 	include <abstractions/base>
