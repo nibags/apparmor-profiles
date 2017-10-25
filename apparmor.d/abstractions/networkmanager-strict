@@ -1,4 +1,4 @@
-# vim:syntax=apparmor
+# kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: September 07, 2017
 
