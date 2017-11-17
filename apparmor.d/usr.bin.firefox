@@ -1,27 +1,26 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
-
-include <tunables/global>
+# Last change: September 17, 2017
 
 # Declare an apparmor variable to help with overrides
-@{MOZ_LIBDIR}=/usr/lib{,64}/firefox
+@{MOZ_LIBDIR}=/usr/lib/firefox
 
 # NOTE: By default, full write access is granted to the owner of the
 # directories: /home, /media, /mnt, /srv, /net.
 # View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
-# Downloads & Desktop directories:
-@{DOWNLOADS_DIR}=@{HOME}/Descargas
-@{DESKTOP_DIR}=@{HOME}/Escritorio
+@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
+@{USER_DIR} += @{HOME}/Escritorio  # Desktop Desktop
+
+include <tunables/global>
 
 # We want to confine the binaries that match:
 #  /usr/lib/firefox/firefox
 #  /usr/lib/firefox/firefox
 # but not:
 #  /usr/lib/firefox/firefox.sh
-/usr/lib{,64}/firefox/firefox{,*[^s][^h]} {
+/usr/lib/firefox/firefox{,*[^s][^h]} {
   include <abstractions/audio>
   include <abstractions/cups-client>
   include <abstractions/dbus-strict>
@@ -34,6 +33,7 @@ include <tunables/global>
   include <abstractions/p11-kit>
   include <abstractions/ubuntu-unity7-base>
   include <abstractions/ubuntu-unity7-launcher>
+  
   include <abstractions/flatpak-snap>
   include <abstractions/open-messaging>
 
@@ -47,18 +47,14 @@ include <tunables/global>
   dbus (receive, send)
        bus=accessibility,
        
-  # KWallet support
-  #dbus (send)
-  #     bus=session
-  #     interface=org.kde.KWallet,
-  
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_MOZILLA} rwklmx,
-  
+
   # for networking
   network inet stream,
   network inet6 stream,
+  @{PROC}/[0-9]*/net/arp r,
   @{PROC}/[0-9]*/net/if_inet6 r,
   @{PROC}/[0-9]*/net/ipv6_route r,
   @{PROC}/[0-9]*/net/dev r,
@@ -71,16 +67,18 @@ include <tunables/global>
        bus=system
        path=/org/freedesktop/NetworkManager,
 
-  # Should maybe be in abstractions
+  # should maybe be in abstractions
   /etc/ r,
   /etc/mime.types r,
   /etc/mailcap r,
   /etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
   /etc/xfce4/defaults.list r,
-  /usr/share/xubuntu/applications/defaults.list r,  
+  /usr/share/xubuntu/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/defaults.list r,
   owner @{HOME}/.local/share/applications/mimeapps.list r,
   owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+  /var/lib/snapd/desktop/applications/mimeinfo.cache r,
+  /var/lib/snapd/desktop/applications/*.desktop r,
   owner /tmp/** m,
   owner /var/tmp/** m,
   owner /{,var/}run/shm/shmfd-* rw,
@@ -95,25 +93,6 @@ include <tunables/global>
      bus=session
      interface=org.gtk.gio.DesktopAppInfo
      member=Launched,
-  
-  # Modifications
-  dbus (send)
-    bus=system
-    path=/org/freedesktop/UPower
-    interface=org.freedesktop.UPower
-    member=EnumerateDevices
-    peer=(name=org.freedesktop.UPower label=unconfined),
-  dbus (send)
-    bus=system
-    path=/org/freedesktop/UPower/devices/*
-    interface=org.freedesktop.DBus.Properties
-    member=GetAll
-    peer=(name=org.freedesktop.UPower label=unconfined),
-    
-  ptrace (trace) peer=@{profile_name},
-  
-  /sys/devices/system/node/node[0-9]*/meminfo r,
-  @{PROC}/[0-9]*/net/arp r,
 
   /etc/timezone r,
   /etc/wildmidi/wildmidi.cfg r,
@@ -129,9 +108,9 @@ include <tunables/global>
 
   # noisy
   deny @{MOZ_LIBDIR}/** w,
-  deny /usr/lib{,64}/firefox-addons/** w,
-  deny /usr/lib{,64}/xulrunner-addons/** w,
-  deny /usr/lib{,64}/xulrunner-*/components/*.tmp w,
+  deny /usr/lib/firefox-addons/** w,
+  deny /usr/lib/xulrunner-addons/** w,
+  deny /usr/lib/xulrunner-*/components/*.tmp w,
   deny /.suspended r,
   deny /boot/initrd.img* r,
   deny /boot/vmlinuz* r,
@@ -157,9 +136,16 @@ include <tunables/global>
   @{PROC}/[0-9]*/status r,
   @{PROC}/filesystems r,
   @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
+  /sys/devices/pci[0-9]*/**/uevent r,
   /sys/devices/platform/**/uevent r,
-  #/dev/tty r,  # Required for some extensions
+  /sys/devices/pci*/**/{busnum,idVendor,idProduct} r,
+  /sys/devices/pci*/**/{,subsystem_}device r,
+  /sys/devices/pci*/**/{,subsystem_}vendor r,
+  /sys/devices/system/node/node[0-9]*/meminfo r,
+  /sys/devices/pci[0-9]*/**/{config,revision} r,  # Modifications
+  owner @{HOME}/.cache/thumbnails/** w,
+  
+  
 
   /etc/mtab r,
   /etc/fstab r,
@@ -177,38 +163,28 @@ include <tunables/global>
   owner @{PROC}/[0-9]*/smaps r,
 
   # Needed for container to work in xul builds
-  /usr/lib{,64}/xulrunner-*/plugin-container ixr,
+  /usr/lib/xulrunner-*/plugin-container ixr,
 
-  # Allow access to documentation and other files the user may want to look
+  # allow access to documentation and other files the user may want to look
   # at in /usr and /opt
-  /usr/{,**} r,
-  /opt/{,**} r,
+  /usr/ r,
+  /usr/** r,
+  /opt/ r,
+  /opt/** r,
 
-  # So browsing directories works
-  /{,**/} r,
+  # so browsing directories works
+  / r,
+  /**/ r,
 
   # Downloads and Desktop folders
   owner @{HOME}/ r,
-  owner @{DESKTOP_DIR}/ r,
-  owner @{DESKTOP_DIR}/** rw,
-  owner @{DOWNLOADS_DIR}/ r,
-  owner @{DOWNLOADS_DIR}/** rw,
+  owner @{USER_DIR}/ r,
+  owner @{USER_DIR}/** rw,
   
-  owner @{HOME}/{*,[^.]*/**}.{[jJ][sS][oO][nN],[hH][tT][mM][lL]} rw,  # To back up bookmarks
+  owner @{HOME}/{*,[^.]*/**}.{[jJ][sS][oO][nN],[hH][tT][mM][lL]} rw,  # To backup bookmarks
   owner @{HOME}/dwhelper/{,**} rw,
-  
-  # Replicated in "/etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files"
-  #@{HOME}/** r,
-  #/{media,mnt,srv,net}/** r,
-  
-  # Block binary execution and mapping of compiled libraries
-  audit deny /{media,mnt,srv,net}/** mx,
-  audit deny @{HOME}/{*,[^.]**} m,
-  audit deny @{HOME}/.[^mf]*/** m,
-  audit deny @{HOME}/** x,
-  audit deny owner /**/* x,
-  
-  # Per-user firefox configuration
+
+  # per-user firefox configuration
   owner @{HOME}/.{firefox,mozilla}/ rw,
   owner @{HOME}/.{firefox,mozilla}/** rw,
   owner @{HOME}/.{firefox,mozilla}/**/*.{db,parentlock,sqlite}* k,
@@ -220,27 +196,73 @@ include <tunables/global>
   owner @{HOME}/.cache/mozilla/firefox/**/*.sqlite k,
   owner @{HOME}/.config/gtk-3.0/bookmarks r,
   owner @{HOME}/.config/dconf/user w,
+  # To set the browser as the default
   owner /{,var/}run/user/*/dconf/user w,
-  owner @{HOME}/.cache/thumbnails/** w,
   owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]*} rwk,
-   owner @{HOME}/.local/share/mime/packages/*-extension-{,?}html.xml{,.[a-zA-Z0-9]*} rwk,
-  #owner @{HOME}/.cache/icon-cache.kcache rw,
-  
+  owner @{HOME}/.local/share/mime/packages/*-extension-{,?}html.xml{,.[a-zA-Z0-9]*} rwk,
   dbus (send)
        bus=session
        path=/org/gnome/GConf/Server
-       member=GetDefaultDatabase,
+       member=GetDefaultDatabase
+       peer=(label=unconfined),
   dbus (send)
        bus=session
        path=/org/gnome/GConf/Database/*
-       member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify},
-	
+       member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify}
+       peer=(label=unconfined),
+  dbus (send)
+       bus=session
+       path=/org/gtk/vfs/mounttracker
+       interface=org.gtk.vfs.MountTracker
+       member=ListMountableInfo
+       peer=(label=unconfined),
+
+  # gnome-session
+  dbus (send)
+       bus=session
+       path=/org/gnome/SessionManager
+       interface=org.gnome.SessionManager
+       member={Inhibit,Uninhibit}
+       peer=(label=unconfined),
+
+  # unity screen API
   dbus (send)
        bus=system
-       path=/org/freedesktop/hostname1
-       interface=org.freedesktop.DBus.Properties
-       member=GetAll,
-  
+       interface="org.freedesktop.DBus.Introspectable"
+       path="/com/canonical/Unity/Screen"
+       member="Introspect"
+       peer=(label=unconfined),
+  dbus (send)
+       bus=system
+       interface="com.canonical.Unity.Screen"
+       path="/com/canonical/Unity/Screen"
+       member={keepDisplayOn,removeDisplayOnRequest}
+       peer=(label=unconfined),
+
+  # freedesktop.org ScreenSaver
+  dbus (send)
+       bus=session
+       path=/{,org/freedesktop/,org.gnome/}Screen{s,S}aver
+       interface=org.freedesktop.ScreenSaver
+       member={Inhibit,UnInhibit,SimulateUserActivity}
+       peer=(label=unconfined),
+
+  # gnome, kde and cinnamon screensaver
+  dbus (send)
+       bus=session
+       path=/{,ScreenSaver}
+       interface=org.{gnome.ScreenSaver,kde.screensaver,cinnamon.ScreenSaver}
+       member=SimulateUserActivity
+       peer=(label=unconfined),
+
+  # UPower
+  dbus (send)
+       bus=system
+       path=/org/freedesktop/UPower
+       interface=org.freedesktop.UPower
+       member=EnumerateDevices
+       peer=(label=unconfined),
+
   #
   # Extensions
   # /usr/share/.../extensions/... is already covered by '/usr/** r', above.
@@ -248,8 +270,8 @@ include <tunables/global>
   owner @{HOME}/.mozilla/**/extensions/** mixr,
 
   deny @{MOZ_LIBDIR}/update.test w,
-  deny /usr/lib{,64}/mozilla/extensions/**/ w,
-  deny /usr/lib{,64}/xulrunner-addons/extensions/**/ w,
+  deny /usr/lib/mozilla/extensions/**/ w,
+  deny /usr/lib/xulrunner-addons/extensions/**/ w,
   deny /usr/share/mozilla/extensions/**/ w,
   deny /usr/share/mozilla/ w,
 
@@ -260,13 +282,6 @@ include <tunables/global>
   /usr/bin/mkfifo Uxr,  # investigate
   /bin/ps Uxr,
   /bin/uname Uxr,
-  
-  #/usr/bin/ffmpeg Pix,  # Used by some extensions that download and convert video
-  
-  # Required to make Firefox the default browser
-  #/usr/bin/update-mime-database{,.real} ix,
-  #/usr/bin/dpkg-trigger ix,
-  #/var/lib/dpkg/triggers/Unincorp r,
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {
@@ -278,13 +293,12 @@ include <tunables/global>
     /usr/include/python2.[4567]/pyconfig.h r,
     /etc/lsb-release r,
     /etc/debian_version r,
-    /var/lib/dpkg/** r,
     /usr/share/distro-info/*.csv r,
-    
-    # Python version correction
-    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
+    /var/lib/dpkg/** r,
+
+    /usr/local/lib/python3.[0-6]/dist-packages/ r,
     /usr/bin/ r,
-    /usr/bin/python3.[0-5] mr,  # Mask required: "m"
+    /usr/bin/python3.[0-6] mr,
 
     # file_inherit
     deny /tmp/gtalkplugin.log w,
