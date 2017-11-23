@@ -2,7 +2,7 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: October 25, 2017
 
-# NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.9 and GNOME 3.
+# NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 
 include <tunables/global>
 
@@ -73,7 +73,9 @@ profile vlc /usr/bin/vlc {
 	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{config,revision,vendor,device,busnum,subsystem_device,subsystem_vendor,idVendor,idProduct} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	/sys/devices/system/**/meminfo r,
 	
 	# Libraries and binaries

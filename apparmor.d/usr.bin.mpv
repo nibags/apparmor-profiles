@@ -48,7 +48,8 @@ profile mpv /usr/bin/mpv {
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/system/**/meminfo r,
-	/sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+	/sys/devices/pci[0-9]*/**/{config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	
 	# Device access
 	/dev/ati/{,**} r,

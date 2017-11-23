@@ -104,7 +104,9 @@ profile okular /usr/bin/okular {
 	/etc/xdg/{,**} r,
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{busnum,config,device,idProduct,idVendor,revision,subsystem_device,subsystem_vendor,vendor} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
 	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	

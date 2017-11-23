@@ -186,7 +186,9 @@ include <tunables/global>
 	@{PROC}/sys/vm/overcommit_memory r,
 	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	
-	/sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,revision,uevent} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	/sys/devices/platform/**/uevent r,
 	/dev/tty r,
 	

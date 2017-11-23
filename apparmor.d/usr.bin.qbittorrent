@@ -67,10 +67,8 @@ include <tunables/global>
 	# Binaries
 	/usr/bin/qbittorrent r,
 	/usr/bin/kdeinit{4,5} ixr,
-	/usr/bin/xdg-open ixr,
-	/usr/bin/gnome-open ixr,
+	/usr/bin/{gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde-open{,5} ixr,
-	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
 		
 	# Libraries
@@ -96,7 +94,9 @@ include <tunables/global>
 	
 	@{PROC}/*/mounts r,
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{busnum,config,device,idProduct,idVendor,revision,subsystem_device,subsystem_vendor,vendor} r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	
 	# Temporal files & sockets
 	owner /tmp/{,.}qBittorrent*.lock rwkl,

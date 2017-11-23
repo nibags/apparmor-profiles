@@ -108,7 +108,8 @@ include <tunables/global>
 	@{PROC}/sys/kernel/core_pattern r,
 	@{PROC}/*/mounts r,
 	/sys/devices/**/uevent r,
-	/sys/devices/pci[0-9]*/**/{config,device,revision,subsystem_device,subsystem_vendor,vendor} r,
+	/sys/devices/pci[0-9]*/**/{config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	
 	# Temp files
 	owner /run/user/[0-9]*/kioclient*.slave-socket rwk,
