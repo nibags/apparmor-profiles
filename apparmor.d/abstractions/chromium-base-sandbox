@@ -1,0 +1,65 @@
+# kate: syntax AppArmor Security Profile
+
+# Chromium sandbox binary:
+# Base rules for Web browsers based on Chromium.
+# ---------------------------------------------------
+# This abstraction is based on the Chromium profile,
+# created by Jamie Strandboge <jamie@canonical.com>
+#   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+#   Last change: November 22, 2017
+
+# Be fanatical since it is setuid root and don't use an abstraction
+/lib{,64}/libgcc_s.so* mr,
+/lib{,64,/@{multiarch}}/libgcc_s.so* mr,
+/lib{,64}/libm-*.so* mr,
+/lib{,64,/@{multiarch}}/libm-*.so* mr,
+/lib{,64}/libpthread-*.so* mr,
+/lib{,64,/@{multiarch}}/libpthread-*.so* mr,
+/lib{,64}/libc-*.so* mr,
+/lib{,64,/@{multiarch}}/libc-*.so* mr,
+/lib{,64}/libld-*.so* mr,
+/lib{,64,/@{multiarch}}/libld-*.so* mr,
+/lib{,64}/ld-*.so* mr,
+/lib{,64,/@{multiarch}}ld-*.so* mr,
+/lib{,64}/tls/*/{cmov,nosegneg}/libm-*.so* mr,
+/lib{,64}/tls/*/{cmov,nosegneg}/libpthread-*.so* mr,
+/lib{,64}/tls/*/{cmov,nosegneg}/libc-*.so* mr,
+/usr/lib{,64}/libstdc++.so* mr,
+/usr/lib{,64,/@{multiarch}}/libstdc++.so* mr,
+/etc/ld.so.cache r,
+
+# Required for dropping into PID namespace. Keep in mind that until the
+# process drops this capability it can escape confinement, but once it
+# drops CAP_SYS_ADMIN we are ok.
+capability sys_admin,
+
+# All of these are for sanely dropping from root and chrooting
+capability chown,
+capability fsetid,
+capability setgid,
+capability setuid,
+capability dac_override,
+capability sys_chroot,
+
+capability sys_ptrace,
+ptrace (read, readby),
+
+signal (receive) peer=unconfined,
+signal peer=@{profile_name},
+signal (receive, send) set=("exists"),
+
+unix (create),
+unix peer=(label=@{profile_name}),
+unix (getattr, getopt, setopt, shutdown) addr=none,
+
+@{PROC}/ r,
+@{PROC}/[0-9]*/ r,
+@{PROC}/[0-9]*/fd/ r,
+deny @{PROC}/[0-9]*/oom_adj w,
+deny @{PROC}/[0-9]*/oom_score_adj w,
+@{PROC}/[0-9]*/status r,
+@{PROC}/[0-9]*/task/[0-9]*/stat r,
+
+/dev/null rw,
+
+owner /tmp/** rw,

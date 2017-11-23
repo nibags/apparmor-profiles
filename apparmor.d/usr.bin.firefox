@@ -10,8 +10,9 @@
 # directories: /home, /media, /mnt, /srv, /net.
 # View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
+# User directories (with write access):
 @{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
-@{USER_DIR} += @{HOME}/Escritorio  # Desktop Desktop
+@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
 
 include <tunables/global>
 

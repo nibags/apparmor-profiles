@@ -1,0 +1,170 @@
+# kate: syntax AppArmor Security Profile
+
+# Base rules for Web browsers based on Chromium.
+# ---------------------------------------------------
+# This abstraction is based on the Chromium profile,
+# created by Jamie Strandboge <jamie@canonical.com>
+#   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+#   Last change: November 22, 2017
+
+include <abstractions/audio>
+include <abstractions/cups-client>
+include <abstractions/dbus>
+include <abstractions/dbus-session>
+include <abstractions/gnome>
+include <abstractions/kde>
+include <abstractions/ibus>
+include <abstractions/nameservice>
+include <abstractions/user-tmp>
+include <abstractions/flatpak-snap>
+
+# Networking
+network inet stream,
+network inet6 stream,
+@{PROC}/[0-9]*/net/if_inet6 r,
+@{PROC}/[0-9]*/net/ipv6_route r,
+@{PROC}/sys/net/ipv4/tcp_fastopen r,
+
+capability sys_admin,
+# capability net_bind_service,  # Investigate
+capability sys_chroot,
+capability sys_ptrace,
+
+owner @{PROC}/[0-9]*/setgroups w,
+owner @{PROC}/[0-9]*/gid_map w,
+owner @{PROC}/[0-9]*/uid_map w,
+
+/etc/mime.types r,
+/etc/mailcap r,
+/etc/mtab r,
+/etc/xdg/xubuntu/applications/defaults.list r,
+owner @{HOME}/.local/share/applications/defaults.list r,
+owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+
+@{PROC}/ r,
+@{PROC}/filesystems r,
+@{PROC}/vmstat r,
+@{PROC}/[0-9]*/fd/ r,
+@{PROC}/[0-9]*/environ r,
+@{PROC}/[0-9]*/smaps r,
+@{PROC}/[0-9]*/stat r,
+@{PROC}/[0-9]*/statm r,
+@{PROC}/[0-9]*/task/[0-9]*/stat r,
+@{PROC}/[0-9]*/task/[0-9]*/status r,
+owner @{PROC}/[0-9]*/cmdline r,
+owner @{PROC}/[0-9]*/io r,
+owner @{PROC}/[0-9]*/stat r,
+owner @{PROC}/[0-9]*/status r,
+deny @{PROC}/[0-9]*/oom_{,score_}adj w,
+@{PROC}/sys/kernel/yama/ptrace_scope r,
+
+/etc/lsb-release r,
+/etc/ssl/openssl.cnf r,
+/etc/udev/udev.conf r,
+/dev/video[0-9]* r,
+
+/sys/devices/system/cpu/cpu*/{cpufreq,policy[0-9]*}/cpuinfo_max_freq r,
+/sys/devices/pci[0-9]*/**/{config,revision,busnum} r,
+/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
+/sys/devices/pci[0-9]*/**/class r,
+/sys/devices/pci[0-9]*/**/irq r,
+/sys/devices/pci[0-9]*/**/resource r,
+/sys/devices/pci[0-9]*/**/removable r,
+/sys/devices/pci[0-9]*/**/block/**/size r,
+/sys/devices/virtual/block/**/removable r,
+/sys/devices/virtual/block/**/size r,
+/sys/devices/virtual/tty/tty[0-9]/active r,
+/sys/devices/**/uevent r,
+
+# This is requested, but doesn't seem to actually be needed so deny for now
+deny /run/udev/data/** r,
+
+# Needed for the crash reporter
+owner @{PROC}/[0-9]*/auxv r,
+
+# mmaps all kinds of things for speed.
+/etc/passwd m,
+/usr/share/fonts/truetype/**/*.tt[cf] m,
+/usr/share/fonts/**/*.pfb m,
+/usr/share/mime/mime.cache m,
+/usr/share/icons/**/*.cache m,
+owner /{dev,run}/shm/pulse-shm* m,
+owner @{HOME}/.local/share/mime/mime.cache m,
+owner /tmp/** m,
+
+@{PROC}/sys/kernel/shmmax r,
+# owner /{dev,run}/shm/{,.}org.chromium.* mrw,
+owner /{var/run,run,dev}/shm/shmfd-* mrw,
+
+# Chromium Policies
+/etc/chromium-browser/policies/** r,
+
+# Make browsing directories work
+/{,**/} r,
+
+# Allow access to documentation and other files the user
+# may want to look at in /usr
+/usr/{include,share,src}** r,
+
+# For migration
+# owner @{HOME}/.mozilla/firefox/profiles.ini r,
+# owner @{HOME}/.mozilla/firefox/*/prefs.js r,
+
+# Block binary execution and mapping of compiled libraries
+audit deny /{data,media,mnt,srv,net}/** mx,
+audit deny @{HOME}/{*,[^.]**} m,
+audit deny @{HOME}/** x,
+audit deny owner /**/* x,
+
+owner @{HOME}/.pki/nssdb/* rwk,
+owner @{HOME}/.config/gtk-3.0/* r,
+# owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+
+/bin/ps Uxr,
+/usr/bin/xdg-settings Cxr -> xdgsettings,
+/usr/bin/lsb_release Cxr -> lsb_release,
+
+# Helpers
+/usr/bin/{gnome,gvfs,xdg}-open ixr,
+/usr/bin/kde-open{,5} ixr,
+/usr/bin/kdialog ixr,
+# TODO: xfce
+
+# GSettings
+owner /{,var/}run/user/*/dconf/     rw,
+owner /{,var/}run/user/*/dconf/user rw,
+owner @{HOME}/.config/dconf/user r,
+
+# Allow ptracing ourselves
+ptrace (trace) peer=@{profile_name},
+ptrace (trace) peer=@{profile_name}//lsb_release,
+ptrace (trace) peer=@{profile_name}//xdgsettings,
+
+profile lsb_release flags=(attach_disconnected) {
+	include <abstractions/base>
+	include <abstractions/python>
+	/usr/bin/lsb_release r,
+	/bin/dash ixr,
+	/usr/bin/dpkg-query ixr,
+	/usr/include/python2.[4567]/pyconfig.h r,
+	/etc/lsb-release r,
+	/etc/debian_version r,
+	/usr/share/distro-info/*.csv r,
+	/var/lib/dpkg/** r,
+	
+	/usr/local/lib{,64}/python3.[0-6]/dist-packages/ r,
+	/usr/bin/ r,
+	/usr/bin/python3.[0-6] mr,
+	
+	# file_inherit
+	deny /tmp/gtalkplugin.log w,
+}
+
+
+	
+	
+	
+
+
+

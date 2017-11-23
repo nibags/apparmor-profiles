@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: November 22, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -17,382 +17,386 @@
 include <tunables/global>
 
 # Thunderbird directory:
-@{MOZ_LIBDIR} = /usr/lib{,64}/thunderbird
+@{THUNB_LIBDIR} = /usr/lib{,64}/thunderbird
 
-# Download & Desktop directories:
-@{DOWNLOADS_DIR} = @{HOME}/Descargas
-@{DESKTOP_DIR} = @{HOME}/Escritorio
+# User directories (with write access):
+@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
+@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
 
 /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
-  include <abstractions/audio>
-  include <abstractions/aspell>
-  include <abstractions/cups-client>
-  include <abstractions/dbus-strict>
-  include <abstractions/dbus-session-strict>
-  include <abstractions/fonts>
-  include <abstractions/dconf>
-  include <abstractions/gnome>
-  include <abstractions/kde>
-  include <abstractions/ibus>
-  include <abstractions/nameservice>
-  include <abstractions/openssl>
-  include <abstractions/p11-kit>
-  include <abstractions/private-files>
-  include <abstractions/ssl_certs>
-  include <abstractions/ubuntu-unity7-base>
-  include <abstractions/ubuntu-unity7-launcher>
-  include <abstractions/flatpak-snap>
-  include <abstractions/wayland>
-  
-  # Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
-  include <abstractions/open-browser>
-  ##  include <abstractions/ubuntu-helpers>
-  ##  include <abstractions/ubuntu-browsers>
-  
-  # Required to open downloaded files.
-  include <abstractions/open-some-applications>
-  
-  include <abstractions/dbus-accessibility-strict>
-  dbus (send)
-       bus=session
-       peer=(name=org.a11y.Bus),
-  dbus (receive)
-       bus=session
-       interface=org.a11y.atspi**,
-  dbus (receive, send)
-       bus=accessibility,
-       
-  # KWallet support
-  dbus (send)
-       bus=session
-       interface=org.kde.KWallet,
-  
-  # Block full access to sensitive data, as passwords and keys.
-  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-  deny @{CONFIDENTIAL_EXCEPT_THUNDERBIRD} rwklmx,
-       
-  # For crash reports?
-  ptrace (read,trace) peer=@{profile_name},
-  
-  # Pulseaudio
-  /usr/bin/pulseaudio Pixr,
-  
-  # Potentially extremely sensitive files
-  audit deny @{HOME}/.gnupg/** mrwkl,
-  audit deny @{HOME}/.ssh/** mrwkl,
-  
-  # Block access to camera & microphone
-  audit deny /dev/{video,audio}* rwlkmx,
-  
-  # Access to HOME
-  owner @{HOME}/{,[^.]**} r,
-  owner @{DESKTOP_DIR}/ r,
-  owner @{DESKTOP_DIR}/** rw,
-  owner @{DOWNLOADS_DIR}/ r,
-  owner @{DOWNLOADS_DIR}/** rw,
-  
-  # Block binary execution and mapping of compiled libraries
-  audit deny /{data,media,mnt,srv,net}/** mx,
-  audit deny @{HOME}/{*,[^.]**} m,
-  audit deny @{HOME}/.[^t]*/** m,
-  audit deny @{HOME}/** x,
-  audit deny owner /**/* x,
-  
-  # Required for LVM setups
-  /sys/devices/virtual/block/dm-[0-9]*/uevent r,
-  
-  # WARNING: Required for GNOME 3
-  # /run/systemd/journal/socket w,
+	include <abstractions/audio>
+	include <abstractions/aspell>
+	include <abstractions/cups-client>
+	include <abstractions/dbus-strict>
+	include <abstractions/dbus-session-strict>
+	include <abstractions/fonts>
+	include <abstractions/dconf>
+	include <abstractions/gnome>
+	include <abstractions/kde>
+	include <abstractions/ibus>
+	include <abstractions/nameservice>
+	include <abstractions/openssl>
+	include <abstractions/p11-kit>
+	include <abstractions/private-files>
+	include <abstractions/ssl_certs>
+	include <abstractions/ubuntu-unity7-base>
+	include <abstractions/ubuntu-unity7-launcher>
+	include <abstractions/flatpak-snap>
+	include <abstractions/wayland>
 
-  # For networking
-  network inet stream,
-  network inet6 stream,
-  @{PROC}/[0-9]*/net/if_inet6 r,
-  @{PROC}/[0-9]*/net/ipv6_route r,
-  @{PROC}/[0-9]*/net/dev r,
-  @{PROC}/[0-9]*/net/wireless r,
-  dbus (send)
-       bus=system
-       path=/org/freedesktop/NetworkManager
-       member=state,
-  dbus (receive)
-       bus=system
-       path=/org/freedesktop/NetworkManager,
-  
-  # Should maybe be in abstractions
-  /etc/ r,
-  /etc/mime.types r,
-  /etc/mailcap r,
-  /etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
-  /etc/gnome/defaults.list r,
-  /etc/xfce4/defaults.list r,
-  /usr/share/xubuntu/applications/defaults.list r,
-  owner /tmp/** m,
-  owner /var/tmp/** m,
-  owner /{,var/}run/shm/shmfd-* rw,
-  owner /{dev,run}/shm/org.chromium.* rwk,
-  /tmp/.X[0-9]*-lock r,
-  /etc/udev/udev.conf r,
-  # Doesn't seem to be required, but noisy. Maybe allow 'r' for 'b*' if needed.
-  # Possibly move to an abstraction if anything else needs it.
-  deny /run/udev/data/** r,
-  # Let the shell know we launched something
-  dbus (send)
-     bus=session
-     interface=org.gtk.gio.DesktopAppInfo
-     member=Launched,
-  
-  /etc/fonts/** r,
-  
-  /etc/timezone r,
-  /etc/wildmidi/wildmidi.cfg r,
+	# Needed to open links (only for Firefox, Opera, Chromium, Chrome & Vivaldi).
+	include <abstractions/open-browser>
+	##  include <abstractions/ubuntu-helpers>
+	##  include <abstractions/ubuntu-browsers>
 
-  # Thunderbird specific
-  /etc/thunderbird*/ r,
-  /etc/thunderbird*/** r,
-  /etc/xul-ext/** r,
-  /etc/xulrunner-2.0*/ r,
-  /etc/xulrunner-2.0*/** r,
-  /etc/gre.d/ r,
-  /etc/gre.d/* r,
-  
-  # Libraries for KDE Plasma
-  /usr/lib{,64,/*-linux-gnu}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
-  /usr/lib{,64,/*-linux-gnu}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
+	# Required to open downloaded files.
+	include <abstractions/open-some-applications>
 
-  # noisy
-  deny @{MOZ_LIBDIR}/** w,
-  deny /usr/lib{,64}/thunderbird-addons/** w,
-  deny /usr/lib{,64}/xulrunner-addons/** w,
-  deny /usr/lib{,64}/xulrunner-*/components/*.tmp w,
-  deny /.suspended r,
-  deny /boot/initrd.img* r,
-  deny /boot/vmlinuz* r,
-  deny /var/cache/fontconfig/ w,
-  deny @{HOME}/.local/share/recently-used.xbel r,
+	include <abstractions/dbus-accessibility-strict>
+	dbus (send)
+		bus=session
+		peer=(name=org.a11y.Bus),
+	dbus (receive)
+		bus=session
+		interface=org.a11y.atspi**,
+	dbus (receive, send)
+		bus=accessibility,
 
-  # TODO: investigate
-  deny /usr/bin/gconftool-2 x,
-
-  # These are needed when a new user starts thunderbird and thunderbird.sh is used
-  @{MOZ_LIBDIR}/** ixr,
-  /usr/bin/basename ixr,
-  /usr/bin/dirname ixr,
-  /usr/bin/pwd ixr,
-  /sbin/killall5 ixr,
-  /bin/which ixr,
-  /usr/bin/tr ixr,
-  /bin/dash ix,
-  @{PROC}/ r,
-  @{PROC}/[0-9]*/cmdline r,
-  @{PROC}/[0-9]*/mountinfo r,
-  @{PROC}/[0-9]*/stat r,
-  owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
-  @{PROC}/[0-9]*/status r,
-  @{PROC}/filesystems r,
-  @{PROC}/sys/vm/overcommit_memory r,
-  /sys/devices/platform/**/uevent r,
-  /sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
-  /dev/tty r,
-  @{PROC}/[0-9]*/net/arp r,
-  
-  /etc/mtab r,
-  /etc/fstab r,
-  
-  # Needed for the crash reporter
-  owner @{PROC}/[0-9]*/environ r,
-  owner @{PROC}/[0-9]*/auxv r,
-  /etc/lsb-release r,
-  /usr/bin/expr ix,
-  /sys/devices/system/cpu/ r,
-  /sys/devices/system/cpu/** r,
-
-  # about:memory
-  owner @{PROC}/[0-9]*/statm r,
-  owner @{PROC}/[0-9]*/smaps r,
-
-  # Needed for container to work in xul builds
-  /usr/lib{,64}/xulrunner-*/plugin-container ixr,
-
-  # So browsing directories works
-  /{,**/} r,
-  
-  /usr/share/** r,
-  
-  # Per-user Thunderbird configuration
-  owner @{HOME}/.thunderbird/{,**} rw,
-  owner @{HOME}/.thunderbird/**/*.{db,parentlock,sqlite}* k,
-  owner @{HOME}/.thunderbird/plugins/** rm,
-  owner @{HOME}/.thunderbird/**/plugins/** rm,
-  owner @{HOME}/.gnome2/thunderbird* rwk,
-  owner @{HOME}/.config/gtk-3.0/** r,
-  owner @{HOME}/.{cache,config}/dconf/user rw,
-  owner /{,var/}run/user/[0-9]*/dconf/user rw,
-  owner @{HOME}/.cache/thunderbird/{,**} rw,
-  owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
-  owner @{HOME}/.cache/icon-cache.kcache rw,
-  
-  owner @{HOME}/.config/kdeglobals r,
-  owner @{HOME}/.config/kwalletrc r,
-  owner @{HOME}/.config/klanguageoverridesrc r,
-  owner @{HOME}/.gtkrc-2.0 r,
-  owner @{HOME}/.gtkrc-2.0-kde4 r,
-  owner @{HOME}/.config/user-dirs.dirs r,
-  owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
-  owner @{HOME}/.local/share/applications/defaults.list r,
-  owner @{HOME}/.local/share/applications/mimeapps.list r,
-  owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-  owner @{HOME}/.local/share/mime/mime.cache r,
-  owner @{HOME}/.local/share/mime/generic-icons r,
-  owner @{HOME}/.local/share/icons/ r,
-  owner @{HOME}/.local/share/icons/hicolor/* r,
-  owner @{HOME}/.local/share/icons/hicolor/*/apps/{,*} r,
-  
-  dbus (send)
-       bus=session
-       path=/org/gnome/GConf/Server
-       member=GetDefaultDatabase,
-  dbus (send)
-       bus=session
-       path=/org/gnome/GConf/Database/*
-       member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify},
-  
-  # Extensions
-  # /usr/share/.../extensions/... is already covered by '/usr/** r', above.
-  # Allow 'x' for downloaded extensions, but inherit policy for safety
-  owner @{HOME}/.thunderbird/**/extensions/** mixrw,
-  /usr/share/xul-ext/**/*.sqlite rk,
-  /usr/lib{,64}/xul-ext/**/*.sqlite rk,
-  /usr/lib{,64}/thunderbird-addons/extensions/**/*.sqlite rk,
-
-  deny @{MOZ_LIBDIR}/update.test w,
-  deny /usr/lib{,64}/mozilla/extensions/**/ w,
-  deny /usr/lib{,64}/xulrunner-addons/extensions/**/ w,
-  deny /usr/share/mozilla/extensions/**/ w,
-  deny /usr/share/mozilla/ w,
-
-  # Miscellaneous (to be abstracted)
-  # Ideally these would use a child profile. They are all ELF executables
-  # so running with 'Ux', while not ideal, is ok because we will at least
-  # benefit from glibc's secure execute.
-  /usr/bin/mkfifo Uxr,  # investigate
-  /bin/ps Uxr,
-  /bin/uname Uxr,
-
-  /usr/bin/lsb_release Cxr -> lsb_release,
-  
-  # Support for GPG
-  /usr/bin/gpg Cx -> gpg,
-  /usr/bin/gpg2 Cx -> gpg2,
-  /usr/bin/gpgconf Cx -> gpg2,
-  /usr/bin/gpg-connect-agent Cx -> gpg2,
-
-  # TB tries to create this file but has no business doing so
-  deny @{HOME}/.gnupg/gpg-agent.conf w,
-  
-  profile lsb_release {
-    include <abstractions/base>
-    include <abstractions/python>
-    /usr/bin/lsb_release r,
-    /bin/dash ixr,
-    /usr/bin/dpkg-query ixr,
-    /usr/include/python2.[4567]/pyconfig.h r,
-    /etc/lsb-release r,
-    /etc/debian_version r,
-    /var/lib/dpkg/** r,
-
-    /usr/local/lib{,64}/python3.[0-5]/dist-packages/ r,
-    /usr/bin/ r,
-    /usr/bin/python3.[0-5] mr,  # m
-    /usr/share/distro-info/*.csv r,
+	# KWallet support
+	dbus (send)
+		bus=session
+		interface=org.kde.KWallet,
 	
-    # file_inherit
-    deny /tmp/gtalkplugin.log w,
-  }
-  
-  profile gpg {
-    include <abstractions/base>
+	# Block full access to sensitive data, as passwords and keys.
+	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+	deny @{CONFIDENTIAL_EXCEPT_THUNDERBIRD} rwklmx,
 
-    # Required to import keys from keyservers
-    include <abstractions/nameservice>
-    include <abstractions/p11-kit>
+	# For crash reports?
+	ptrace (read,trace) peer=@{profile_name},
 
-    # For smartcards?
-    /dev/bus/usb/ r,
-    /dev/bus/usb/[0-9]*/ r,
-    /dev/bus/usb/[0-9]*/[0-9]* r,
+	# Pulseaudio
+	/usr/bin/pulseaudio Pixr,
 
-    # LDAP key servers
-    /etc/ldap/ldap.conf r,
+	# Potentially extremely sensitive files
+	audit deny @{HOME}/.gnupg/** mrwkl,
+	audit deny @{HOME}/.ssh/** mrwkl,
 
-    /usr/bin/gpg mr,
-    /usr/lib{,64}/gnupg/gpgkeys_* ix,
-    owner @{HOME}/.gnupg r,
-    owner @{HOME}/.gnupg/gpg.conf r,
-    owner @{HOME}/.gnupg/random_seed rwk,
-    owner @{HOME}/.gnupg/pubring.gpg{,~} rw,
-    owner @{HOME}/.gnupg/secring.gpg rw,
-    owner @{HOME}/.gnupg/trustdb.gpg rw,
-    owner @{HOME}/.gnupg/*.gpg.{lock,tmp} rwl,
-    owner @{HOME}/.gnupg/.#*[0-9]  rw,
-    owner @{HOME}/.gnupg/.#*[0-9]x rwl,
-    owner @{HOME}/** r,
+	# Block access to cameras & microphones
+	audit deny /dev/{video,audio}* rwlkmx,
 
-    owner /run/user/[0-9]*/keyring-*/gpg rw,
+	# Access to HOME
+	owner @{HOME}/{,[^.]**} r,
+	owner @{USER_DIR}/ r,
+	owner @{USER_DIR}/** rw,
 
-    # for inline pgp
-    owner /tmp/encfile rw,
-    owner /tmp/encfile-[0-9]* rw,
-  }
-  
-  profile gpg2 {
-    include <abstractions/base>
+	# Block binary execution and mapping of compiled libraries
+	audit deny /{data,media,mnt,srv,net}/** mx,
+	audit deny @{HOME}/{*,[^.]**} m,
+	audit deny @{HOME}/.[^t]*/** m,
+	audit deny @{HOME}/** x,
+	audit deny owner /**/* x,
 
-    # Required to import keys from keyservers
-    include <abstractions/nameservice>
-    include <abstractions/p11-kit>
-    /usr/lib{,64}/gnupg2/gpg2keys_hkp ix,
+	# Required for LVM setups
+	/sys/devices/virtual/block/dm-[0-9]*/uevent r,
 
-    # For smartcards?
-    /dev/bus/usb/ r,
-    /dev/bus/usb/[0-9]*/ r,
-    /dev/bus/usb/[0-9]*/[0-9]* r,
+	# WARNING: Required for GNOME 3
+	# /run/systemd/journal/socket w,
 
-    # LDAP key servers
-    /etc/ldap/ldap.conf r,
+	# For networking
+	network inet stream,
+	network inet6 stream,
+	@{PROC}/[0-9]*/net/if_inet6 r,
+	@{PROC}/[0-9]*/net/ipv6_route r,
+	@{PROC}/[0-9]*/net/dev r,
+	@{PROC}/[0-9]*/net/wireless r,
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		member=state,
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager,
 
-    /usr/bin/gpg-connect-agent mr,
-    owner @{HOME}/.gnupg/S.gpg-agent rw,
-    owner @{HOME}/.gnupg/S.dirmngr rw,
+	# Should maybe be in abstractions
+	/etc/ r,
+	/etc/mime.types r,
+	/etc/mailcap r,
+	/etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
+	/etc/gnome/defaults.list r,
+	/etc/xfce4/defaults.list r,
+	/usr/share/xubuntu/applications/defaults.list r,
+	owner /tmp/** m,
+	owner /var/tmp/** m,
+	owner /{,var/}run/shm/shmfd-* rw,
+	owner /{dev,run}/shm/org.chromium.* rwk,
+	/tmp/.X[0-9]*-lock r,
+	/etc/udev/udev.conf r,
+	# Doesn't seem to be required, but noisy. Maybe allow 'r' for 'b*' if needed.
+	# Possibly move to an abstraction if anything else needs it.
+	deny /run/udev/data/** r,
+	# Let the shell know we launched something
+	dbus (send)
+		bus=session
+		interface=org.gtk.gio.DesktopAppInfo
+		member=Launched,
+	
+	# Thunderbird specific
+	/etc/thunderbird*/ r,
+	/etc/thunderbird*/** r,
+	/etc/xul-ext/** r,
+	/etc/xulrunner-2.0*/ r,
+	/etc/xulrunner-2.0*/** r,
+	/etc/gre.d/ r,
+	/etc/gre.d/* r,
 
-    /usr/bin/gpg2 mr,
-    owner @{HOME}/.gnupg/ rw,
-    owner @{HOME}/.gnupg/gpg.conf r,
-    owner @{HOME}/.gnupg/random_seed rwk,
-    owner @{HOME}/.gnupg/pubring.gpg{,~} rw,
-    owner @{HOME}/.gnupg/secring.gpg rw,
-    owner @{HOME}/.gnupg/trustdb.gpg rw,
-    owner @{HOME}/.gnupg/*.gpg.{lock,tmp} rwl,
-    owner @{HOME}/.gnupg/.gpg-*.lock rwl,
-    owner @{HOME}/.gnupg/gnupg_spawn_*.lock rwl,
-    owner @{HOME}/.gnupg/.#lk0x[0-9a-f]* rwl,
-    owner @{HOME}/.gnupg/.gpg-v[0-9]*-migrated rw,
-    owner @{HOME}/** r,
+	# Libraries for KDE Plasma
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
 
-    # for inline pgp
-    owner /tmp/encfile rw,
-    owner /tmp/encfile-[0-9]* rw,
+	# noisy
+	deny @{THUNB_LIBDIR}/** w,
+	deny /usr/lib{,64}/thunderbird-addons/** w,
+	deny /usr/lib{,64}/xulrunner-addons/** w,
+	deny /usr/lib{,64}/xulrunner-*/components/*.tmp w,
+	deny /.suspended r,
+	deny /boot/initrd.img* r,
+	deny /boot/vmlinuz* r,
+	deny /var/cache/fontconfig/ w,
+	deny @{HOME}/.local/share/recently-used.xbel r,
 
-    # for signature verifications
-    owner /tmp/data.sig r,
-    owner /tmp/data-[0-9]*.sig r,
+	# TODO: investigate
+	deny /usr/bin/gconftool-2 x,
 
-    owner /tmp/gpg-[a-zA-Z0-9]*/S.gpg-agent rw,
-  }
+	# These are needed when a new user starts thunderbird and thunderbird.sh is used
+	@{THUNB_LIBDIR}/** ixr,
+	/usr/bin/basename ixr,
+	/usr/bin/dirname ixr,
+	/usr/bin/pwd ixr,
+	/sbin/killall5 ixr,
+	/bin/which ixr,
+	/usr/bin/tr ixr,
+	/bin/dash ix,
+	@{PROC}/ r,
+	@{PROC}/[0-9]*/cmdline r,
+	@{PROC}/[0-9]*/mountinfo r,
+	@{PROC}/[0-9]*/net/arp r,
+	@{PROC}/[0-9]*/stat r,
+	@{PROC}/[0-9]*/status r,
+	@{PROC}/filesystems r,
+	@{PROC}/sys/vm/overcommit_memory r,
+	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
+	
+	/sys/devices/pci[0-9]*/**/{device,uevent,config,revision,busnum,subsystem_device,subsystem_vendor,vendor,idVendor,idProduct} r,
+	/sys/devices/platform/**/uevent r,
+	/dev/tty r,
+	
+	/etc/fstab r,
+	/etc/mtab r,
+	/etc/timezone r,
+	/etc/wildmidi/wildmidi.cfg r,
 
-  # Site-specific additions and overrides. See local/README for details.
-  ## include <local/usr.bin.thunderbird>
-  
-  # Addons
-  ## include <abstractions/ubuntu-browsers.d/firefox>
+	# Needed for the crash reporter
+	owner @{PROC}/[0-9]*/environ r,
+	owner @{PROC}/[0-9]*/auxv r,
+	/etc/lsb-release r,
+	/usr/bin/expr ix,
+	/sys/devices/system/cpu/ r,
+	/sys/devices/system/cpu/** r,
+
+	# about:memory
+	owner @{PROC}/[0-9]*/statm r,
+	owner @{PROC}/[0-9]*/smaps r,
+
+	# Needed for container to work in xul builds
+	/usr/lib{,64}/xulrunner-*/plugin-container ixr,
+
+	# So browsing directories works
+	/{,**/} r,
+
+	# /usr/share/** r,
+	/usr/share/applications/*.list r,
+	/usr/share/color-schemes/** r,
+	/usr/share/glib-*/** r,
+	/usr/share/icons/** r,
+	/usr/share/plasma/** r,
+	/usr/share/sounds/** r,
+	/usr/share/themes/** r,
+	/usr/share/qt5/translations/*.qm r,
+	
+	# Per-user Thunderbird configuration
+	owner @{HOME}/.thunderbird/{,**} rw,
+	owner @{HOME}/.thunderbird/**/*.{db,parentlock,sqlite}* k,
+	owner @{HOME}/.thunderbird/plugins/** rm,
+	owner @{HOME}/.thunderbird/**/plugins/** rm,
+	owner @{HOME}/.gnome2/thunderbird* rwk,
+	owner @{HOME}/.config/gtk-3.0/** r,
+	owner @{HOME}/.{cache,config}/dconf/user rw,
+	owner /{,var/}run/user/[0-9]*/dconf/user rw,
+	owner @{HOME}/.cache/thunderbird/{,**} rw,
+	owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+
+	owner @{HOME}/.config/kdeglobals r,
+	owner @{HOME}/.config/kwalletrc r,
+	owner @{HOME}/.config/klanguageoverridesrc r,
+	owner @{HOME}/.gtkrc-2.0 r,
+	owner @{HOME}/.gtkrc-2.0-kde4 r,
+	owner @{HOME}/.config/user-dirs.dirs r,
+	owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
+	owner @{HOME}/.local/share/applications/defaults.list r,
+	owner @{HOME}/.local/share/applications/mimeapps.list r,
+	owner @{HOME}/.local/share/applications/mimeinfo.cache r,
+	owner @{HOME}/.local/share/mime/mime.cache r,
+	owner @{HOME}/.local/share/mime/generic-icons r,
+	owner @{HOME}/.local/share/icons/ r,
+	owner @{HOME}/.local/share/icons/hicolor/* r,
+	owner @{HOME}/.local/share/icons/hicolor/*/apps/{,*} r,
+
+	dbus (send)
+		bus=session
+		path=/org/gnome/GConf/Server
+		member=GetDefaultDatabase,
+	dbus (send)
+		bus=session
+		path=/org/gnome/GConf/Database/*
+		member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify},
+
+	# Extensions
+	# /usr/share/.../extensions/... is already covered by '/usr/** r', above.
+	# Allow 'x' for downloaded extensions, but inherit policy for safety
+	owner @{HOME}/.thunderbird/**/extensions/** mixrw,
+	/usr/share/xul-ext/**/*.sqlite rk,
+	/usr/lib{,64}/xul-ext/**/*.sqlite rk,
+	/usr/lib{,64}/thunderbird-addons/extensions/**/*.sqlite rk,
+
+	deny @{THUNB_LIBDIR}/update.test w,
+	deny /usr/lib{,64}/mozilla/extensions/**/ w,
+	deny /usr/lib{,64}/xulrunner-addons/extensions/**/ w,
+	deny /usr/share/mozilla/extensions/**/ w,
+	deny /usr/share/mozilla/ w,
+
+	# Miscellaneous (to be abstracted)
+	# Ideally these would use a child profile. They are all ELF executables
+	# so running with 'Ux', while not ideal, is ok because we will at least
+	# benefit from glibc's secure execute.
+	/usr/bin/mkfifo Uxr,  # investigate
+	/bin/ps Uxr,
+	/bin/uname Uxr,
+
+	/usr/bin/lsb_release Cxr -> lsb_release,
+
+	# Support for GPG
+	/usr/bin/gpg Cx -> gpg,
+	/usr/bin/gpg2 Cx -> gpg2,
+	/usr/bin/gpgconf Cx -> gpg2,
+	/usr/bin/gpg-connect-agent Cx -> gpg2,
+
+	# TB tries to create this file but has no business doing so
+	deny @{HOME}/.gnupg/gpg-agent.conf w,
+
+	profile lsb_release {
+		include <abstractions/base>
+		include <abstractions/python>
+		/usr/bin/lsb_release r,
+		/bin/dash ixr,
+		/usr/bin/dpkg-query ixr,
+		/usr/include/python2.[4567]/pyconfig.h r,
+		/etc/lsb-release r,
+		/etc/debian_version r,
+		/usr/share/distro-info/*.csv r,
+		/var/lib/dpkg/** r,
+
+		/usr/local/lib{,64}/python3.[0-6]/dist-packages/ r,
+		/usr/bin/ r,
+		/usr/bin/python3.[0-6] mr,
+		
+		# file_inherit
+		deny /tmp/gtalkplugin.log w,
+	}
+
+	profile gpg {
+		include <abstractions/base>
+
+		# Required to import keys from keyservers
+		include <abstractions/nameservice>
+		include <abstractions/p11-kit>
+
+		# For smartcards?
+		/dev/bus/usb/ r,
+		/dev/bus/usb/[0-9]*/ r,
+		/dev/bus/usb/[0-9]*/[0-9]* r,
+
+		# LDAP key servers
+		/etc/ldap/ldap.conf r,
+
+		/usr/bin/gpg mr,
+		/usr/lib{,64}/gnupg/gpgkeys_* ix,
+		owner @{HOME}/.gnupg r,
+		owner @{HOME}/.gnupg/gpg.conf r,
+		owner @{HOME}/.gnupg/random_seed rwk,
+		owner @{HOME}/.gnupg/pubring.gpg{,~} rw,
+		owner @{HOME}/.gnupg/secring.gpg rw,
+		owner @{HOME}/.gnupg/trustdb.gpg rw,
+		owner @{HOME}/.gnupg/*.gpg.{lock,tmp} rwl,
+		owner @{HOME}/.gnupg/.#*[0-9]  rw,
+		owner @{HOME}/.gnupg/.#*[0-9]x rwl,
+		owner @{HOME}/** r,
+
+		owner /run/user/[0-9]*/keyring-*/gpg rw,
+
+		# for inline pgp
+		owner /tmp/encfile rw,
+		owner /tmp/encfile-[0-9]* rw,
+	}
+
+	profile gpg2 {
+		include <abstractions/base>
+
+		# Required to import keys from keyservers
+		include <abstractions/nameservice>
+		include <abstractions/p11-kit>
+		/usr/lib{,64}/gnupg2/gpg2keys_hkp ix,
+
+		# For smartcards?
+		/dev/bus/usb/ r,
+		/dev/bus/usb/[0-9]*/ r,
+		/dev/bus/usb/[0-9]*/[0-9]* r,
+
+		# LDAP key servers
+		/etc/ldap/ldap.conf r,
+
+		/usr/bin/gpg-connect-agent mr,
+		owner @{HOME}/.gnupg/S.gpg-agent rw,
+		owner @{HOME}/.gnupg/S.dirmngr rw,
+
+		/usr/bin/gpg2 mr,
+		owner @{HOME}/.gnupg/ rw,
+		owner @{HOME}/.gnupg/gpg.conf r,
+		owner @{HOME}/.gnupg/random_seed rwk,
+		owner @{HOME}/.gnupg/pubring.gpg{,~} rw,
+		owner @{HOME}/.gnupg/secring.gpg rw,
+		owner @{HOME}/.gnupg/trustdb.gpg rw,
+		owner @{HOME}/.gnupg/*.gpg.{lock,tmp} rwl,
+		owner @{HOME}/.gnupg/.gpg-*.lock rwl,
+		owner @{HOME}/.gnupg/gnupg_spawn_*.lock rwl,
+		owner @{HOME}/.gnupg/.#lk0x[0-9a-f]* rwl,
+		owner @{HOME}/.gnupg/.gpg-v[0-9]*-migrated rw,
+		owner @{HOME}/** r,
+
+		# for inline pgp
+		owner /tmp/encfile rw,
+		owner /tmp/encfile-[0-9]* rw,
+
+		# for signature verifications
+		owner /tmp/data.sig r,
+		owner /tmp/data-[0-9]*.sig r,
+
+		owner /tmp/gpg-[a-zA-Z0-9]*/S.gpg-agent rw,
+	}
+
+	# Site-specific additions and overrides. See local/README for details.
+	## include <local/usr.bin.thunderbird>
+
+	# Addons
+	## include <abstractions/ubuntu-browsers.d/firefox>
 }

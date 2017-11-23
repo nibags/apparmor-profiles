@@ -1,0 +1,47 @@
+# kate: syntax AppArmor Security Profile
+
+# Chromium xdg-settings binary:
+# Base rules for Web browsers based on Chromium.
+# ---------------------------------------------------
+# This abstraction is based on the Chromium profile,
+# created by Jamie Strandboge <jamie@canonical.com>
+#   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+#   Last change: November 22, 2017
+
+include <abstractions/bash>
+include <abstractions/gnome>
+
+# For KDE Plasma 5
+owner @{HOME}/.config/kdeglobals rk,
+owner @{HOME}/.cache/ksycoca5_* r,
+/usr/share/qt5/translations/qt_*.qm r,
+
+/usr/bin/kreadconfig5 ixr,
+/usr/bin/ktraderclient5 ixr,
+/usr/bin/head ixr,
+
+/bin/dash ixr,
+
+/etc/ld.so.cache r,
+/usr/bin/xdg-settings r,
+# /{opt,usr/lib,usr/lib64,usr/lib/*-linux-gnu}/*/xdg-settings r,
+/usr/share/applications/*.desktop r,
+
+# Checking default browser
+/bin/grep ixr,
+/bin/readlink ixr,
+/bin/sed ixr,
+/bin/which ixr,
+/usr/bin/basename ixr,
+/usr/bin/cut ixr,
+
+# Setting the default browser
+/bin/mkdir ixr,
+/bin/mv ixr,
+/bin/touch ixr,
+/usr/bin/dirname ixr,
+/usr/bin/gconftool-2 ix,
+/usr/bin/[gm]awk ixr,
+/usr/bin/xdg-mime ixr,
+owner @{HOME}/.local/share/applications/ w,
+owner @{HOME}/.local/share/applications/mimeapps.list* rw,
