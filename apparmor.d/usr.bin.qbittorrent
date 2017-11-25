@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: November 23, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -47,9 +47,10 @@ include <tunables/global>
 	
 	# qBittorrent configuration
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
+	owner @{HOME}/.config/qBittorrentrc* rwk,
 	owner @{HOME}/.local/share/data/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/ rw,
-	owner @{HOME}/.config/qBittorrentrc* rwk,
+	owner @{HOME}/.cache/qBittorrent/{,**} rw,
 	
 	# Local configuration
 	include <abstractions/kde-user>

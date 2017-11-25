@@ -39,7 +39,8 @@ include <tunables/global>
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
 	
-	/sys/devices/pci[0-9]*/**/{bConfigurationValue,descriptors,manufacturer,product,serial} r,	
+	/sys/devices/pci[0-9]*/**/{bConfigurationValue,descriptors,manufacturer,product,serial} r,
+	/sys/devices/pci[0-9]*/**/usb[0-9]*/[0-9]**/interface r,
 	owner /{dev,run}/shm/{,.}org.chromium.* mrw,
 	owner /{dev,run}/shm/{,.}com.opera.* mrw,
 	
@@ -59,7 +60,7 @@ include <tunables/global>
 	owner @{HOME}/.cache/opera/{,**} rw,
 	owner @{HOME}/.cache/opera/Cache/* mr,
 	
-	# Access tp Opera directory
+	# Access to Opera directory
 	deny @{OPERA_LIBDIR}/** w,  # Noisy
 	@{OPERA_LIBDIR}/*.pak mr,
 	@{OPERA_LIBDIR}/locales/* mr,

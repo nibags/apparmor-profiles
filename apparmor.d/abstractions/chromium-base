@@ -26,8 +26,8 @@ network inet6 stream,
 @{PROC}/sys/net/ipv4/tcp_fastopen r,
 
 capability sys_admin,
-# capability net_bind_service,  # Investigate
 capability sys_chroot,
+# capability net_bind_service,  # Investigate
 capability sys_ptrace,
 
 owner @{PROC}/[0-9]*/setgroups w,
@@ -107,20 +107,6 @@ owner /{var/run,run,dev}/shm/shmfd-* mrw,
 # may want to look at in /usr
 /usr/{include,share,src}** r,
 
-# For migration
-# owner @{HOME}/.mozilla/firefox/profiles.ini r,
-# owner @{HOME}/.mozilla/firefox/*/prefs.js r,
-
-# Block binary execution and mapping of compiled libraries
-audit deny /{data,media,mnt,srv,net}/** mx,
-audit deny @{HOME}/{*,[^.]**} m,
-audit deny @{HOME}/** x,
-audit deny owner /**/* x,
-
-owner @{HOME}/.pki/nssdb/* rwk,
-owner @{HOME}/.config/gtk-3.0/* r,
-# owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
-
 /bin/ps Uxr,
 /usr/bin/xdg-settings Cxr -> xdgsettings,
 /usr/bin/lsb_release Cxr -> lsb_release,
@@ -140,6 +126,25 @@ owner @{HOME}/.config/dconf/user r,
 ptrace (trace) peer=@{profile_name},
 ptrace (trace) peer=@{profile_name}//lsb_release,
 ptrace (trace) peer=@{profile_name}//xdgsettings,
+
+# Block binary execution and mapping of compiled libraries
+audit deny /{data,media,mnt,srv,net}/** mx,
+audit deny @{HOME}/{*,[^.]**} m,
+audit deny @{HOME}/** x,
+audit deny owner /**/* x,
+
+owner @{HOME}/.pki/nssdb/* rwk,
+owner @{HOME}/.config/gtk-3.0/* r,
+# owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+
+# For migration
+# owner @{HOME}/.mozilla/firefox/profiles.ini r,
+# owner @{HOME}/.mozilla/firefox/*/prefs.js r,
+
+# Importing firefox settings (requires 'r' access to @{HOME}/.mozilla/**
+# which is provided by abstractions/ubuntu-browsers.d/user-files).
+# /etc/firefox/profile/bookmarks.html r,
+# owner @{HOME}/.mozilla/** k,
 
 profile lsb_release flags=(attach_disconnected) {
 	include <abstractions/base>

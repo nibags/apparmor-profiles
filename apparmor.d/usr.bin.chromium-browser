@@ -3,7 +3,7 @@
 # created by Jamie Strandboge <jamie@canonical.com>
 
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 22, 2017
+# Last change: November 23, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -55,8 +55,12 @@ include <tunables/global>
 	
 	# For KDE Plasma 5
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/kdialogrc{,.[a-zA-Z0-9]*} rw,
-	owner @{HOME}/.config/QtProject.conf{,.[a-zA-Z0-9]*} rwk,
+	owner @{HOME}/.config/kdeglobals rw,
+	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/kdialogrc rw,
+	owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/QtProject.conf rw,
+	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/QtProject/{,**} rw,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner /run/user/[0-9]*/kdialog*.slave-socket rwk,

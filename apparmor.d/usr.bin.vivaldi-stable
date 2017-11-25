@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 22, 2017
+# Last change: November 24, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -34,7 +34,7 @@ include <tunables/global>
 	deny @{CONFIDENTIAL_EXCEPT_VIVALDI} rwklmx,
 	
 	owner /{dev,run}/shm/{,.}com.vivaldi.* mrw,
-
+		
 	# Access to Home, removable medias & other folders
 	@{HOME}/{,[^.]**} r,
 	/{data,media,mnt,srv,net}/** r,
@@ -44,18 +44,19 @@ include <tunables/global>
 	owner @{USER_DIR}/ r,
 	owner @{USER_DIR}/** rw,
 	
-	# Vivaldi configuration
+	# Vivaldi configuration.
+	# For Vivaldi-snapshot, use the "vivaldi-snapshot" directory instead of "vivaldi".
 	owner @{HOME}/.config/vivaldi/ rw,
 	owner @{HOME}/.config/vivaldi/** rwk,
 	owner @{HOME}/.config/vivaldi/{,**/}Dictionaries/*.bdic mr,
 	owner @{HOME}/.config/vivaldi/**/Cache/* mr,
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
-	owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
 	
 	# Access to Vivaldi directory
 	deny @{VIVALDI_LIBDIR}/** w, # Noisy
-	@{VIVALDI_LIBDIR}/{,**} r,
+	@{VIVALDI_LIBDIR}/** r,
 	@{VIVALDI_LIBDIR}/*.pak mr,
 	@{VIVALDI_LIBDIR}/locales/* mr,
 	@{VIVALDI_LIBDIR}/xdg-settings Cxr -> xdgsettings,
@@ -84,7 +85,7 @@ include <tunables/global>
 		signal (receive) peer=@{VIVALDI_LIBDIR}/vivaldi-bin,
 		unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin),
 		
-		@{VIVALDI_LIBDIR}/vivaldi r,
+		@{VIVALDI_LIBDIR}/vivaldi r, # vivaldi{,-snapshot}
 		@{VIVALDI_LIBDIR}/vivaldi-bin Px,
 		@{VIVALDI_LIBDIR}/vivaldi-sandbox r,
 	}
