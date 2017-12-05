@@ -35,6 +35,7 @@ include <tunables/global>
 	include <abstractions/private-files>
 	include <abstractions/ssl_certs>
 	include <abstractions/openssl>
+	include <abstractions/ubuntu-unity7-base>  # For notifications
 	
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
