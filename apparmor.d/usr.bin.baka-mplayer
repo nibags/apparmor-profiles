@@ -1,27 +1,27 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: December 04, 2017
 
 include <tunables/global>
 
 profile baka-mplayer /usr/bin/baka-mplayer {
-	include <abstractions/audio>
 	include <abstractions/base>
 	include <abstractions/fonts>
-	include <abstractions/kde>
 	include <abstractions/dbus-session-strict>
+	include <abstractions/audio>
 	include <abstractions/X>
-	include <abstractions/consoles>
-	include <abstractions/flatpak-snap>
+	include <abstractions/ssl_certs>
+	
 	include <abstractions/networkmanager-strict>
 	include <abstractions/udisk-strict>
 	include <abstractions/wayland>
+	include <abstractions/flatpak-snap>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
 	
 	# Block network connection:
-	## include <abstractions/block-networking>
+	# include <abstractions/block-networking>
 	# Allow network connection:
 	include <abstractions/nameservice>
 	
@@ -37,8 +37,8 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	owner /**/{,*} r,
 	
 	# Configuration
+	owner @{HOME}/.config/ rw,
 	owner @{HOME}/.config/{baka-mplayer*,bakamplayer*} rwk,
-	owner @{HOME}/.config/mpv/{,**} rwk,
 	
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/kdeglobals rw,
@@ -50,20 +50,16 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
 	
 	/usr/share/** r,
-	
-	/etc/directfbrc* r,
+	/etc/ssl/openssl.cnf r,
 	/etc/udev/udev.conf r,
+	/etc/xdg/{,**} r,
+	/etc/directfbrc* r,
+	/etc/fstab r,
 	/etc/vdpau_wrapper.cfg r,
 	/etc/nsswitch.conf r,
-	/etc/fstab r,
 	/etc/passwd r,
-	/etc/pulse/*.conf r,
-	/etc/ssl/openssl.cnf r,
-	/etc/ssl/{certs,ssl}/ r,
-	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
-	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
 	
+	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/system/**/meminfo r,
@@ -73,6 +69,7 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	# Device access
 	/dev/ati/{,**} r,
 	/dev/dri/{,**} r,
+	/dev/tty r,
 	
 	# Binaries and libraries
 	/usr/bin/baka-mplayer ixr,
@@ -80,7 +77,8 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	/usr/bin/{mpv,dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} ixr,
 	/usr/bin/kdeinit{4,5} ixr,
-	/usr/bin/{xdg-open,kde-open,kde-open5,gnome-open,gvfs-open} ixr,
+	/usr/bin/kde-open{,5} ixr,
+	/usr/bin/{gnome,gvfs,kde,xdg}-open ixr,
 	/usr/bin/kdialog ixr,
 	/usr/lib/x86_64-linux-gnu/libexec/kf5/* Pixr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so rm,

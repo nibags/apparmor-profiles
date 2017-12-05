@@ -1,20 +1,21 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 25, 2017
+# Last change: December 04, 2017
 
 include <tunables/global>
 
 profile okular /usr/bin/okular {
 	include <abstractions/base>
+	include <abstractions/cups-client>
 	include <abstractions/dbus>
 	include <abstractions/dbus-session>
 	include <abstractions/dbus-accessibility>
 	include <abstractions/fonts>
 	include <abstractions/X>
-	include <abstractions/kde>
-	include <abstractions/consoles>
-	include <abstractions/cups-client>
+	include <abstractions/freedesktop.org>
+	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
+	
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 	
@@ -40,40 +41,40 @@ profile okular /usr/bin/okular {
 	owner /{data,media,mnt,srv,net}/** rw,
 	
 	# Files supported:
-	/**/*.[pP][dD][fF] rw, # pdf
-	/**/*.[oO][kK][uU][lL][aA][rR] rw, # okular
-	/**/*.[tT][xX][tT] rw, # txt
+	/**.[pP][dD][fF]                rw, # pdf
+	/**.[oO][kK][uU][lL][aA][rR]    rw, # okular
+	/**.[tT][xX][tT]                rw, # txt
 	
-	/**/*.[bB][mM][pP] r, # bmp
-	/**/*.[bBgGxX][zZ] r, # bz, gz, xz
-	/**/*.[fF][bB][23]{,.[zZ][iI][pP]} r, # fb2, fb3
-	/**/*.[cC][bB][rRzZtTaA7] r, # cbr, cbz, cbt, cba, cb7
-	/**/*.[cC][hH][mM] r, # chm
-	/**/*.[dD][dD][sS] r, # dds
-	/**/*.[dD][jJ][vV][uU] r, # djvu
-	/**/*.[dD][vV][iI] r, # dvi
-	/**/*.[eE][pP][uU][bB] r, # epub
-	/**/*.[fF][aA][xX] r, # fax
-	/**/*.[fF][dD][fF] r, # fdf
-	/**/*.[gG][iI][fF] r, # gif
-	/**/*.[hH][tT][mM][lL] r, # html
-	/**/*.[iI][cC][oObB] r, # ico, icb
-	/**/*.[iI][cC][nN][sS] r, # icns
-	/**/*.[jJ][pP]{,[eE]}[gG] r, # jpg, jpeg
-	/**/*.[mM][oO][bB][iI] r, # mobi
-	/**/*.[oO][dD][tT] r, # odt
-	/**/*.[pP][cC][xX] r, # pcx
-	/**/*.[pP][iI][cC] r, # pic
-	/**/*.[pP][bBgGpP][mM] r, # pbm, pgm, ppm
-	/**/*.[pP][nN][gGmM] r, # png, pnm
-	/**/*.{,[eE]}[pP][sS] r, # ps, eps
-	/**/*.[rR][dD][fF] r, # rdf
-	/**/*.[rR][sS][sS] r, # rss
-	/**/*.[sS][vV][gG]{,[zZ]} r, # svg, svgz
-	/**/*.[tT][iI][fF]{,[fF]} r, # tif, tiff
-	/**/*.[wW][bB][mM][pP] r, # wbmp
-	/**/*.[wW][eE][bB][pP] r, # webp
-	/**/*.[xX][bBpP][sSmM] r, # xbm, xps, xpm
+	/**.[bB][mM][pP]                 r, # bmp
+	/**.[bBgGxX][zZ]                 r, # bz, gz, xz
+	/**.[fF][bB][23]{,.[zZ][iI][pP]} r, # fb2, fb3
+	/**.[cC][bB][rRzZtTaA7]          r, # cbr, cbz, cbt, cba, cb7
+	/**.[cC][hH][mM]                 r, # chm
+	/**.[dD][dD][sS]                 r, # dds
+	/**.[dD][jJ][vV][uU]             r, # djvu
+	/**.[dD][vV][iI]                 r, # dvi
+	/**.[eE][pP][uU][bB]             r, # epub
+	/**.[fF][aA][xX]                 r, # fax
+	/**.[fF][dD][fF]                 r, # fdf
+	/**.[gG][iI][fF]                 r, # gif
+	/**.[hH][tT][mM][lL]             r, # html
+	/**.[iI][cC][oObB]               r, # ico, icb
+	/**.[iI][cC][nN][sS]             r, # icns
+	/**.[jJ][pP]{,[eE]}[gG]          r, # jpg, jpeg
+	/**.[mM][oO][bB][iI]             r, # mobi
+	/**.[oO][dD][tT]                 r, # odt
+	/**.[pP][cC][xX]                 r, # pcx
+	/**.[pP][iI][cC]                 r, # pic
+	/**.[pP][bBgGpP][mM]             r, # pbm, pgm, ppm
+	/**.[pP][nN][gGmM]               r, # png, pnm
+	/**.{,[eE]}[pP][sS]              r, # ps, eps
+	/**.[rR][dD][fF]                 r, # rdf
+	/**.[rR][sS][sS]                 r, # rss
+	/**.[sS][vV][gG]{,[zZ]}          r, # svg, svgz
+	/**.[tT][iI][fF]{,[fF]}          r, # tif, tiff
+	/**.[wW][bB][mM][pP]             r, # wbmp
+	/**.[wW][eE][bB][pP]             r, # webp
+	/**.[xX][bBpP][sSmM]             r, # xbm, xps, xpm
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/{,**} rwk,
@@ -83,10 +84,6 @@ profile okular /usr/bin/okular {
 	owner @{HOME}/.kde/share/apps/okular/{,**} rwk,
 	owner @{HOME}/.kde/share/config/okularrc{,.lock} rwk,
 	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
-	
-	deny owner @{HOME}/.config/autostart** w,
-	deny owner @{HOME}/.local/share/applications/** w,
-	deny owner @{HOME}/flatpak/** w,
 	
 	## include <abstractions/kde-user>
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
@@ -100,15 +97,15 @@ profile okular /usr/bin/okular {
 	/etc/nsswitch.conf r,
 	/etc/fstab r,
 	/etc/udev/udev.conf r,
+	/etc/pulse/{client,daemon}.conf r,
 	/etc/passwd r,
 	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
-	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
-	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
+	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	owner @{PROC}/@{pid}/task/[0-9]*/stat r,
 	
 	# Libraries and binaries
 	/usr/bin/okular ixr,
@@ -119,16 +116,23 @@ profile okular /usr/bin/okular {
 	/usr/lib{,64,/*-linux-gnu}/qt5/** r,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64,/*-linux-gnu}/qt5/{bin,libexec}/** ix,
+	deny /usr/lib{,64}/vlc/plugins/plugins.dat* w,
 	
 	# Temporal files and sockets
-	owner /tmp/*lock rwk,
-	owner /tmp/kde-*/{,**} rwk,
-	owner /var/tmp/kdecache-*/* rwk,
-	owner /run/user/[0-9]*/*-socket rwk,
-	owner /run/user/[0-9]*/bus rw,
-	owner /run/user/[0-9]*/kdeinit5* rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,**} rwk,
+	owner /tmp/xauth-* rk,
+	owner /{,var/}tmp/kde-*/{,**} rwk,
+	owner /{,var/}tmp/kdecache-*/{,*} rwk,
+	owner /{,var/}run/user/[0-9]*/pulse/  rw,
+	owner /{,var/}run/user/[0-9]*/pulse/{native,pid,*lock} rwk,
+	owner /{,var/}run/user/[0-9]*/*-socket rwk,
+	owner /{,var/}run/user/[0-9]*/bus rw,
+	owner /{,var/}run/user/[0-9]*/kdeinit5* rwk,
+	owner /{,var/}run/user/[0-9]*/ksocket-*/{,**} rwk,
 	/run/dbus/system_bus_socket w,
+	
+	/dev/tty r,
+	/dev/snd/controlC[0-9]* r,
+	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	signal (send) set=(term) peer=unconfined,
 }

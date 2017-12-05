@@ -5,17 +5,17 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: November 22, 2017
+#   Last change: December 04, 2017
 
 include <abstractions/audio>
 include <abstractions/cups-client>
 include <abstractions/dbus>
 include <abstractions/dbus-session>
 include <abstractions/gnome>
-include <abstractions/kde>
 include <abstractions/ibus>
 include <abstractions/nameservice>
 include <abstractions/user-tmp>
+
 include <abstractions/flatpak-snap>
 
 # Networking
@@ -72,6 +72,7 @@ deny @{PROC}/[0-9]*/oom_{,score_}adj w,
 /sys/devices/pci[0-9]*/**/resource r,
 /sys/devices/pci[0-9]*/**/removable r,
 /sys/devices/pci[0-9]*/**/block/**/size r,
+/sys/devices/pci[0-9]*/**/usb[0-9]*/[0-9]**/{descriptors,interface} r,
 /sys/devices/virtual/block/**/removable r,
 /sys/devices/virtual/block/**/size r,
 /sys/devices/virtual/tty/tty[0-9]/active r,
@@ -127,16 +128,6 @@ ptrace (trace) peer=@{profile_name},
 ptrace (trace) peer=@{profile_name}//lsb_release,
 ptrace (trace) peer=@{profile_name}//xdgsettings,
 
-# Block binary execution and mapping of compiled libraries
-audit deny /{data,media,mnt,srv,net}/** mx,
-audit deny @{HOME}/{*,[^.]**} m,
-audit deny @{HOME}/** x,
-audit deny owner /**/* x,
-
-owner @{HOME}/.pki/nssdb/* rwk,
-owner @{HOME}/.config/gtk-3.0/* r,
-# owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
-
 # For migration
 # owner @{HOME}/.mozilla/firefox/profiles.ini r,
 # owner @{HOME}/.mozilla/firefox/*/prefs.js r,
@@ -145,6 +136,41 @@ owner @{HOME}/.config/gtk-3.0/* r,
 # which is provided by abstractions/ubuntu-browsers.d/user-files).
 # /etc/firefox/profile/bookmarks.html r,
 # owner @{HOME}/.mozilla/** k,
+
+# Block binary execution and mapping of compiled libraries
+audit deny /{data,media,mnt,srv,net}/** mx,
+audit deny @{HOME}/{*,[^.]**} m,
+audit deny @{HOME}/** x,
+audit deny owner /**/* x,
+
+deny @{HOME}/.local/share/applications/** w,
+deny @{HOME}/.local/share/flatpak/** w,
+deny /usr/lib/vlc/plugins/plugins.dat.* w,
+deny @{HOME}/.* w,
+deny @{HOME}/.bash* r,
+deny @{HOME}/.sudo_as_admin_* r,
+
+owner @{HOME}/.pki/nssdb/* rwk,
+owner @{HOME}/.config/gtk-3.0/* r,
+# owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+
+# For KDE Plasma 5 (used by kdialog & kde-open5).
+# This could be inside a child profile for the kdialog and kde-open5
+# binaries, but most of the rules in the parent profile are repeated.
+include <abstractions/kde-user>
+owner @{HOME}/.config/kdialogrc rw,
+owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
+owner @{HOME}/.local/share/qt_temp.* rwk,
+deny @{HOME}/.local/share/RecentDocuments/* w,
+owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
+owner @{PROC}/[0-9]*/mounts r,
+/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{imageformats,platformthemes,styles}/*.so m,
+/etc/fstab r,
+/etc/rpc r,
+/dev/tty r,
+
+signal (send) set=(term) peer=unconfined,
+
 
 profile lsb_release flags=(attach_disconnected) {
 	include <abstractions/base>
@@ -165,11 +191,3 @@ profile lsb_release flags=(attach_disconnected) {
 	# file_inherit
 	deny /tmp/gtalkplugin.log w,
 }
-
-
-	
-	
-	
-
-
-

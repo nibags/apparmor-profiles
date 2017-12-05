@@ -1,20 +1,21 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 25, 2017
+# Last change: December 04, 2017
 
 include <tunables/global>
 
 profile gwenview /usr/bin/gwenview {
 	include <abstractions/base>
+	include <abstractions/cups-client>
+	include <abstractions/fonts>
 	include <abstractions/dbus>
 	include <abstractions/dbus-session>
-	include <abstractions/dbus-accessibility>
-	include <abstractions/fonts>
+	include <abstractions/dbus-accessibility>	
+	include <abstractions/audio>
 	include <abstractions/X>
-	include <abstractions/kde>
-	include <abstractions/consoles>
-	include <abstractions/cups-client>
+	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
+	
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 	
@@ -40,39 +41,36 @@ profile gwenview /usr/bin/gwenview {
 	owner /{data,media,mnt,srv,net}/** rw,
 	
 	# Files supported
-	/**/*.[bB][mM][pP] rw, # bmp
-	/**/*.[jJ][pP]2 rw, # jp2
-	/**/*.[jJ][pP]{,[eE]}[gG] rw, # jpeg, jpg
-	/**/*.[pP][nN][gG] rw, # png
-	/**/*.[tT][iI][fF]{,[fF]} rw, # tif, tiff
-	/**/*.[iI][cC][oObB] rw, # ico, icb
-	/**/*.[wW][bB][mM][pP] rw, # wbmp
-	/**/*.[wW][eE][bB][pP] rw, # webp
-	/**/*.[dD][dD][sS] rw, # dds
-	/**/*.[eE][pP][sS] rw, # eps
-	/**/*.[iI][cC][nN][sS] rw, # icns
-	/**/*.[pP][cC][xX] rw, # pcx
-	/**/*.[pP][iI][cC] rw, # pic
-	/**/*.[pP][bBgGpP][mM] rw, # pbm, pgm, ppm
-	/**/*.[rR][gG][bB] rw, # rgb
-	/**/*.[xX][bBpP][mM] rw, # xbm, xpm
+	/**.[bB][mM][pP]        rw,  # bmp
+	/**.[jJ][pP]2           rw,  # jp2
+	/**.[jJ][pP]{,[eE]}[gG] rw,  # jpeg, jpg
+	/**.[pP][nN][gG]        rw,  # png
+	/**.[tT][iI][fF]{,[fF]} rw,  # tif, tiff
+	/**.[iI][cC][oObB]      rw,  # ico, icb
+	/**.[wW][bB][mM][pP]    rw,  # wbmp
+	/**.[wW][eE][bB][pP]    rw,  # webp
+	/**.[dD][dD][sS]        rw,  # dds
+	/**.[eE][pP][sS]        rw,  # eps
+	/**.[iI][cC][nN][sS]    rw,  # icns
+	/**.[pP][cC][xX]        rw,  # pcx
+	/**.[pP][iI][cC]        rw,  # pic
+	/**.[pP][bBgGpP][mM]    rw,  # pbm, pgm, ppm
+	/**.[rR][gG][bB]        rw,  # rgb
+	/**.[xX][bBpP][mM]      rw,  # xbm, xpm
 	
 	# Gwenview configuration
 	owner @{HOME}/.config/gwenviewrc{,.lock} rwk,
 	owner @{HOME}/.config/org.kde.gwenviewrc{,.lock} rwk,
-	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
 	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,.}* rwk,
-	
-	deny owner @{HOME}/.config/autostart** w,
-	deny owner @{HOME}/.local/share/applications/** w,
-	deny owner @{HOME}/flatpak/[^e]** w,
-	deny owner @{HOME}/flatpak/exports/**.desktop w,
+	owner @{HOME}/.local/share/org.kde.gwenview/{,**} rwk,
 	
 	## include <abstractions/kde-user>
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.local/share/baloo/index-lock rwk,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop{,.lock} rwk,
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* rwk,
+	
+	allow owner @{HOME}/.local/share/flatpak/exports/share/icons/** rw,
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
@@ -86,18 +84,14 @@ profile gwenview /usr/bin/gwenview {
 	/usr/lib{,64,/*-linux-gnu}/qt5/{bin,libexec}/** ix,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	
-	/dev/snd/control* rw,
-	
 	# Temporal files
 	owner /var/tmp/kdecache-*/* rwk,
-	owner /tmp/* rwk,
+	owner /tmp/* rwkl,
 	owner /tmp/kde-*/** rwk,
 	owner /run/user/[0-9]*/ksocket-*/** rwk,
 	owner /run/user/[0-9]*/bus rwk,
 	owner /run/user/[0-9]*/*-socket rwk,
 	owner /run/user/[0-9]*/kdeinit5* rwk,
-	owner /run/user/[0-9]*/pulse/{,*} rwk,
-	/{dev,run,var/run}/shm/pulse-shm* rwk,
 	
 	signal (send) set=(term) peer=unconfined,
 }

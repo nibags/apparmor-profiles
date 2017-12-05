@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 24, 2017
+# Last change: December 04, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -21,7 +21,7 @@ include <tunables/global>
 /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
-
+	
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>
 
@@ -36,7 +36,7 @@ include <tunables/global>
 	owner /{dev,run}/shm/{,.}com.vivaldi.* mrw,
 		
 	# Access to Home, removable medias & other folders
-	@{HOME}/{,[^.]**} r,
+	@{HOME}/{,*,[^.]**} r,
 	/{data,media,mnt,srv,net}/** r,
 
 	# User folders
@@ -53,6 +53,7 @@ include <tunables/global>
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
+	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw, 
 	
 	# Access to Vivaldi directory
 	deny @{VIVALDI_LIBDIR}/** w, # Noisy
@@ -73,6 +74,8 @@ include <tunables/global>
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
 		include <abstractions/chromium-base-xdgsettings>
+		
+		deny @{CONFIDENTIAL_EXCEPT_VIVALDI} rwklmx,
 		
 		@{VIVALDI_LIBDIR}/xdg-settings r,
 		/dev/tty r,

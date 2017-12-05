@@ -1,13 +1,16 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 17, 2017
+# Last change: November 30, 2017
 
 # Flatpak
 /var/lib/flatpak/exports/share/** r,
 /var/lib/flatpak/app/**/export/share/applications/*.desktop r,
+/var/lib/flatpak/app/**/export/share/applications/ r,
 owner @{HOME}/.local/share/flatpak/exports/share/** r,
 owner @{HOME}/.local/share/flatpak/app/**.desktop r,
+owner @{HOME}/.local/share/flatpak/app/ r,
 
 # Snap
 /var/lib/snapd/desktop/applications/mimeinfo.cache r,
 /var/lib/snapd/desktop/applications/*.desktop r,
+/var/lib/snapd/desktop/applications/ r,

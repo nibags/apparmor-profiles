@@ -1,28 +1,28 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: December 04, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
-#  - This profile is only tested on Ubuntu 16.04 with KDE Plasma 5 and GNOME 3.
 #  - By default, there is only write access to the download directory.
+#  - This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.
 
 include <tunables/global>
 
-# Download directory:
+# Downloads directory:
 @{DOWNLOADS_DIR} = @{HOME}/Descargas
 
 profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	include <abstractions/base>
-	include <abstractions/fonts>
 	include <abstractions/nameservice>
-	include <abstractions/kde>
-	include <abstractions/gnome>
-	include <abstractions/X>
-	include <abstractions/audio>
+	include <abstractions/fonts>
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>
-	include <abstractions/dbus-accessibility-strict>
+	include <abstractions/audio>
+	include <abstractions/X>
+	include <abstractions/freedesktop.org>
+	include <abstractions/user-tmp>
+	
 	include <abstractions/flatpak-snap>
 	
 	# Needed to open links (only for some browsers).
@@ -46,42 +46,41 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.config/* r,
 	owner @{HOME}/.config/{fontconfig,gtk-[0-9]*,kde.org,menus,pulse,session}/{**,} r,
 	owner @{HOME}/.config/gtk-[0-9]*/bookmarks rw,
+	owner @{HOME}/.config/gtkrc{,-*} r,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
-	owner @{HOME}/.local/share/icons/{,**} rw,
+	owner @{HOME}/.local/share/RecentDocuments/ r,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
+	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	deny @{HOME}/.local/share/recently-used.xbel r,
+	
+	# For KDE Plasma 5
 	owner @{HOME}/.kde/share/config/kdeglobals rk,
 	owner @{HOME}/.kde/share/kde4/services/*.protocol rw,
-	
 	owner @{HOME}/.config/kdeglobals rk,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
 	owner @{HOME}/.cache/ksycoca5_* r,
 	owner @{HOME}/.cache/qt_compose_cache_* rw,
-	owner @{HOME}/.local/share/RecentDocuments/ r,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
-	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
-		
+	
 	/usr/share/** r,
 	/etc/timezone r,
-	/etc/openal/alsoft.conf r,
-	/etc/pulse/*.conf r,
 	/etc/udev/udev.conf r,
 	/etc/lsb-release r,
 	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	
-	@{PROC}/[0-9]*/{cmdline,environ,status} r,
-	@{PROC}/[0-9]*/fd/{,**} r,
-	@{PROC}/[0-9]*/auxv r,  # Wayland
-	@{PROC}/[0-9]*/task/{,**} r,
-	/run/systemd/journal/socket rw,
-	/run/dbus/system_bus_socket r,
-	/run/user/[0-9]*/bus r,
+	owner @{PROC}/@{pid}/{cmdline,environ,status} r,
+	owner @{PROC}/@{pid}/fd/{,**} r,
+	owner @{PROC}/@{pid}/auxv r,
+	owner @{PROC}/@{pid}/task/{,**} r,
 	/sys/dbus/** r,
 	/sys/devices/**/uevent r,
 	
-	# Device access
-	/dev/tty* r,
+	/run/systemd/journal/socket rw,
+	/run/dbus/system_bus_socket r,
+	owner /run/user/[0-9]*/bus r,
+	owner /run/user/[0-9]*/*.slave-socket rwk,
+	
+	/dev/tty r,
 	deny /dev/video* rwmlkx,  # Block cameras
 	
 	# Binaries & Helpers
@@ -92,17 +91,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
-	
-	# Temp Files
-	owner /tmp/** rwk,
-	owner /var/tmp/** rw,
-	owner /run/user/[0-9]*/*.slave-socket rwk,
-	
-	# For Networking
-	#@{PROC}/[0-9]*/net/if_inet6 r,
-	#@{PROC}/[0-9]*/net/ipv6_route r,
-	#@{PROC}/[0-9]*/net/dev r,
-	#@{PROC}/[0-9]*/net/wireless r,
 	
 	# Block binary execution and mapping of compiled libraries
 	audit deny owner /**/* m,
@@ -117,15 +105,6 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	
 	ptrace (trace) peer=unconfined,
 	ptrace (trace) peer=Telegram,
-	
-	dbus (send)
-		bus=session
-		peer=(name=org.a11y.Bus),
-	dbus (receive)
-		bus=session
-		interface=org.a11y.atspi**,
-	dbus (receive, send)
-		bus=accessibility,
 		
 	dbus (send)
 		bus=system

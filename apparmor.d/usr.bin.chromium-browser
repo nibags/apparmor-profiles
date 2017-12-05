@@ -3,7 +3,7 @@
 # created by Jamie Strandboge <jamie@canonical.com>
 
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 23, 2017
+# Last change: December 04, 2017
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -34,8 +34,6 @@ include <tunables/global>
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_CHROME} rwklmx,
 	
-	/etc/fstab r,
-	/dev/tty r,
 	owner /{dev,run}/shm/{,.}org.chromium.* mrw,
 
 	# User folders
@@ -52,18 +50,6 @@ include <tunables/global>
 	owner @{HOME}/.cache/chromium/{,**} rw,
 	owner @{HOME}/.cache/chromium/Cache/* mr,
 	owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
-	
-	# For KDE Plasma 5
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/kdeglobals rw,
-	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/kdialogrc rw,
-	owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/QtProject.conf rw,
-	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/QtProject/{,**} rw,
-	owner @{HOME}/.cache/icon-cache.kcache rw,
-	owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
 	
 	# Access to Chromium directory
 	deny @{CHROM_LIBDIR}/** w, # Noisy
@@ -90,12 +76,11 @@ include <tunables/global>
 	/bin/rm ixr,
 	/bin/touch ixr,
 	
-	signal (send) set=(term) peer=unconfined,
-	deny /usr/lib/vlc/plugins/plugins.dat.* w,
-
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
 		include <abstractions/chromium-base-xdgsettings>
+		
+		deny @{CONFIDENTIAL_EXCEPT_CHROME} rwklmx,
 		
 		@{CHROM_LIBDIR}/xdg-settings r,
 		

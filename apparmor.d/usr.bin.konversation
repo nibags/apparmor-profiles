@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: December 04, 2017
 
 include <tunables/global>
 
@@ -8,19 +8,21 @@ include <tunables/global>
 
 # Downloads & Logs directories:
 @{DOWNLOADS_DIR} = @{HOME}/Descargas
-@{LOGS_DIR} = @{HOME}/logs
+@{LOGS_DIR}      = @{HOME}/logs
 
 profile konversation /usr/bin/konversation {
 	include <abstractions/base>
+	include <abstractions/nameservice>
 	include <abstractions/fonts>
 	include <abstractions/dbus>
-	include <abstractions/dbus-accessibility>
 	include <abstractions/dbus-session>
-	include <abstractions/nameservice>
-	include <abstractions/X>
+	include <abstractions/dbus-accessibility>
 	include <abstractions/audio>
+	include <abstractions/X>
+	include <abstractions/freedesktop.org>
+	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
-	include <abstractions/kde>
+	
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 	
@@ -85,4 +87,5 @@ profile konversation /usr/bin/konversation {
 	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
 	
 	signal (send) set=(term) peer=unconfined,
+	unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper addr=none),
 }

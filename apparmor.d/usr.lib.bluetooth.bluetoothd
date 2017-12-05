@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 17, 2017
+# Last change: December 03, 2017
 
 include <tunables/global>
 
@@ -72,7 +72,16 @@ include <tunables/global>
 	audit deny /{home,root,media,mnt,srv,net,cdrom,run,tmp}/** mx,
 	audit deny /dev/{audio,video}* rwklmx,
 	
+	# Noisy
 	audit deny /boot/** rwklmx,
 	audit deny /var/log/** rwklmx,
 	audit deny /etc/apparmor.d/** rwklmx,
+	audit deny /etc/apparmor/** rwklmx,
+	
+	audit deny /etc/init.d/** rwklmx,
+	audit deny /etc/cron.*/** rwklmx,
+	audit deny /etc/initramfs-tools/** rwklmx,
+	audit deny /etc/systemd/** rwklmx,
+	audit deny /etc/xdg/systemd/** rwklmx,
+	audit deny /etc/xdg/autostart/** rwklmx,
 }

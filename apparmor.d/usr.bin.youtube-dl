@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 17, 2017
+# Last change: November 30, 2017
 
 include <tunables/global>
 
@@ -30,8 +30,8 @@ profile youtube_dl /usr{,/local}/bin/youtube-dl {
 	
 	/usr/local/bin/ r,
 	/etc/mime.types r,
-	@{PROC}/[0-9]*/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
-	@{PROC}/[0-9]*/fd/ r,
+	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	owner @{PROC}/@{pid}/fd/ r,
 	
 	# Temporal files and sockets
 	owner @{HOME}/[a-zA-Z0-9]* rw,

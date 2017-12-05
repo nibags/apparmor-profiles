@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 22, 2017
+# Last change: December 04, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -11,8 +11,6 @@
 #  - By default, there is only write access to the download & desktop directories.
 #  - This profile was designed with the intention of working
 #    correctly in the KDE Plasma 5 desktop environment.
-#  - For this profile to work correctly in GNOME 3,
-#    it is necessary to uncomment some lines. Please check!
 
 include <tunables/global>
 
@@ -30,17 +28,14 @@ include <tunables/global>
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session-strict>
 	include <abstractions/fonts>
-	include <abstractions/dconf>
 	include <abstractions/gnome>
-	include <abstractions/kde>
 	include <abstractions/ibus>
 	include <abstractions/nameservice>
-	include <abstractions/openssl>
 	include <abstractions/p11-kit>
 	include <abstractions/private-files>
 	include <abstractions/ssl_certs>
-	include <abstractions/ubuntu-unity7-base>
-	include <abstractions/ubuntu-unity7-launcher>
+	include <abstractions/openssl>
+	
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 
@@ -77,9 +72,10 @@ include <tunables/global>
 	# Pulseaudio
 	/usr/bin/pulseaudio Pixr,
 
-	# Potentially extremely sensitive files
-	audit deny @{HOME}/.gnupg/** mrwkl,
-	audit deny @{HOME}/.ssh/** mrwkl,
+	# Potentially extremely sensitive files.
+	# NOTE: Included in @{CONFIDENTIAL_EXCEPT_THUNDERBIRD}
+	# audit deny @{HOME}/.gnupg/** mrwkl,
+	# audit deny @{HOME}/.ssh/** mrwkl,
 
 	# Block access to cameras & microphones
 	audit deny /dev/{video,audio}* rwlkmx,
@@ -101,14 +97,14 @@ include <tunables/global>
 
 	# WARNING: Required for GNOME 3
 	# /run/systemd/journal/socket w,
-
+	
 	# For networking
 	network inet stream,
 	network inet6 stream,
-	@{PROC}/[0-9]*/net/if_inet6 r,
-	@{PROC}/[0-9]*/net/ipv6_route r,
-	@{PROC}/[0-9]*/net/dev r,
-	@{PROC}/[0-9]*/net/wireless r,
+	@{PROC}/@{pid}/net/if_inet6 r,
+	@{PROC}/@{pid}/net/ipv6_route r,
+	@{PROC}/@{pid}/net/dev r,
+	@{PROC}/@{pid}/net/wireless r,
 	dbus (send)
 		bus=system
 		path=/org/freedesktop/NetworkManager
@@ -122,7 +118,6 @@ include <tunables/global>
 	/etc/mime.types r,
 	/etc/mailcap r,
 	/etc/xdg/*buntu/applications/defaults.list    r, # for all derivatives
-	/etc/gnome/defaults.list r,
 	/etc/xfce4/defaults.list r,
 	/usr/share/xubuntu/applications/defaults.list r,
 	owner /tmp/** m,
@@ -134,11 +129,6 @@ include <tunables/global>
 	# Doesn't seem to be required, but noisy. Maybe allow 'r' for 'b*' if needed.
 	# Possibly move to an abstraction if anything else needs it.
 	deny /run/udev/data/** r,
-	# Let the shell know we launched something
-	dbus (send)
-		bus=session
-		interface=org.gtk.gio.DesktopAppInfo
-		member=Launched,
 	
 	# Thunderbird specific
 	/etc/thunderbird*/ r,
@@ -153,7 +143,7 @@ include <tunables/global>
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
 
-	# noisy
+	# Noisy
 	deny @{THUNB_LIBDIR}/** w,
 	deny /usr/lib{,64}/thunderbird-addons/** w,
 	deny /usr/lib{,64}/xulrunner-addons/** w,
@@ -163,6 +153,9 @@ include <tunables/global>
 	deny /boot/vmlinuz* r,
 	deny /var/cache/fontconfig/ w,
 	deny @{HOME}/.local/share/recently-used.xbel r,
+	deny @{HOME}/.local/share/applications/** w,
+	deny @{HOME}/.local/share/flatpak/** w,
+	deny @{HOME}/.* r,
 
 	# TODO: investigate
 	deny /usr/bin/gconftool-2 x,
@@ -177,14 +170,14 @@ include <tunables/global>
 	/usr/bin/tr ixr,
 	/bin/dash ix,
 	@{PROC}/ r,
-	@{PROC}/[0-9]*/cmdline r,
-	@{PROC}/[0-9]*/mountinfo r,
-	@{PROC}/[0-9]*/net/arp r,
-	@{PROC}/[0-9]*/stat r,
-	@{PROC}/[0-9]*/status r,
 	@{PROC}/filesystems r,
+	@{PROC}/@{pid}/net/arp r,
+	owner @{PROC}/@{pid}/cmdline r,
+	owner @{PROC}/@{pid}/mountinfo r,
+	owner @{PROC}/@{pid}/stat r,
+	owner @{PROC}/@{pid}/status r,
+	owner @{PROC}/@{pid}/task/[0-9]*/stat r,
 	@{PROC}/sys/vm/overcommit_memory r,
-	owner @{PROC}/[0-9]*/task/[0-9]*/stat r,
 	
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision,uevent} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
@@ -198,24 +191,23 @@ include <tunables/global>
 	/etc/wildmidi/wildmidi.cfg r,
 
 	# Needed for the crash reporter
-	owner @{PROC}/[0-9]*/environ r,
-	owner @{PROC}/[0-9]*/auxv r,
+	owner @{PROC}/@{pid}/environ r,
+	owner @{PROC}/@{pid}/auxv r,
 	/etc/lsb-release r,
 	/usr/bin/expr ix,
 	/sys/devices/system/cpu/ r,
 	/sys/devices/system/cpu/** r,
 
 	# about:memory
-	owner @{PROC}/[0-9]*/statm r,
-	owner @{PROC}/[0-9]*/smaps r,
+	owner @{PROC}/@{pid}/statm r,
+	owner @{PROC}/@{pid}/smaps r,
 
 	# Needed for container to work in xul builds
 	/usr/lib{,64}/xulrunner-*/plugin-container ixr,
 
 	# So browsing directories works
 	/{,**/} r,
-
-	# /usr/share/** r,
+	
 	/usr/share/applications/*.list r,
 	/usr/share/color-schemes/** r,
 	/usr/share/glib-*/** r,
@@ -227,41 +219,31 @@ include <tunables/global>
 	
 	# Per-user Thunderbird configuration
 	owner @{HOME}/.thunderbird/{,**} rw,
+	owner @{HOME}/.thunderbird/**/storage.sdb k,
 	owner @{HOME}/.thunderbird/**/*.{db,parentlock,sqlite}* k,
 	owner @{HOME}/.thunderbird/plugins/** rm,
 	owner @{HOME}/.thunderbird/**/plugins/** rm,
-	owner @{HOME}/.gnome2/thunderbird* rwk,
-	owner @{HOME}/.config/gtk-3.0/** r,
-	owner @{HOME}/.{cache,config}/dconf/user rw,
-	owner /{,var/}run/user/[0-9]*/dconf/user rw,
 	owner @{HOME}/.cache/thunderbird/{,**} rw,
 	owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
-	owner @{HOME}/.cache/icon-cache.kcache rw,
-
+	
+	owner @{HOME}/.config/gtk-3.0/** r,
+	owner @{HOME}/.config/gtk-3.0/bookmarks r,
+	owner @{HOME}/.gtkrc-2.0{,-kde4} r,
+	
+	# For KDE Plasma 5
 	owner @{HOME}/.config/kdeglobals r,
-	owner @{HOME}/.config/kwalletrc r,
 	owner @{HOME}/.config/klanguageoverridesrc r,
-	owner @{HOME}/.gtkrc-2.0 r,
-	owner @{HOME}/.gtkrc-2.0-kde4 r,
-	owner @{HOME}/.config/user-dirs.dirs r,
+	owner @{HOME}/.config/kwalletrc r,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	
 	owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
 	owner @{HOME}/.local/share/applications/defaults.list r,
 	owner @{HOME}/.local/share/applications/mimeapps.list r,
 	owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-	owner @{HOME}/.local/share/mime/mime.cache r,
-	owner @{HOME}/.local/share/mime/generic-icons r,
-	owner @{HOME}/.local/share/icons/ r,
-	owner @{HOME}/.local/share/icons/hicolor/* r,
-	owner @{HOME}/.local/share/icons/hicolor/*/apps/{,*} r,
-
-	dbus (send)
-		bus=session
-		path=/org/gnome/GConf/Server
-		member=GetDefaultDatabase,
-	dbus (send)
-		bus=session
-		path=/org/gnome/GConf/Database/*
-		member={AddMatch,AddNotify,AllEntries,LookupExtended,RemoveNotify},
+	
+	owner @{HOME}/.{cache,config}/dconf/user rw,
+	owner /{,var/}run/user/[0-9]*/dconf/user rw,
+	deny owner @{HOME}/.local/share/gvfs-metadata/* r,
 
 	# Extensions
 	# /usr/share/.../extensions/... is already covered by '/usr/** r', above.
@@ -353,11 +335,20 @@ include <tunables/global>
 
 	profile gpg2 {
 		include <abstractions/base>
-
+		
 		# Required to import keys from keyservers
 		include <abstractions/nameservice>
 		include <abstractions/p11-kit>
-		/usr/lib{,64}/gnupg2/gpg2keys_hkp ix,
+		/usr/lib/gnupg2/gpg2keys_hkp ix,
+
+		# Silence noise from enigmail 1.9+
+		deny owner @{HOME}/.thunderbird/*/.parentlock w,
+		deny owner @{HOME}/.thunderbird/*/panacea.dat w,
+		deny owner @{HOME}/.thunderbird/*/*.mab w,
+		deny owner @{HOME}/.thunderbird/**/*.msf w,
+		deny owner @{HOME}/.cache/thunderbird/**/_CACHE_* w,
+
+		/usr/share/xul-ext/enigmail/chrome/enigmail.jar r,
 
 		# For smartcards?
 		/dev/bus/usb/ r,
@@ -384,12 +375,17 @@ include <tunables/global>
 		owner @{HOME}/.gnupg/.#lk0x[0-9a-f]* rwl,
 		owner @{HOME}/.gnupg/.gpg-v[0-9]*-migrated rw,
 		owner @{HOME}/** r,
+		owner @{PROC}/@{pids}/mountinfo r,
 
-		# for inline pgp
+		# For inline pgp
 		owner /tmp/encfile rw,
 		owner /tmp/encfile-[0-9]* rw,
 
-		# for signature verifications
+		# For signature generation
+		owner /tmp/nsemail.eml w,
+		owner /tmp/nsemail-[0-9]*.eml w,
+
+		# For signature verifications
 		owner /tmp/data.sig r,
 		owner /tmp/data-[0-9]*.sig r,
 
@@ -397,8 +393,5 @@ include <tunables/global>
 	}
 
 	# Site-specific additions and overrides. See local/README for details.
-	## include <local/usr.bin.thunderbird>
-
-	# Addons
-	## include <abstractions/ubuntu-browsers.d/firefox>
+	# include <local/usr.bin.thunderbird>
 }

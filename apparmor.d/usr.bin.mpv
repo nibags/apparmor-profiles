@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 13, 2017
+# Last change: December 04, 2017
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the library import:
@@ -12,18 +12,17 @@ include <tunables/global>
 @{DATA_DIR} = /{data,home,media,mnt,srv,net,cdrom}
 
 profile mpv /usr/bin/mpv {
-	include <abstractions/audio>
 	include <abstractions/base>
 	include <abstractions/fonts>
-	include <abstractions/kde>
 	include <abstractions/dbus-session-strict>
+	include <abstractions/audio>
 	include <abstractions/X>
-	include <abstractions/consoles>
+	include <abstractions/freedesktop.org>
 	
 	# Block network connection:
 	include <abstractions/block-networking>
 	# Allow network connection (uncomment this line):
-	## include <abstractions/nameservice>
+	# include <abstractions/nameservice>
 	
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
@@ -37,6 +36,7 @@ profile mpv /usr/bin/mpv {
 	audit deny owner /**/* mx,
 	
 	# Configuration
+	owner @{HOME}/.config/ rw,
 	owner @{HOME}/.config/mpv/{,**} rwk,
 	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
 	
@@ -66,63 +66,68 @@ profile mpv /usr/bin/mpv {
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,  # Block Python imports
 	audit deny @{DATA_DIR}/**.py* r,
+	deny owner @{HOME}/.recently-used.xbel* rw,
+	deny owner @{HOME}/.local/share/recently-used.xbel* rw,
+	
+	# Temp files
+	owner /tmp/xauth-* r,
 	
 	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 	
 	# Common supported files:
 	
 	# Audio
-	/**/*.3[gG][aA] r, # 3ga
-	/**/*.[aA][aA][cC] r, # aac
-	/**/*.[aA][dD][tT]{,[sS]} r, # adt, adts
-	/**/*.[aA][iI][fF]{,[cCfF]} r, # aif, aifc, aiff	
-	/**/*.[aA][uU] r, # au
-	/**/*.[cC][dD][aA] r, # cda
-	/**/*.[fF][lL][aA][cC] r, # flac
-	/**/*.[mM]4[aApP] r, # m4a, m4p
-	/**/*.[mM][iIoO][dD] r, # mid, mod
-	/**/*.[mM][kK][aA] r, # mka
-	/**/*.[mM][lL][pP] r, # mlp
-	/**/*.[mM][pP][123cC] r, # mp1, mp2, mp3, mpc
-	/**/*.[mM][pP][gG][aA] r, # mpga
-	/**/*.[oO][gGmM][aA] r, # oga, oma
-	/**/*.[oO][pP][uU][sS] r, # opus
-	/**/*.[rR]{[aA],[mM][iI]} r, # ra, rmi
-	/**/*.[vV]{[oO][cC],[qQ][fF]} r, # voc, vqf
-	/**/*.[wW]{,[aA]}[vV] r, # wav, wv
-	/**/*.[wW][mM]{,[aA]} r, # wm, wma
+	/**.3[gG][aA]                r, # 3ga
+	/**.[aA][aA][cC]             r, # aac
+	/**.[aA][dD][tT]{,[sS]}      r, # adt, adts
+	/**.[aA][iI][fF]{,[cCfF]}    r, # aif, aifc, aiff	
+	/**.[aA][uU]                 r, # au
+	/**.[cC][dD][aA]             r, # cda
+	/**.[fF][lL][aA][cC]         r, # flac
+	/**.[mM]4[aApP]              r, # m4a, m4p
+	/**.[mM][iIoO][dD]           r, # mid, mod
+	/**.[mM][kK][aA]             r, # mka
+	/**.[mM][lL][pP]             r, # mlp
+	/**.[mM][pP][123cC]          r, # mp1, mp2, mp3, mpc
+	/**.[mM][pP][gG][aA]         r, # mpga
+	/**.[oO][gGmM][aA]           r, # oga, oma
+	/**.[oO][pP][uU][sS]         r, # opus
+	/**.[rR]{[aA],[mM][iI]}      r, # ra, rmi
+	/**.[vV]{[oO][cC],[qQ][fF]}  r, # voc, vqf
+	/**.[wW]{,[aA]}[vV]          r, # wav, wv
+	/**.[wW][mM]{,[aA]}          r, # wm, wma
 	
 	# Video
-	/**/*.3[gG]{[2pP],[pP][2pP]} r, # 3g2, 3gp, 3gp2, 3gpp	
-	/**/*.[aA][mM][vV] r, # amv
-	/**/*.[aA][sS][fF] r, # asf
-	/**/*.[aA][vV][iI] r,  # avi
-	/**/*.[dD][iI][vV][xX] r, # divx
-	/**/*.[dD][vV] r, # dv
-	/**/*.[fF][4lL][vV] r, # f4v, flv
-	/**/*.[gG]{[vV][iI],[xX][fF]} r, # gvi, gxf
-	/**/*.[mM][124][vV] r, # m1v, m2v, m4v
-	/**/*.[mM]2[tT]{,[sS]} r, # m2t, m2ts
-	/**/*.[mM][kKoO][vV] r, # mkv, mov
-	/**/*.[mM][pP][24][vV] r, # mp2v, mp4v
-	/**/*.[mM][pP][4aAeEgG] r, # mp4, mpa, mpe, mpg
-	/**/*.[mM][pP][eE][gG]{,[124]} r, # mpeg, mpeg1, mpeg2, mpeg4
-	/**/*.[mM][pP][vV]{,2} r, # mpv, mpv2
-	/**/*.[mM][tT][sSvV] r, # mts, mtv
-	/**/*.[mM][xX][fF] r, # mxf
-	/**/*.[nN][sSuU][vV] r, # nsv, nuv
-	/**/*.[oO][gG][gGmMxXvV] r, # ogg, ogm, ogx, ogv
-	/**/*.[rR][eE][cC] r, # rec
-	/**/*.[rR][mM]{,[vV][bB]} r, # rm, rmvb
-	/**/*.[tT]{,[tT]}[sS] r, # ts, tts
-	/**/*.[vV][oO][bB] r, # vob
-	/**/*.[vV][rR][oO] r, # vro
-	/**/*.[wW][eE][bB][mM] r, # webm
-	/**/*.[wW][mM][vV] r, # wmv
+	/**.3[gG]{[2pP],[pP][2pP]}   r, # 3g2, 3gp, 3gp2, 3gpp
+	/**.[aA][mM][vV]             r, # amv
+	/**.[aA][sS][fF]             r, # asf
+	/**.[aA][vV][iI]             r,  # avi
+	/**.[dD][iI][vV][xX]         r, # divx
+	/**.[dD][vV]                 r, # dv
+	/**.[fF][4lL][vV]            r, # f4v, flv
+	/**.[gG]{[vV][iI],[xX][fF]}  r, # gvi, gxf
+	/**.[mM][124][vV]            r, # m1v, m2v, m4v
+	/**.[mM]2[tT]{,[sS]}         r, # m2t, m2ts
+	/**.[mM][kKoO][vV]           r, # mkv, mov
+	/**.[mM][pP][24][vV]         r, # mp2v, mp4v
+	/**.[mM][pP][4aAeEgG]        r, # mp4, mpa, mpe, mpg
+	/**.[mM][pP][eE][gG]{,[124]} r, # mpeg, mpeg1, mpeg2, mpeg4
+	/**.[mM][pP][vV]{,2}         r, # mpv, mpv2
+	/**.[mM][tT][sSvV]           r, # mts, mtv
+	/**.[mM][xX][fF]             r, # mxf
+	/**.[nN][sSuU][vV]           r, # nsv, nuv
+	/**.[oO][gG][gGmMxXvV]       r, # ogg, ogm, ogx, ogv
+	/**.[rR][eE][cC]             r, # rec
+	/**.[rR][mM]{,[vV][bB]}      r, # rm, rmvb
+	/**.[tT]{,[tT]}[sS]          r, # ts, tts
+	/**.[vV][oO][bB]             r, # vob
+	/**.[vV][rR][oO]             r, # vro
+	/**.[wW][eE][bB][mM]         r, # webm
+	/**.[wW][mM][vV]             r, # wmv
 
 	# Others
-	/**/*.[aA][sS][xX] r, # asx
-	/**/*.[mM]3[uU]{,8} r, # m3u, m3u8
-	/**/*.[pP][lL][sS] r, # pls
-	/**/*.[sS][rR][tT] r, # srt
+	/**.[aA][sS][xX]   r, # asx
+	/**.[mM]3[uU]{,8}  r, # m3u, m3u8
+	/**.[pP][lL][sS]   r, # pls
+	/**.[sS][rR][tT]   r, # srt
 }

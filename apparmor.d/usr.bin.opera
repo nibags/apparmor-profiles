@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 22, 2017
+# Last change: December 04, 2017
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -40,12 +40,11 @@ include <tunables/global>
 	deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
 	
 	/sys/devices/pci[0-9]*/**/{bConfigurationValue,descriptors,manufacturer,product,serial} r,
-	/sys/devices/pci[0-9]*/**/usb[0-9]*/[0-9]**/interface r,
 	owner /{dev,run}/shm/{,.}org.chromium.* mrw,
 	owner /{dev,run}/shm/{,.}com.opera.* mrw,
 	
 	# Access to Home, removable medias & other folders
-	@{HOME}/{,[^.]**} r,
+	@{HOME}/{,*,[^.]**} r,
 	/{data,media,mnt,srv,net}/** r,
 
 	# User folders
@@ -59,6 +58,7 @@ include <tunables/global>
 	owner @{HOME}/.config/opera/**/Cache/* mr,
 	owner @{HOME}/.cache/opera/{,**} rw,
 	owner @{HOME}/.cache/opera/Cache/* mr,
+	owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
 	
 	# Access to Opera directory
 	deny @{OPERA_LIBDIR}/** w,  # Noisy
@@ -79,7 +79,9 @@ include <tunables/global>
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
 		include <abstractions/chromium-base-xdgsettings>
-
+		
+		deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
+		
 		@{OPERA_LIBDIR}/xdg-settings r,
 	}
 	

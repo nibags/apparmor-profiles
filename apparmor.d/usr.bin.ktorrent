@@ -1,10 +1,10 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: December 04, 2017
 
 # NOTE:
-# - This profile is made for KTorrent 5. It does not work 
-#   in older versions (with QT 4).
+#  - This profile is made for KTorrent 5. It does not work 
+#    in older versions (with QT 4).
 #  - This profile is more restrictive than the one provided 
 #    in <abstractions/ubuntu-bittorrent-clients>.
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -19,17 +19,19 @@ include <tunables/global>
 
 /usr/bin/ktorrent {
 	include <abstractions/base>
+	include <abstractions/nameservice>
+	include <abstractions/fonts>
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>
-	include <abstractions/fonts>
-	include <abstractions/nameservice>
-	include <abstractions/kde>
+	include <abstractions/X>
+	include <abstractions/freedesktop.org>
+	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
-	include <abstractions/flatpak-snap>
-	include <abstractions/wayland>
 	
 	include <abstractions/networkmanager-strict>
 	include <abstractions/udisk-strict>
+	include <abstractions/wayland>	
+	include <abstractions/flatpak-snap>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
@@ -63,7 +65,7 @@ include <tunables/global>
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/kde.org/libphonon.conf r,
 	
-	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
+	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
 	
 	# Binaries
 	/usr/bin/ktorrent r,
@@ -93,7 +95,6 @@ include <tunables/global>
 	/usr/share/alsa/*.conf r,
 	
 	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/etc/xdg/Trolltech.conf k,
 	# /etc/fstab r,  # Used, but not essential
 	/etc/machine-id r,
@@ -106,7 +107,7 @@ include <tunables/global>
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	@{PROC}/sys/kernel/core_pattern r,
-	@{PROC}/*/mounts r,
+	owner @{PROC}/@{pid}/mounts r,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,

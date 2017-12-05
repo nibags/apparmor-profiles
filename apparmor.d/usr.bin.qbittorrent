@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 23, 2017
+# Last change: December 04, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -18,14 +18,17 @@ include <tunables/global>
 
 /usr/bin/qbittorrent {
 	include <abstractions/base>
+	include <abstractions/nameservice>
+	include <abstractions/fonts>
 	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>
-	include <abstractions/fonts>
-	include <abstractions/nameservice>
-	include <abstractions/kde>
-	include <abstractions/flatpak-snap>
+	include <abstractions/X>
+	include <abstractions/freedesktop.org>
+	include <abstractions/xdg-desktop>
+	
 	include <abstractions/networkmanager-strict>
 	include <abstractions/wayland>
+	include <abstractions/flatpak-snap>
 	
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
@@ -40,6 +43,8 @@ include <tunables/global>
 	
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>
+	
+	network netlink dgram,
 	
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
@@ -63,7 +68,7 @@ include <tunables/global>
 	owner @{HOME}/.kde/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde/share/config/*.new rwk,
 	
-	deny /{media,mnt,srv,net}/** rwklmx,     # Block access to mounted drives & other directories
+	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
 		
 	# Binaries
 	/usr/bin/qbittorrent r,
@@ -88,29 +93,27 @@ include <tunables/global>
 	/etc/machine-id r,
 	# /etc/fstab r,  # Used, but not essential
 	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/etc/ssl/openssl.cnf r,
 	/etc/udev/udev.conf r,
 	/dev/tty r,
 	
-	@{PROC}/*/mounts r,
+	owner @{PROC}/@{pid}/mounts r,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	
 	# Temporal files & sockets
-	owner /tmp/{,.}qBittorrent*.lock rwkl,
-	owner /tmp/kde-*/{,**} rwk,
+	owner /tmp/{,.}qBittorrent*/{,**} rwkl,
+	owner /tmp/{,.,*-}qBitto* rwkl,
 	owner /var/tmp/kdecache-*/{,*} rwk,
-	owner /run/user/[0-9]*/ksocket-*/{,qBittorrent*} rwk,
+	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,
 	owner /run/user/[0-9]*/kioclient*-socket rwk,
-	owner /run/user/[0-9]*/qBittorrent*-socket rwk,
+	owner /run/user/[0-9]*/qBitto*-socket rwk,
 	
 	owner /run/user/[0-9]*/bus rwk,
 	/run/dbus/system_bus_socket rw,
 	
-	network netlink dgram,
 	signal (send) set=(term) peer=unconfined,
 	
 	dbus (send)

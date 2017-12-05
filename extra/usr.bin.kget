@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2017
+# Last change: December 03, 2017
 
 include <tunables/global>
 
@@ -11,13 +11,13 @@ include <tunables/global>
 
 /usr/bin/kget {
 	include <abstractions/base>
+	include <abstractions/nameservice>
 	include <abstractions/fonts>
 	include <abstractions/dbus>
 	include <abstractions/dbus-accessibility>
 	include <abstractions/dbus-session>
-	include <abstractions/nameservice>
 	include <abstractions/X>
-	include <abstractions/kde>
+	include <abstractions/freedesktop.org>
 	include <abstractions/ubuntu-helpers>
 	include <abstractions/flatpak-snap>
 	
@@ -82,10 +82,12 @@ include <tunables/global>
 	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/etc/xdg/Trolltech.conf rk,
 	
-	@{PROC}/*/{mounts,maps} r,
+	owner @{PROC}/@{pid}/{mounts,maps} r,
 	/sys/devices/**/uevent r,
 	
 	# Temporal files and sockets
+	owner @{HOME}/.kde/tmp-* rwlk,
+	owner /{,var/}tmp/kde-*/{,**} rwlk,
 	owner /{,var/}tmp/kdecache-*/** rwk,
 	owner /{,var/}tmp/{,.}kget*.lock rwk,
 	owner /run/user/[0-9]*/{,ksocket-*/}{,kget*,kdeinit*,klauncher*,kio*,*.slave-socket} rwk,
@@ -97,5 +99,8 @@ include <tunables/global>
 	/dev/tty r,
 	/dev/snd/control* r,
 	
+	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
+	
 	signal (send) set=(term) peer=unconfined,
+	unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper addr=none),
 }

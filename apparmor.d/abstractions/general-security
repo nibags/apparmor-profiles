@@ -1,6 +1,6 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 16, 2017 
+# Last change: December 04, 2017 
 
 # Block binary execution & mapping of compiled libraries from untrusted sources
 audit deny owner /**/* mx,
@@ -17,3 +17,6 @@ audit deny /dev/{video,audio}* rwlkmx,
 
 # Others
 deny /run/udev/data/** rwklmx,
+
+deny @{HOME}/.local/share/applications/** w,
+deny @{HOME}/.local/share/flatpak/** w,
