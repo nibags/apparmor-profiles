@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 03, 2017
+# Last change: December 05, 2017
 
 include <tunables/global>
 
@@ -73,13 +73,11 @@ include <tunables/global>
 	
 	/usr/share/** r,
 	
-	/etc/udev/udev.conf r,
 	/etc/fstab r,
-	/etc/udev/udev.conf r,
 	/etc/pulse/*.conf r,
 	/etc/timezone r,
+	/etc/udev/udev.conf r,
 	/etc/xdg/{,**} r,
-	deny /etc/xdg/{autostart,systemd}/{,**} rw,
 	/etc/xdg/Trolltech.conf rk,
 	
 	owner @{PROC}/@{pid}/{mounts,maps} r,

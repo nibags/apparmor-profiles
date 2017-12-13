@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 10, 2017
+# Last change: December 12, 2017
 
 # NOTE:
 #  - This profile is made for KTorrent 5. It does not work 
@@ -106,10 +106,9 @@ include <tunables/global>
 	/etc/udev/udev.conf r,
 	deny /etc/fstab r,
 	
+	/dev/**/ r,
 	/dev/tty r,
 	/dev/snd/controlC[0-9]* r,
-	/dev/{ati,dri}/ r,
-	/dev/shm/ r,
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	/sys/**/ r,
