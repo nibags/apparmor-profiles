@@ -1,18 +1,20 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: September 10, 2017
+# Last change: December 10, 2017
 
 # Local Configuration Files in KDE Plasma 5
 
 owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 owner @{HOME}/.config/kdeglobals rw,
 owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
-owner @{HOME}/.config/trashrc rw,
-owner @{HOME}/.config/breezerc r,
-owner @{HOME}/.config/klanguageoverridesrc r,
 owner @{HOME}/.config/QtProject.conf rw,
 owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
 owner @{HOME}/.config/QtProject/{,**} rw,
+
+owner @{HOME}/.config/baloofilerc r,
+owner @{HOME}/.config/breezerc r,
+owner @{HOME}/.config/klanguageoverridesrc r,
+owner @{HOME}/.config/trashrc rw,
 
 # owner @{HOME}/.config/kio* r,
 # owner @{HOME}/.config/kdebugrc rw, 

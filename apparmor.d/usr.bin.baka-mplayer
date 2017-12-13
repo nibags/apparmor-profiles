@@ -38,7 +38,7 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	
 	# Configuration
 	owner @{HOME}/.config/ rw,
-	owner @{HOME}/.config/{baka-mplayer*,bakamplayer*} rwk,
+	owner @{HOME}/.config/baka{,-}mplayer* rwk,
 	
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/kdeglobals rw,
@@ -50,14 +50,15 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* wk,
 	
 	/usr/share/** r,
-	/etc/ssl/openssl.cnf r,
-	/etc/udev/udev.conf r,
-	/etc/xdg/{,**} r,
+	
 	/etc/directfbrc* r,
 	/etc/fstab r,
-	/etc/vdpau_wrapper.cfg r,
 	/etc/nsswitch.conf r,
 	/etc/passwd r,
+	/etc/ssl/openssl.cnf r,
+	/etc/udev/udev.conf r,
+	/etc/vdpau_wrapper.cfg r,
+	/etc/xdg/{,**} r,
 	
 	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
 	/sys/**/ r,
@@ -76,11 +77,11 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	/usr{,/local}/bin/youtube-dl Pxr,
 	/usr/bin/{mpv,dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} ixr,
+	/usr/bin/kdialog ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
-	/usr/bin/{gnome,gvfs,kde,xdg}-open ixr,
-	/usr/bin/kdialog ixr,
-	/usr/lib/x86_64-linux-gnu/libexec/kf5/* Pixr,
+	/usr/bin/{gnome,gvfs,xdg}-open ixr,
+	/usr{,/lib/x86_64-linux-gnu}/libexec/kf5/* Pixr,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so rm,
 	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
 	

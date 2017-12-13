@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 05, 2017
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -75,8 +75,8 @@ include <tunables/global>
 
 	# Potentially extremely sensitive files.
 	# NOTE: Included in @{CONFIDENTIAL_EXCEPT_THUNDERBIRD}
-	# audit deny @{HOME}/.gnupg/** mrwkl,
-	# audit deny @{HOME}/.ssh/** mrwkl,
+	#   audit deny @{HOME}/.gnupg/** mrwkl,
+	#   audit deny @{HOME}/.ssh/** mrwkl,
 
 	# Block access to cameras & microphones
 	audit deny /dev/{video,audio}* rwlkmx,
@@ -92,6 +92,9 @@ include <tunables/global>
 	audit deny @{HOME}/.[^t]*/** m,
 	audit deny @{HOME}/** x,
 	audit deny owner /**/* x,
+	
+	audit deny @{HOME}/.* w,
+	audit deny @{HOME}/.bash_history r,
 
 	# Required for LVM setups
 	/sys/devices/virtual/block/dm-[0-9]*/uevent r,

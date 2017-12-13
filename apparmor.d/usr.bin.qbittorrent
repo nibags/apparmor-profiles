@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 10, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -27,6 +27,7 @@ include <tunables/global>
 	include <abstractions/xdg-desktop>
 	
 	include <abstractions/networkmanager-strict>
+	include <abstractions/udisk-strict>
 	include <abstractions/wayland>
 	include <abstractions/flatpak-snap>
 	
@@ -47,8 +48,10 @@ include <tunables/global>
 	network netlink dgram,
 	
 	# Access to Home
-	owner @{TORRENTS_DIR}/{,**} rw,  # Just read/write in the Torrents directory.
-	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
+	owner @{TORRENTS_DIR}/{,**} rw,                  # Just read/write in the Torrents directory
+	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r, # Only read .torrent files
+	owner @{HOME}/{,**/} r,                          # Only read directories
+	deny @{HOME}/**/.directory r,
 	
 	# qBittorrent configuration
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
@@ -67,6 +70,7 @@ include <tunables/global>
 	owner @{HOME}/.kde/share/config/breezerc r,
 	owner @{HOME}/.kde/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde/share/config/*.new rwk,
+	owner @{HOME}/.local/share/qt_temp.* rwk,
 	
 	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
 		
@@ -78,34 +82,39 @@ include <tunables/global>
 	/usr/bin/kdialog ixr,
 		
 	# Libraries
+	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/} r,
 	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so mr,
 	
-	/{,**/} r,  # Read only directories, not files
-	
-	/usr/share/knotifications5/* r,
-	/usr/share/qt5/** r,
-	/usr/share/plasma/** r,
 	/usr/share/color-schemes/{,**} r,
+	/usr/share/GeoIP/{,*} r,
+	/usr/share/knotifications5/{,*} r,
+	/usr/share/kservices5/{,**/,**.protocol} r,
+	/usr/share/plasma/{,**} r,
+	/usr/share/qt5/{,**} r,
 	/usr/share/sounds/{,**} r,
-	/usr/share/kservices5/{,**} r,
-	/usr/share/GeoIP/* r,
+	/usr/share/mime/ r,
+	/usr/share/templates/ r,
 	
-	/etc/machine-id r,
-	# /etc/fstab r,  # Used, but not essential
 	/etc/xdg/{,**} r,
+	/etc/machine-id r,
 	/etc/ssl/openssl.cnf r,
 	/etc/udev/udev.conf r,
-	/dev/tty r,
+	deny /etc/fstab r,
 	
-	owner @{PROC}/@{pid}/mounts r,
+	/dev/tty r,
+	/dev/{ati,dri}/ r,
+	
+	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
+	owner @{PROC}/@{pid}/mounts r,
 	
 	# Temporal files & sockets
-	owner /tmp/{,.}qBittorrent*/{,**} rwkl,
-	owner /tmp/{,.,*-}qBitto* rwkl,
+	owner /tmp/*-qBitto* rwkl,
+	owner /tmp/qt_temp.* rwkl,
+	owner /{,var/}tmp/{,.}qBitto** rwkl,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,
 	owner /run/user/[0-9]*/kioclient*-socket rwk,
@@ -115,12 +124,5 @@ include <tunables/global>
 	/run/dbus/system_bus_socket rw,
 	
 	signal (send) set=(term) peer=unconfined,
-	
-	dbus (send)
-		bus=system
-		path=/org/freedesktop/UPower
-		interface=org.freedesktop.DBus.Introspectable
-		member=Introspect
-		peer=(name=org.freedesktop.UPower label=unconfined),
 }
 

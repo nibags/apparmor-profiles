@@ -1,6 +1,6 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 10, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
@@ -33,6 +33,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	deny @{CONFIDENTIAL_EXCEPT_TELEGRAM} rwklmx,
 	
 	# Access to Home
+	owner @{HOME}/ r,
 	owner @{HOME}/* r,
 	owner @{HOME}/[^.]*/ r,
 	owner @{HOME}/[^.]*/** r,
@@ -49,10 +50,13 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.config/gtkrc{,-*} r,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
+	owner @{HOME}/.local/share/icons/ rw,
+	owner @{HOME}/.local/share/icons/** r,
 	owner @{HOME}/.local/share/RecentDocuments/ r,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
 	deny @{HOME}/.local/share/recently-used.xbel r,
+	owner @{HOME}/.cache/fontconfig/{,*} rw,
 	
 	# For KDE Plasma 5
 	owner @{HOME}/.kde/share/config/kdeglobals rk,
@@ -86,11 +90,10 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	# Binaries & Helpers
 	/bin/dash Pixr,
 	/usr/bin/pulseaudio Pixr,
-	/usr/bin/xdg-open ixr,
-	/usr/bin/gnome-open ixr,
+	/usr/bin/{gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde-open{,5} ixr,
-	/usr/bin/gvfs-open ixr,
 	/usr/bin/kdialog ixr,
+	/usr/bin/desktop-file-install ixr,
 	
 	# Block binary execution and mapping of compiled libraries
 	audit deny owner /**/* m,
@@ -105,6 +108,8 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	
 	ptrace (trace) peer=unconfined,
 	ptrace (trace) peer=Telegram,
+	
+	unix (connect, send, receive) type=(stream) peer=(label=unconfined addr=@/dbus-vfs-daemon/socket-*),
 		
 	dbus (send)
 		bus=system

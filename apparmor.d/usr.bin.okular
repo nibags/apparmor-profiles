@@ -94,12 +94,13 @@ profile okular /usr/bin/okular {
 	
 	/usr/share/** r,
 	
-	/etc/nsswitch.conf r,
 	/etc/fstab r,
-	/etc/udev/udev.conf r,
-	/etc/pulse/{client,daemon}.conf r,
+	/etc/nsswitch.conf r,
 	/etc/passwd r,
+	/etc/pulse/{client,daemon}.conf r,
+	/etc/udev/udev.conf r,
 	/etc/xdg/{,**} r,
+	
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,

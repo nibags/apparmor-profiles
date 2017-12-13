@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 10, 2017
 
 # NOTE:
 #  - This profile is made for KTorrent 5. It does not work 
@@ -48,8 +48,10 @@ include <tunables/global>
 	include <abstractions/open-some-applications>
 	
 	# Access to Home
-	owner @{DOWNLOAD_DIR}/{,**} rw,  # Just read/write in the download directory
-	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r,  # Only read .torrent files
+	owner @{DOWNLOAD_DIR}/{,**} rw,                  # Just read/write in the download directory
+	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r, # Only read .torrent files
+	owner @{HOME}/{,**/} r,                          # Only read directories
+	deny @{HOME}/**/.directory r,
 	
 	# KTorrent configuration
 	owner @{TORRENT_INF_DIR}/{,**} rwk,
@@ -77,40 +79,45 @@ include <tunables/global>
 	/usr/bin/pulseaudio Pixr,
 	
 	# Libraries
+	/usr/lib{,64}/ r,
 	/usr/lib{,64}/libktorrent.so.* mr,
+	/usr/lib{64,/*-linux-gnu}/qt5/plugins/{,**/} r,
 	/usr/lib{64,/*-linux-gnu}/qt5/plugins/**.so mr,
 	deny /usr/lib{,64}/vlc/plugins/plugins.dat* w,
 	
-	/{,**/} r,  # Read only directories
-	
-	/usr/share/qt5/** r,
-	/usr/share/plasma/** r,
-	/usr/share/icons/** r,
-	/usr/share/kservices5/**.protocol r,
-	/usr/share/kxmlgui5/ktorrent/** r,
-	/usr/share/GeoIP/* r,
-	/usr/share/knotifications5/* r,
+	/usr/share/alsa/{,*.conf} r,
 	/usr/share/color-schemes/{,**} r,
+	/usr/share/GeoIP/{,*} r,
+	/usr/share/icons/{,**} r,
+	/usr/share/knotifications5/{,*} r,
+	/usr/share/kservices5/{,**/,**.protocol} r,
+	/usr/share/kxmlgui5/ktorrent/{,**} r,
+	/usr/share/plasma/{,**} r,
+	/usr/share/qt5/{,**} r,
 	/usr/share/sounds/{,**} r,
-	/usr/share/alsa/*.conf r,
+	/usr/share/mime/ r,
+	/usr/share/templates/ r,
 	
 	/etc/xdg/{,**} r,
 	/etc/xdg/Trolltech.conf k,
-	# /etc/fstab r,  # Used, but not essential
-	/etc/machine-id r,
-	/etc/udev/udev.conf r,
-	/etc/timezone r,
 	/etc/pulse/client.conf r,
+	/etc/machine-id r,
+	/etc/timezone r,
+	/etc/udev/udev.conf r,
+	deny /etc/fstab r,
 	
 	/dev/tty r,
 	/dev/snd/controlC[0-9]* r,
+	/dev/{ati,dri}/ r,
+	/dev/shm/ r,
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
-	@{PROC}/sys/kernel/core_pattern r,
-	owner @{PROC}/@{pid}/mounts r,
+	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	@{PROC}/sys/kernel/core_pattern r,
+	owner @{PROC}/@{pid}/mounts r,
 	
 	# Temp files
 	owner /run/user/[0-9]*/kioclient*.slave-socket rwk,

@@ -41,9 +41,9 @@ profile mpv /usr/bin/mpv {
 	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
 	
 	/etc/mpv/{,**} r,
+	/etc/nsswitch.conf r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
-	/etc/nsswitch.conf r,
 	
 	/sys/**/ r,
 	/sys/devices/**/uevent r,

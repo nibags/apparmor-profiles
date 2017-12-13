@@ -1,6 +1,6 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017 
+# Last change: December 05, 2017 
 
 # Block binary execution & mapping of compiled libraries from untrusted sources
 audit deny owner /**/* mx,
@@ -8,9 +8,9 @@ audit deny @{HOME}/** mx,
 audit deny /{media,mnt,srv,net,cdrom,var,run,tmp}/** mx,
 
 # Block Python imports from untrusted sources
-audit deny owner /**/**.py* r,
-audit deny @{HOME}/**.py* r,
-audit deny /{media,mnt,srv,net,cdrom,var,run,tmp}/**.py* r,
+deny owner /**/**.py* r,
+deny @{HOME}/**.py* r,
+deny /{media,mnt,srv,net,cdrom,var,run,tmp}/**.py* r,
 
 # Block cameras & microphones
 audit deny /dev/{video,audio}* rwlkmx,
@@ -20,3 +20,6 @@ deny /run/udev/data/** rwklmx,
 
 deny @{HOME}/.local/share/applications/** w,
 deny @{HOME}/.local/share/flatpak/** w,
+
+audit deny @{HOME}/.* w,
+audit deny @{HOME}/.bash_history r,
