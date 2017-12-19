@@ -1,5 +1,5 @@
 # kate: syntax AppArmor Security Profile
-# Last change: December 03, 2017
+# Last change: December 13, 2017
 
 # Files and directories with sensitive data,
 # such as keys, passwords, settings or others:
@@ -17,9 +17,10 @@
 @{VIVALDI} = @{HOME}/.config/vivaldi/{,**} @{HOME}/.cache/vivaldi/**
 @{CHROME} =  @{HOME}/.config/chromium/{,**} @{HOME}/.config/google-chrome/{,**} @{HOME}/.cache/{chromium,google-chrome}/**
 @{CHROME} += @{HOME}/.encrypted-volume/chromium/{,**} @{HOME}/.encrypted-volume/google-chrome/{,**}
-@{TELEGRAM} = @{HOME}/.TelegramDesktop/{,**}
+@{TELEGRAM} = @{HOME}/.TelegramDesktop/{,**} @{HOME}/.var/app/org.telegram.desktop/{,**}
 
 @{USER_HISTORY} = @{HOME}/.local/share/recently-used.xbel @{HOME}/.kde/share/apps/RecentDocuments/** @{HOME}/.cache/thumbnails/**
+#@{FLATPAK} = @{HOME}/.var/app/{,**} @{HOME}/.local/share/flatpak/{app,db,repo,runtime,system-cache}/{,**}
 @{SYSTEM_SEC} =  /boot/{,**} /var/log/{,**}
 @{SYSTEM_SEC} += @{HOME}/.config/autostart{,-scripts}/** /etc/xdg/autostart/**
 @{SYSTEM_SEC} += /etc/init.d/** /etc/cron.*/** /etc/initramfs-tools/** /etc/systemd/** /etc/xdg/systemd/**

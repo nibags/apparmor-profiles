@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 12, 2017
+# Last change: December 14, 2017
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -114,6 +114,7 @@ include <tunables/global>
 	# Temporal files & sockets
 	owner /tmp/*-qBitto* rwkl,
 	owner /tmp/qt_temp.* rwkl,
+	owner /tmp/[0-9]*/ rw,
 	owner /{,var/}tmp/{,.}qBitto** rwkl,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,

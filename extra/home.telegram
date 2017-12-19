@@ -1,6 +1,6 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 10, 2017
+# Last change: December 13, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
@@ -50,11 +50,12 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	owner @{HOME}/.config/gtkrc{,-*} r,
 	owner @{HOME}/.config/dconf/user rw,
 	owner /{,var/}run/user/*/dconf/user rw,
-	owner @{HOME}/.local/share/icons/ rw,
-	owner @{HOME}/.local/share/icons/** r,
-	owner @{HOME}/.local/share/RecentDocuments/ r,
+	owner @{HOME}/.local/share/icons/{,**} rw,
+	owner @{HOME}/.local/share/applications/{,telegramdesktop.desktop} rw,
+	owner @{HOME}/.local/share/applications/telegramdesktop.desktop.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.local/share/RecentDocuments/ rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
-	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.local/share/RecentDocuments/*.desktop.[a-zA-Z0-9]* rwk,
 	deny @{HOME}/.local/share/recently-used.xbel r,
 	owner @{HOME}/.cache/fontconfig/{,*} rw,
 	
