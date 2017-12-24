@@ -1,6 +1,6 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 13, 2017
+# Last change: December 19, 2017
 
 # NOTE: 
 #  - Important: Check & change the Telegram binary path and the user downloads directory.
@@ -12,7 +12,10 @@ include <tunables/global>
 # Downloads directory:
 @{DOWNLOADS_DIR} = @{HOME}/Descargas
 
-profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
+# Binaries location
+@{TELEGRAM_BIN} = @{HOME}/.app/Telegram
+
+profile Telegram /home/*/.app/Telegram/{Telegram,Updater} {
 	include <abstractions/base>
 	include <abstractions/nameservice>
 	include <abstractions/fonts>
@@ -41,7 +44,7 @@ profile Telegram /home/*/.TelegramDesktop/bin/{Telegram,Updater} {
 	
 	# Telegram directory
 	owner @{HOME}/.TelegramDesktop/{**,} rwkl,
-	owner @{HOME}/.TelegramDesktop/bin/* ix,
+	owner @{TELEGRAM_BIN}/* ixwr,
 	
 	# Local configuration
 	owner @{HOME}/.config/* r,

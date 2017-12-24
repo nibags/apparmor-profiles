@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 17, 2017
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the library import:
@@ -54,6 +54,7 @@ profile mpv /usr/bin/mpv {
 	# Device access
 	/dev/ati/{,**} r,
 	/dev/dri/{,**} r,
+	/dev/tty rw,
 	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
 	
 	# Binaries and libraries

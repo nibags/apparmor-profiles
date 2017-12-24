@@ -8,10 +8,10 @@
 AppArmor profiles for:
 * Baka-MPlayer
 * Bluetooth Daemon
+* Brave
 * Chromium
 * Firefox
 * Gwenview
-* Konversation
 * KTorrent
 * mpv
 * Okular
@@ -38,7 +38,7 @@ If you use Ubuntu, please install the packages
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
-* Check the location of the Telegram executable. The profile uses: `/home/*/.TelegramDesktop/bin/{Telegram,Updater}`.
+* Check the location of the Telegram executable. The profile uses: `/home/*/.app/Telegram/{Telegram,Updater}`.
 
 * For the profiles to work correctly, in the file `/etc/apparmor.d/tunables/global`, add the line:
 ```c
