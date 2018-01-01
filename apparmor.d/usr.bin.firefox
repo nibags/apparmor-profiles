@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 05, 2017
+# Last change: December 26, 2017
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -183,6 +183,7 @@ include <tunables/global>
   
   owner @{HOME}/{*,[^.]*/**}.{[jJ][sS][oO][nN],[hH][tT][mM][lL]} rw,  # To backup bookmarks
   owner @{HOME}/dwhelper/{,**} rw,
+  owner @{HOME}/mozilla.pdf rw,
   
   # Noisy
   audit deny /{data,media,mnt,srv,net}/** mx,
