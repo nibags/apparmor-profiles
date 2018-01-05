@@ -81,9 +81,9 @@ include <tunables/global>
 	# Libraries
 	/usr/lib{,64}/ r,
 	/usr/lib{,64}/libktorrent.so.* mr,
-	/usr/lib{64,/*-linux-gnu}/qt5/plugins/{,**/} r,
-	/usr/lib{64,/*-linux-gnu}/qt5/plugins/**.so mr,
-	deny /usr/lib{,64}/vlc/plugins/plugins.dat* w,
+	/usr/lib{64,/@{multiarch}}/qt5/plugins/{,**/} r,
+	/usr/lib{64,/@{multiarch}}/qt5/plugins/**.so mr,
+	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat* w,
 	
 	/usr/share/alsa/{,*.conf} r,
 	/usr/share/color-schemes/{,**} r,

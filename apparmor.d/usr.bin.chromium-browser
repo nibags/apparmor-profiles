@@ -3,7 +3,7 @@
 # created by Jamie Strandboge <jamie@canonical.com>
 
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: January 05, 2018
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -16,9 +16,10 @@ include <tunables/global>
 # Chromium directory:
 @{CHROM_LIBDIR} = /usr/lib{,64}/chromium-browser
 
-# User directories (with write access):
-@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
-@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
+# User directories, with write access
+# (downloads and desktop directories):
+@{USER_DIR} =  @{HOME}/Descargas
+@{USER_DIR} += @{HOME}/Escritorio
 
 /usr/lib{,64}/chromium-browser/chromium-browser flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 05, 2017
+# Last change: January 05, 2018
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -17,9 +17,10 @@ include <tunables/global>
 # Thunderbird directory:
 @{THUNB_LIBDIR} = /usr/lib{,64}/thunderbird
 
-# User directories (with write access):
-@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
-@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
+# User directories, with write access
+# (downloads and desktop directories):
+@{USER_DIR} =  @{HOME}/Descargas
+@{USER_DIR} += @{HOME}/Escritorio
 
 /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	include <abstractions/audio>
@@ -144,8 +145,8 @@ include <tunables/global>
 	/etc/gre.d/* r,
 
 	# Libraries for KDE Plasma
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/platformthemes/KDEPlasmaPlatformTheme.so mr,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/kf5/org.kde.kwindowsystem.platforms/KF5WindowSystem{KWayland,Wayland,X11}Plugin.so mr,
 
 	# Noisy
 	deny @{THUNB_LIBDIR}/** w,

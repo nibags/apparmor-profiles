@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 26, 2017
+# Last change: January 05, 2018
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -10,9 +10,10 @@
 # directories: /home, /media, /mnt, /srv, /net.
 # View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
-# User directories (with write access):
-@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
-@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
+# User directories, with write access
+# (downloads and desktop directories):
+@{USER_DIR} =  @{HOME}/Descargas
+@{USER_DIR} += @{HOME}/Escritorio
 
 include <tunables/global>
 

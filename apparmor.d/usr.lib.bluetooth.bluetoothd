@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 03, 2017
+# Last change: December 30, 2017
 
 include <tunables/global>
 
@@ -16,6 +16,8 @@ include <tunables/global>
 	
 	/usr/lib{,32,64}/bluetooth/bluetoothd ixmr,
 	/var/lib{,32,64}/bluetooth/** rwk,
+	/usr/lib{,32,64}/{,@{multiarch}/}bluetooth/{,**} r,
+	/usr/lib{,32,64}/{,@{multiarch}/}bluetooth/plugins/sixaxis.so m,
 	/etc/bluetooth/** r,
 	/etc/udev/udev.conf r,
 	
@@ -54,7 +56,7 @@ include <tunables/global>
 		bus=system
 		path=/
 		interface=org.freedesktop.DBus.ObjectManager
-		member=GetManagedObjects,
+		member={GetAll,GetManagedObjects},
 	
 	dbus (receive)
 		bus=system
@@ -65,14 +67,20 @@ include <tunables/global>
 		bus=system
 		path=/org/freedesktop/DBus
 		interface=org.freedesktop.DBus
-		member={Hello,RequestName,AddMatch,RemoveMatch}
+		member={Hello,RequestName,AddMatch,RemoveMatch,GetNameOwner}
 		peer=(name=org.freedesktop.DBus),
 	
+	dbus (send)
+		bus=system
+		path=/org/freedesktop/hostname[0-9]*
+		interface=org.freedesktop.DBus.Properties
+		member=GetAll,
+	
+	# Noisy
 	deny /{home,root,media,mnt,srv,net}/** rwkl,
 	audit deny /{home,root,media,mnt,srv,net,cdrom,run,tmp}/** mx,
 	audit deny /dev/{audio,video}* rwklmx,
 	
-	# Noisy
 	audit deny /boot/** rwklmx,
 	audit deny /var/log/** rwklmx,
 	audit deny /etc/apparmor.d/** rwklmx,

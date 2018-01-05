@@ -1,0 +1,51 @@
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: January 03, 2018
+
+include <tunables/global>
+
+profile bluedevil /usr/bin/bluedevil-{monolithic,wizard} {
+	include <abstractions/base>
+	include <abstractions/dbus>
+	include <abstractions/dbus-session>
+	include <abstractions/dbus-accessibility>
+	include <abstractions/fonts>
+	include <abstractions/X>
+	include <abstractions/freedesktop.org>
+	include <abstractions/consoles>
+	
+	include <abstractions/confidential-deny>
+	include <abstractions/flatpak-snap>
+	include <abstractions/wayland>
+
+	owner @{HOME}/.kde/share/config/kcmshellrc* r,
+	owner @{HOME}/.kde/share/config/bluedevil* rw,
+	owner @{HOME}/.kde/share/apps/RecentDocuments/{,**} rw,
+	
+	owner @{HOME}/.config/kdeglobals r,
+	owner @{HOME}/.config/klanguageoverridesrc r,
+	owner @{HOME}/.config/breezerc r,
+	owner @{HOME}/.cache/icon-cache.kcache rw,
+	
+	/usr/share/{,apps/}bluedevil/{,**} r,
+	/usr/share/{,apps/}bluedevilwizard/{,**} r,
+	/usr/share/cursors/{,**} r,
+	/usr/share/plasma/look-and-feel/{,**} r,
+	/usr/share/qt5/translations/*.qm r,
+	/usr/share/color-schemes/** r,
+	
+	/etc/nsswitch.conf r,
+	/etc/passwd r,
+	
+	/sys/devices/pci[0-9]*/** r,  # Investigate
+	
+	/usr/bin/bluedevil-wizard ixr,
+	/usr/bin/bluedevil-monolithic mr,
+	/usr/bin/kcmshell{4,5} ixr,
+	
+	/usr/lib{,32,64,/@{multiarch}}/qt5/plugins/{imageformats,platformthemes,styles}/*.so mr,
+	
+	/var/tmp/kdecache-*/*.kcache rw,
+	
+	/dev/rfkill r,
+	/dev/dri/ r,
+}

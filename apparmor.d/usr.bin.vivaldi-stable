@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: January 05, 2018
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -14,9 +14,10 @@ include <tunables/global>
 # Vivaldi directory:
 @{VIVALDI_LIBDIR} = /opt/vivaldi
 
-# User directories (with write access):
-@{USER_DIR} =  @{HOME}/Descargas   # Downloads directory
-@{USER_DIR} += @{HOME}/Escritorio  # Desktop directory
+# User directories, with write access
+# (downloads and desktop directories):
+@{USER_DIR} =  @{HOME}/Descargas
+@{USER_DIR} += @{HOME}/Escritorio
 
 /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.

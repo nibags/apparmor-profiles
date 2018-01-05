@@ -82,8 +82,8 @@ include <tunables/global>
 	/usr/bin/kdialog ixr,
 		
 	# Libraries
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/} r,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so mr,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/} r,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/**.so mr,
 	
 	/usr/share/color-schemes/{,**} r,
 	/usr/share/GeoIP/{,*} r,

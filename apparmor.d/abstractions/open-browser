@@ -1,9 +1,9 @@
 # kate: syntax AppArmor Security Profile
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 09, 2017
+# Last change: January 03, 2018
 
 # Open Web browsers, needed to open links.
-# Only for Firefox, Opera, Chromium, Chrome & Vivaldi.
+# Only for Firefox, Opera, Chromium, Chrome, Vivaldi & Pale Moon.
 # To support more browsers, you can also use (in the toplevel profile):
 #      #include <abstractions/ubuntu-helpers>
 #      #include <abstractions/ubuntu-browsers>
@@ -34,6 +34,9 @@
 # This is a script that executes: "/opt/vivaldi/vivaldi-bin"
 /opt/vivaldi/vivaldi ix,
 /opt/vivaldi/vivaldi-bin PUx,
+
+# Pale Moon
+/usr/lib{,64}/palemoon/palemoon PUx,
 
 /bin/which ix,
 

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: December 30, 2017
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.
 
@@ -84,7 +84,7 @@ profile vlc /usr/bin/vlc {
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kdialog ixr,
 	
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64}/libvlc*.so{,.*} m,
 	/usr/lib{,64}/vlc/**.so{,.*} m,
 	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
@@ -96,6 +96,7 @@ profile vlc /usr/bin/vlc {
 	
 	# Temporal files & sockets
 	owner /tmp/xauth-* r,
+	owner /tmp/vlc* rwk,
 	owner /run/user/[0-9]*/vlc* rwk,
 	/run/dbus/system_bus_socket rw,
 	/run/systemd/journal/socket rw, 

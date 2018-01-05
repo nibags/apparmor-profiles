@@ -81,9 +81,9 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/{gnome,gvfs,xdg}-open ixr,
-	/usr{,/lib/x86_64-linux-gnu}/libexec/kf5/* Pixr,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/**.so rm,
-	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
+	/usr{,/lib/@{multiarch}}/libexec/kf5/* Pixr,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/**.so rm,
+	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat{,.*} w,
 	
 	# Temporal files and sockets
 	owner /run/user/[0-9]*/baka-mplayer*-socket rwkl,

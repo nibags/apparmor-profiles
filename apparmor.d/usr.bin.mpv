@@ -62,7 +62,7 @@ profile mpv /usr/bin/mpv {
 	/usr{,/local}/bin/youtube-dl Pxr,
 	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} Pixr,
-	deny /usr/lib{,64,/*-linux-gnu}/vlc/plugins/plugins.dat{,.*} w,
+	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat{,.*} w,
 	
 	deny /run/udev/data/{,**} rwklmx,
 	audit deny owner /**/*.py* r,  # Block Python imports

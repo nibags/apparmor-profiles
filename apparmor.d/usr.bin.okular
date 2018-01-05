@@ -113,11 +113,11 @@ profile okular /usr/bin/okular {
 	/usr/bin/dolphin PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
 	/usr/bin/* Pixr,
-	/usr/lib{,64,/*-linux-gnu}/qt5/** r,
-	/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{,**/}*.so m,
-	/usr/lib{,64,/*-linux-gnu}/qt5/qml/{,**/}*.{so,jsc,qmlc} m,
-	/usr/lib{,64,/*-linux-gnu}/qt5/{bin,libexec}/** ix,
-	deny /usr/lib{,64}/vlc/plugins/plugins.dat* w,
+	/usr/lib{,64,/@{multiarch}}/qt5/** r,
+	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
+	/usr/lib{,64,/@{multiarch}}/qt5/qml/{,**/}*.{so,jsc,qmlc} m,
+	/usr/lib{,64,/@{multiarch}}/qt5/{bin,libexec}/** ix,
+	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat* w,
 	
 	# Temporal files and sockets
 	owner /tmp/xauth-* rk,
