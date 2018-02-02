@@ -1,7 +1,7 @@
 # vim:syntax=apparmor
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 05, 2018
+# Last change: January 20, 2018
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -196,6 +196,11 @@ include <tunables/global>
   deny @{HOME}/.local/share/{applications,flatpak}/** w,
   audit deny @{HOME}/.* w,
   audit deny @{HOME}/.bash_history r,
+  
+  # Modifications (for Firefox 58)
+  /etc/ld.so.conf r,
+  /etc/ld.so.conf.d/*.conf r,
+  owner @{HOME}/.cache/fontconfig/*.cache-* rw,
   
   # per-user firefox configuration
   owner @{HOME}/.{firefox,mozilla}/ rw,

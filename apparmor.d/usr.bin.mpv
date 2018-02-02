@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 17, 2017
+# Last change: January 31, 2017
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the library import:
@@ -39,6 +39,8 @@ profile mpv /usr/bin/mpv {
 	owner @{HOME}/.config/ rw,
 	owner @{HOME}/.config/mpv/{,**} rwk,
 	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
+	
+	owner @{HOME}/mpv-shot[0-9]*.jpg rw,
 	
 	/etc/mpv/{,**} r,
 	/etc/nsswitch.conf r,

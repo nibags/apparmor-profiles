@@ -3,7 +3,7 @@
 # created by Jamie Strandboge <jamie@canonical.com>
 
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 05, 2018
+# Last change: January 31, 2018
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -52,6 +52,13 @@ include <tunables/global>
 	owner @{HOME}/.cache/chromium/Cache/* mr,
 	owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
 	
+	owner @{HOME}/.config/menus/ rw,
+	owner @{HOME}/.config/menus/applications-merged/ rw,
+	# owner @{HOME}/.config/menus/applications-merged/** rw,
+	owner @{HOME}/.local/share/icons/ rw,
+	owner @{HOME}/.local/share/icons/hicolor/ rw,
+	# owner @{HOME}/.local/share/icons/hicolor/** rw,
+	
 	# Access to Chromium directory
 	deny @{CHROM_LIBDIR}/** w, # Noisy
 	@{CHROM_LIBDIR}/*.pak mr,
@@ -76,6 +83,7 @@ include <tunables/global>
 	/bin/readlink ixr,
 	/bin/rm ixr,
 	/bin/touch ixr,
+	/bin/cp ixr,
 	
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.

@@ -1,6 +1,6 @@
 # vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 17, 2017
+# Last change: January 31, 2017
 
 include <tunables/global>
 
@@ -97,6 +97,7 @@ profile okular /usr/bin/okular {
 	/etc/nsswitch.conf r,
 	/etc/passwd r,
 	/etc/pulse/{client,daemon}.conf r,
+	/etc/rpc r,
 	/etc/udev/udev.conf r,
 	/etc/xdg/{,**} r,
 	
@@ -120,15 +121,18 @@ profile okular /usr/bin/okular {
 	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat* w,
 	
 	# Temporal files and sockets
-	owner /tmp/xauth-* rk,
-	owner /{,var/}tmp/kde-*/{,**} rwk,
-	owner /{,var/}tmp/kdecache-*/{,*} rwk,
+	owner /tmp/* rw,
+	owner /tmp/xauth-* k,
+	owner /{,var/}tmp/kde{,cache}-*/ rw,
+	owner /{,var/}tmp/kde{,cache}-*/** rwk,
+	
 	owner /{,var/}run/user/[0-9]*/pulse/  rw,
 	owner /{,var/}run/user/[0-9]*/pulse/{native,pid,*lock} rwk,
 	owner /{,var/}run/user/[0-9]*/*-socket rwk,
 	owner /{,var/}run/user/[0-9]*/bus rw,
 	owner /{,var/}run/user/[0-9]*/kdeinit5* rwk,
-	owner /{,var/}run/user/[0-9]*/ksocket-*/{,**} rwk,
+	owner /{,var/}run/user/[0-9]*/ksocket-*/ rw,
+	owner /{,var/}run/user/[0-9]*/ksocket-*/** rwk,
 	/run/dbus/system_bus_socket w,
 	
 	/dev/tty r,
@@ -136,6 +140,11 @@ profile okular /usr/bin/okular {
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	signal (send) set=(term) peer=unconfined,
+	
+	deny @{HOME}/.local/share/applications/** w,
+	deny @{HOME}/.local/share/flatpak/** w,
+	deny @{HOME}/.bash_history r,
+	audit deny @{HOME}/.* w,
 	
 	# Block binary execution & mapping of compiled libraries from untrusted sources
 	audit deny /{media,mnt,srv,net,cdrom,var,run,tmp}/** mx,
@@ -150,10 +159,5 @@ profile okular /usr/bin/okular {
 	deny /{media,mnt,srv,net,cdrom,var,run,tmp}/**.py* r,
 	
 	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-	deny /run/udev/data/** rwklmx,
-	
-	deny @{HOME}/.local/share/applications/** w,
-	deny @{HOME}/.local/share/flatpak/** w,
-	audit deny @{HOME}/.* w,
-	audit deny @{HOME}/.bash_history r,
+	deny /run/udev/data/** rwklmx,	
 }
