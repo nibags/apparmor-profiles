@@ -49,3 +49,6 @@ profile bluedevil /usr/bin/bluedevil-{monolithic,wizard} {
 	/dev/rfkill r,
 	/dev/dri/ r,
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

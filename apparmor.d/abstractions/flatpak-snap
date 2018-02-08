@@ -1,6 +1,8 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 30, 2017
+# Last change: February 07, 2018
 
 # Flatpak
 /var/lib/flatpak/exports/share/** r,
@@ -9,6 +11,7 @@
 owner @{HOME}/.local/share/flatpak/exports/share/** r,
 owner @{HOME}/.local/share/flatpak/app/**.desktop r,
 owner @{HOME}/.local/share/flatpak/app/ r,
+deny @{HOME}/.local/share/flatpak/** w,
 
 # Snap
 /var/lib/snapd/desktop/applications/mimeinfo.cache r,

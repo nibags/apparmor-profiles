@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: November 30, 2017
 
@@ -38,3 +37,6 @@ profile youtube_dl /usr{,/local}/bin/youtube-dl {
 	owner /{,var/}tmp/[a-zA-Z0-9]* rw,
 	owner /run/user/[0-9]*/*.slave-socket rwk,
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

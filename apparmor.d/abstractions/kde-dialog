@@ -1,0 +1,37 @@
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: February 07, 2018
+
+#/usr/bin/kde-open{,5} Cx -> kde-dialog,
+#/usr/bin/kdeinit5 Cx -> kde-dialog,
+#/usr/bin/kdialog Cx -> kde-dialog,
+
+profile kde-dialog {
+	include <abstractions/kde-plasma5>
+	include <abstractions/confidential-deny>
+	include <abstractions/general-security>
+	include <abstractions/block-networking>
+	
+	/{,**/} r,
+	/{data,home,media,mnt,srv,net,cdrom}/** r,
+	
+	owner @{HOME}/.config/kdialogrc rw,
+	owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
+	deny @{HOME}/.local/share/RecentDocuments/* w,
+	
+	owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
+	
+	#/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{imageformats,platformthemes,styles}/*.so m,
+	/etc/fstab r,
+	/etc/rpc r,
+	/dev/tty r,
+	
+	/sys/devices/**/uevent r,
+	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
+	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
+	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
+	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
+	owner @{PROC}/@{pid}/task/[0-9]*/stat r,
+}

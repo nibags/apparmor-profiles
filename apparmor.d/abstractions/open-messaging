@@ -1,4 +1,5 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
 
 /usr/bin/konversation Pxr,
 /usr/bin/Telegram Pxr,

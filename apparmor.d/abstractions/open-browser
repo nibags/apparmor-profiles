@@ -1,4 +1,6 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: January 03, 2018
 
@@ -39,5 +41,3 @@
 /usr/lib{,64}/palemoon/palemoon PUx,
 
 /bin/which ix,
-
-

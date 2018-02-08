@@ -1,6 +1,7 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
 
-# Base rules for Web browsers based on Chromium.
+# Rules for Web browsers based on Chromium.
 # ---------------------------------------------------
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>

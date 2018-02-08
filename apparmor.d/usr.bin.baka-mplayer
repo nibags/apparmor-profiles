@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: December 04, 2017
 
@@ -109,3 +108,6 @@ profile baka-mplayer /usr/bin/baka-mplayer {
 		member={Hello,AddMatch,RemoveMatch,GetNameOwner,NameHasOwner}
 		peer=(name=org.freedesktop.DBus),
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

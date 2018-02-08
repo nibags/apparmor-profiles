@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: January 31, 2017
 
@@ -29,7 +28,7 @@ profile mpv /usr/bin/mpv {
 	include <abstractions/confidential-deny>
 	
 	# Only reading access in Home directory, mounted drives and others directories
-	@{DATA_DIR}/{,**} r,
+	@{DATA_DIR}/** r,
 	
 	# Block compiled libraries & executables
 	audit deny @{DATA_DIR}/** mx,
@@ -37,8 +36,8 @@ profile mpv /usr/bin/mpv {
 	
 	# Configuration
 	owner @{HOME}/.config/ rw,
-	owner @{HOME}/.config/mpv/{,**} rwk,
-	owner @{HOME}/.config/gnome-mpv/{,**} rwk,
+	owner @{HOME}/.config/mpv/ rw,
+	owner @{HOME}/.config/mpv/** rwk,
 	
 	owner @{HOME}/mpv-shot[0-9]*.jpg rw,
 	
@@ -134,3 +133,6 @@ profile mpv /usr/bin/mpv {
 	/**.[pP][lL][sS]   r, # pls
 	/**.[sS][rR][tT]   r, # srt
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

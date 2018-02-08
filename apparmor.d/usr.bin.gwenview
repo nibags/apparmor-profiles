@@ -1,6 +1,5 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: February 07, 2018
 
 include <tunables/global>
 
@@ -74,9 +73,19 @@ profile gwenview /usr/bin/gwenview {
 	
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
-	/usr/bin/plasma-discover PUx,
 	/usr/bin/dolphin PUx,
+	/usr/bin/plasma-discover PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
+	
+	/usr/bin/digikam PUx,
+	/usr/bin/gimp PUx,
+	/usr/bin/gimp-2.8 PUx,
+	/usr/bin/inkscape PUx,
+	/usr/bin/krita PUx,
+	/usr/bin/skanlite PUx,
+	/usr/bin/darktable PUx,
+	/usr/bin/mirage PUx,
+	/usr/bin/kate PUx,
 	/usr/bin/* Pixr,
 	
 	/usr/lib{,64,/@{multiarch}}/qt5/** r,
@@ -95,3 +104,6 @@ profile gwenview /usr/bin/gwenview {
 	
 	signal (send) set=(term) peer=unconfined,
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

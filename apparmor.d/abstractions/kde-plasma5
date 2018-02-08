@@ -1,0 +1,61 @@
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: February 07, 2018
+
+# KDE Plasma 5
+
+include <abstractions/base>
+include <abstractions/fonts>
+include <abstractions/X>
+include <abstractions/wayland>
+include <abstractions/freedesktop.org>
+include <abstractions/xdg-desktop>
+
+include <abstractions/flatpak-snap>
+include <abstractions/kde-user>
+
+owner @{HOME}/.config/kde.org/** r,
+owner @{HOME}/.config/kdebugrc rw,
+owner @{HOME}/.config/libaccounts-glib/ rw,
+owner @{HOME}/.config/libaccounts-glib/accounts.db rk,
+owner @{HOME}/.config/Trolltech.conf rk,
+
+owner @{HOME}/.local/share/icons/** rw,
+/usr/share/icons/** r,
+
+/usr/share/color-schemes/** r,
+/usr/share/knotifications5/** r,
+/usr/share/kservices5/** r,
+/usr/share/kxmlgui5/** r,
+/usr/share/plasma/** r,
+/usr/share/qt5/** r,
+/usr/share/sounds/** r,
+/usr/share/mime/** r,
+/usr/share/templates/** r,
+
+/etc/xdg/** r,
+/etc/xdg/Trolltech.conf k,
+deny /etc/xdg/{autostart,systemd}/** rw,
+
+# Qt5
+/usr/lib{,64,/@{multiarch}}/qt5/** r,
+/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
+/usr/lib{,64,/@{multiarch}}/qt5/qml/{,**/}*.{so,jsc,qmlc} m,
+/usr/lib{,64,/@{multiarch}}/qt5/{bin,libexec}/** ix,
+
+/usr/lib/@{multiarch}/libexec/kf5/** ix,
+deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat* w,
+
+# Temporal files
+owner @{HOME}/.local/share/qt_temp.* rwk,
+owner @{HOME}/.kde/tmp-* rwk,
+
+owner /tmp/** rwlk,
+owner /{,var/}tmp/kde{,cache}-*/ rwl,
+owner /{,var/}tmp/kde{,cache}-*/** rwlk,
+owner /{,var/}run/user/[0-9]*/kdeinit5* rwlk,
+owner /{,var/}run/user/[0-9]*/ksocket-*/ rwl,
+owner /{,var/}run/user/[0-9]*/ksocket-*/** rwlk,
+owner /{,var/}run/user/[0-9]*/kioclient*-socket rwlk,

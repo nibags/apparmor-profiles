@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: December 05, 2017
 
@@ -40,8 +39,11 @@ include <tunables/global>
 	owner @{HOME}/{,**} r,
 	
 	# KGet configuration
-	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rwk,
-	owner @{HOME}/.kde{,4}/share/config/kget* rwk,
+	owner @{HOME}/.config/kget/{,**} rw,
+	owner @{HOME}/.cache/kget/{,**} rw,
+	owner @{HOME}/.local/share/kget/{,**} rw,
+	owner @{HOME}/.kde{,4}/share/apps/kget/{,**} rw,
+	owner @{HOME}/.kde{,4}/share/config/kget* rw,
 	
 	owner @{HOME}/.kde{,4}/share/config/{kde,kio,konqueror}* rwk, 
 	owner @{HOME}/.kde{,4}/share/apps/kconf_update/** rw,
@@ -52,6 +54,8 @@ include <tunables/global>
 	owner @{HOME}/.local/share/user-places.xbel{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/RecentDocuments/*.desktop rwl,
 	owner @{HOME}/.local/share/RecentDocuments/{,*.desktop}.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.local/share/qt_temp.* rwk,
+	owner @{HOME}/.kde/tmp-* rwk,
 	
 	/{,**/} r,  # Read only directories
 	
@@ -60,7 +64,7 @@ include <tunables/global>
 	/bin/dash ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kde-open{,5} ixr,
-	/usr/bin/{gnome,gvfs,xdg}-open ixr,
+	/usr/bin/{exo,gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kdialog ixr,
 	/usr/bin/kbuildsycoca4 ixr,
 	/usr/bin/knotify4 ixr,
@@ -82,9 +86,12 @@ include <tunables/global>
 	
 	owner @{PROC}/@{pid}/{mounts,maps} r,
 	/sys/devices/**/uevent r,
+	/sys/devices/pci[0-9]**/vendor r,
+	/proc/sys/kernel/core_pattern r,
 	
 	# Temporal files and sockets
-	owner @{HOME}/.kde/tmp-* rwlk,
+	
+	owner /tmp/qt_temp.* rwlk,
 	owner /{,var/}tmp/kde-*/{,**} rwlk,
 	owner /{,var/}tmp/kdecache-*/** rwk,
 	owner /{,var/}tmp/{,.}kget*.lock rwk,
@@ -102,3 +109,6 @@ include <tunables/global>
 	signal (send) set=(term) peer=unconfined,
 	unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper addr=none),
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

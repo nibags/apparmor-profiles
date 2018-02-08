@@ -1,6 +1,8 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 19, 2017 
+# Last change: February 07, 2018 
 
 # Block binary execution & mapping of compiled libraries from untrusted sources
 audit deny owner /**/* mx,
@@ -15,12 +17,18 @@ deny /{data,media,mnt,srv,net,cdrom,var,run,tmp}/**.py* r,
 # Block cameras & microphones
 audit deny /dev/{video,audio}* rwlkmx,
 
-# Others
-deny /run/udev/data/** rwklmx,
+# For Windows partition
+deny /media/*/[Ww]indows/{Program*,Windows}/{,**} w,
+deny /media/*/[Ww]indows/Users/ w,
+deny /media/*/[Ww]indows/Users/*/ w,
 
-deny @{HOME}/.local/share/applications/** w,
+# Avoid modifications
+audit deny @{HOME}/.local/share/applications/** w,
 deny @{HOME}/.local/share/flatpak/** w,
 deny @{HOME}/.app/** w,
 
 audit deny @{HOME}/.* w,
-audit deny @{HOME}/.bash_history r,
+deny @{HOME}/.bash_history r,
+
+# Others
+deny /run/udev/data/** rwklmx,

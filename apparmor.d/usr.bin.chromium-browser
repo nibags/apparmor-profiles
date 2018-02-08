@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # This AppArmor profile is a modification of the original Chromium profile
 # created by Jamie Strandboge <jamie@canonical.com>
 
@@ -114,3 +113,6 @@ include <tunables/global>
 	# Site-specific additions and overrides. See local/README for details.
 	include <local/usr.bin.chromium-browser>
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

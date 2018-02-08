@@ -1,4 +1,6 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
 # Last change: March 25, 2017
 # Block networking
 
@@ -25,3 +27,4 @@ deny /etc/resolvconf/run/resolv.conf rw,
 deny /etc/host.conf rw,
 deny /etc/hosts rw,
 deny /etc/protocols rw,
+

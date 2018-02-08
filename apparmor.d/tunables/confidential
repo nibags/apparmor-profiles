@@ -1,5 +1,7 @@
 # kate: syntax AppArmor Security Profile
-# Last change: December 13, 2017
+# vim:  syntax=apparmor
+
+# Last change: February 07, 2017
 
 # Files and directories with sensitive data,
 # such as keys, passwords, settings or others:
@@ -9,7 +11,7 @@
 @{ANDROIDKEYS} = @{HOME}/.android-keys/{,**}
 @{KWALLET} = @{HOME}/.kde{,4}/share/apps/kwallet/{,**} @{HOME}/.local/share/kwalletd/{,**}
 
-@{MUTT} = @{HOME}/.mutt/{,**} @{HOME}/.muttrc
+@{MUTT} = @{HOME}/.mutt/** @{HOME}/.muttrc
 @{THUNDERBIRD} = @{HOME}/.thunderbird/{,**} @{HOME}/.cache/thunderbird/**
 @{THUNDERBIRD_SPECIFIC} = @{HOME}/.thunderbird/ @{HOME}/.thunderbird/profiles.ini @{HOME}/.thunderbird/*/{,**} @{HOME}/.cache/thunderbird/**
 @{MOZILLA} = @{HOME}/.mozilla/*/{,**} @{HOME}/.cache/mozilla/firefox/*/{,**}
@@ -20,11 +22,13 @@
 @{TELEGRAM} = @{HOME}/.TelegramDesktop/{,**} @{HOME}/.var/app/org.telegram.desktop/{,**}
 
 @{USER_HISTORY} = @{HOME}/.local/share/recently-used.xbel @{HOME}/.kde/share/apps/RecentDocuments/** @{HOME}/.cache/thumbnails/**
-#@{FLATPAK} = @{HOME}/.var/app/{,**} @{HOME}/.local/share/flatpak/{app,db,repo,runtime,system-cache}/{,**}
-@{SYSTEM_SEC} =  /boot/{,**} /var/log/{,**}
+#@{FLATPAK} = @{HOME}/.var/app/** @{HOME}/.local/share/flatpak/{app,db,repo,runtime,system-cache}/**
+
+# System
+@{SYSTEM_SEC} =  /boot/** /var/log/**
 @{SYSTEM_SEC} += @{HOME}/.config/autostart{,-scripts}/** /etc/xdg/autostart/**
 @{SYSTEM_SEC} += /etc/init.d/** /etc/cron.*/** /etc/initramfs-tools/** /etc/systemd/** /etc/xdg/systemd/**
-@{SYSTEM_SEC} += /etc/apparmor.d/{,**} /etc/apparmor/{,**}
+@{SYSTEM_SEC} += /etc/apparmor.d/** /etc/apparmor/** /var/lib/apparmor/**
 
 # The following variables allow blocking access to confidential data
 # or data from other applications.

@@ -1,4 +1,3 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: December 30, 2017
 
@@ -42,7 +41,7 @@ profile vlc /usr/bin/vlc {
 	audit deny /@{DATA_DIR}/** mx,
 	
 	# VLC configuration
-	owner @{HOME}/.local/share/vlc/{,**} rwk,
+	owner @{HOME}/.local/share/vlc/{,**} rw,
 	owner @{HOME}/.config/vlc/{,**} rwk,
 	owner @{HOME}/.config/vlcrc{,.[a-zA-Z0-9]*} rwk,
 	owner @{HOME}/.cache/vlc/{,**} rwk,
@@ -56,7 +55,7 @@ profile vlc /usr/bin/vlc {
 	
 	/usr/share/** r,
 	
-	/etc/xdg/{,**} r,
+	/etc/xdg/** r,
 	/etc/adduser.conf r,
 	/etc/anacrontab r,
 	/etc/appstream.conf r,
@@ -79,7 +78,7 @@ profile vlc /usr/bin/vlc {
 	# Libraries and binaries
 	/usr/bin/vlc ixr,
 	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
-	/usr/bin/{gnome,gvfs,xdg}-open ixr,
+	/usr/bin/{exo,gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/kdialog ixr,
@@ -206,3 +205,6 @@ profile vlc /usr/bin/vlc {
 	/**.[xX][sS][pP][fF]  rw, # xspf
 	/**.[wW][sS][zZ]      rw, # wsz
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

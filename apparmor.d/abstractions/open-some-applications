@@ -1,6 +1,8 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 19, 2017
+# Last change: February 07, 2018
 
 # Applications with AppArmor Profile:
 
@@ -33,7 +35,6 @@
 /usr/bin/file-roller Cx -> sanitized_helper,
 /usr/bin/xarchiver Cx -> sanitized_helper,
 
-
 # Office
 /usr/bin/libreoffice Cx -> sanitized_helper,
 /usr/bin/lo{calc,draw,impress,writer} Cx -> sanitized_helper,
@@ -52,6 +53,9 @@
 /usr/bin/inkscape Cx -> sanitized_helper,
 /usr/bin/krita Cx -> sanitized_helper,
 /usr/bin/clamscan Cx -> sanitized_helper,
+/usr/bin/skanlite Cx -> sanitized_helper,
+/usr/bin/darktable* Cx -> sanitized_helper,
+/usr/bin/mirage Cx -> sanitized_helper,
 
 # Multimedia
 /usr/bin/amarok Cx -> sanitized_helper,
@@ -64,11 +68,3 @@ include <abstractions/ubuntu-browsers.d/text-editors>
 
 # Feed readers
 ## include <abstractions/ubuntu-feed-readers>
-
-
-
-
-
-
-
-

@@ -1,6 +1,5 @@
-# vim:syntax=apparmor
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 30, 2017
+# Last change: February 07, 2017
 
 include <tunables/global>
 
@@ -85,11 +84,14 @@ include <tunables/global>
 	audit deny /var/log/** rwklmx,
 	audit deny /etc/apparmor.d/** rwklmx,
 	audit deny /etc/apparmor/** rwklmx,
+	audit deny /var/lib/apparmor/** rwklmx,
 	
 	audit deny /etc/init.d/** rwklmx,
 	audit deny /etc/cron.*/** rwklmx,
 	audit deny /etc/initramfs-tools/** rwklmx,
 	audit deny /etc/systemd/** rwklmx,
-	audit deny /etc/xdg/systemd/** rwklmx,
-	audit deny /etc/xdg/autostart/** rwklmx,
+	audit deny /etc/xdg/{autostart,systemd}/** rwklmx,
 }
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

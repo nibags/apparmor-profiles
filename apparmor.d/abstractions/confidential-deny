@@ -1,4 +1,5 @@
 # kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
 
 # Block full access to sensitive data, as passwords, keys and some system directories.
 # View: tunables/confidential.
