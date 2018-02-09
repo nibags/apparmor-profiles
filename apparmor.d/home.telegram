@@ -93,7 +93,7 @@ profile Telegram /home/*/.app/Telegram/{Telegram,Updater} {
 	# Binaries & Helpers
 	/bin/dash Pixr,
 	/usr/bin/pulseaudio Pixr,
-	/usr/bin/{gnome,gvfs,xdg}-open ixr,
+	/usr/bin/{exo,gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/kdialog ixr,
 	/usr/bin/desktop-file-install ixr,

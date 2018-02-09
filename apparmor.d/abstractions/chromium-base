@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: December 04, 2017
+#   Last change: February 07, 2017
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -38,7 +38,8 @@ owner @{PROC}/[0-9]*/uid_map w,
 /etc/mime.types r,
 /etc/mailcap r,
 /etc/mtab r,
-/etc/xdg/xubuntu/applications/defaults.list r,
+/etc/xdg/*ubuntu/applications/defaults.list r,
+/etc/xfce4/defaults.list r,
 owner @{HOME}/.local/share/applications/defaults.list r,
 owner @{HOME}/.local/share/applications/mimeinfo.cache r,
 
@@ -114,10 +115,13 @@ owner /{var/run,run,dev}/shm/shmfd-* mrw,
 /usr/bin/lsb_release Cxr -> lsb_release,
 
 # Helpers
-/usr/bin/{gnome,gvfs,xdg}-open ixr,
+/usr/bin/{exo,gnome,gvfs,xdg}-open ixr,
 /usr/bin/kde-open{,5} ixr,
 /usr/bin/kdialog ixr,
-# TODO: xfce
+# xfce/Xubuntu
+/usr/lib/@{multiarch}/xfce4/exo-1/exo-helper-1 ixr,
+/etc/xdg/xdg-xubuntu/xfce4/helpers.rc r,
+/etc/xdg/xfce4/helpers.rc r,
 
 # GSettings
 owner /{,var/}run/user/*/dconf/     rw,
