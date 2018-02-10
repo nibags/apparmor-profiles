@@ -2,7 +2,7 @@
 # Last change: January 31, 2018
 
 # NOTE: By default, the internet connection is blocked.
-# To allow video streaming, uncomment the library import:
+# To allow video streaming, uncomment the include rule:
 # <abstractions/nameservice> and remove: <abstractions/block-networking>
 
 include <tunables/global>

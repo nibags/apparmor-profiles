@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 30, 2017
+# Last change: February 10, 2018
 
 # NOTE: This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.
 
@@ -33,7 +33,7 @@ profile vlc /usr/bin/vlc {
 	/{,**/} r,   # Read all directories
 	
 	# Read access in Home directory, mounted drives and networks
-	@{DATA_DIR}/{,**} r,
+	@{DATA_DIR}/** r,
 	deny /media/*/[Ww]indows/{Program*,Windows}/{,**} w,
 	
 	# Block compiled libraries & executables
@@ -100,11 +100,12 @@ profile vlc /usr/bin/vlc {
 	/run/dbus/system_bus_socket rw,
 	/run/systemd/journal/socket rw, 
 	
-	deny /run/udev/data/{,**} rwklmx,
+	deny /run/udev/data/** rwklmx,
 	audit deny owner /**/*.py* rw,   # Block Python imports
 	audit deny /@{DATA_DIR}/**.py* rw,
 	deny owner @{HOME}/.recently-used.xbel* rw,
 	deny owner @{HOME}/.local/share/recently-used.xbel* rw,
+	deny @{HOME}/.bash_history rw,
 	
 	unix (connect, receive, send) type=(stream) peer=(label=unconfined addr=@/tmp/ibus/dbus-*),
 	# unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
@@ -117,6 +118,12 @@ profile vlc /usr/bin/vlc {
 	dbus (receive)
 		bus=system
 		path=/org/freedesktop/NetworkManager,
+	
+	
+	# Screenshots
+	owner @{HOME}/**.[pP][nN][gG]     rw, # png
+	owner @{HOME}/**.[jJ][pP][gG]     rw, # jpg
+	owner @{HOME}/**.[tT][iI][fF][fF] rw, # tiff
 	
 	# Files supported:
 	
