@@ -1,7 +1,10 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: November 30, 2017
+# Last change: February 12, 2017
 
 include <tunables/global>
+
+# Python versions
+@{PYTHON} = python{,[23],2.[4-7],3.[0-6]}
 
 profile youtube_dl /usr{,/local}/bin/youtube-dl {
 	include <abstractions/base>
@@ -23,9 +26,9 @@ profile youtube_dl /usr{,/local}/bin/youtube-dl {
 	/usr/lib{,32,64}/gcc/** ixr,
 	
 	# Python
-	/usr/bin/python{2.[4-7],3.[0-5]} mr,
-	/usr{,/local}/lib{,32,64}/python{,[23],2.[4-7],3.[0-5]}/dist-packages/youtube_dl/{,**} r,
-	deny /usr/lib{,32,64}/python{,[23],2.[4-7],3.[0-5]}/**.pyc{,.[0-9]*} w,
+	/usr/bin/@{PYTHON} mr,
+	/usr{,/local}/lib{,32,64}/@{PYTHON}/dist-packages/youtube_dl/{,**} r,
+	deny /usr/lib{,32,64}/@{PYTHON}/**.pyc{,.[0-9]*} w,
 	
 	/usr/local/bin/ r,
 	/etc/mime.types r,

@@ -7,6 +7,7 @@
 
 AppArmor profiles for:
 * Baka-MPlayer
+* Baloo
 * Bluetooth Daemon
 * Brave
 * Chromium

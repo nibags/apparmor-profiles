@@ -1,0 +1,82 @@
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: February 11, 2018
+
+include <tunables/global>
+
+# TODO:
+#   /usr/bin/baloo{ctl,search,show}
+#   /usr/lib/*-linux-gnu/libexec/baloorunner
+
+# Directories, in addition to @{HOME}, 
+# where the files to be indexed are stored
+@{DATA_DIR} = /{data,media,mnt,srv,net}
+
+profile baloo_file /usr/bin/baloo_file{,_extractor,metadata_temp_extractor} {
+	include <abstractions/base>
+	include <abstractions/dbus>
+	include <abstractions/dbus-session>
+	include <abstractions/dbus-accessibility>
+	include <abstractions/freedesktop.org>
+	include <abstractions/xdg-desktop>
+	include <abstractions/user-tmp>
+	
+	include <abstractions/flatpak-snap>
+	include <abstractions/block-networking>
+	
+	# Block full access to sensitive data, as passwords and keys.
+	# View in: tunables/confidential.
+	include <abstractions/confidential-deny>
+	
+	# Configuration files
+	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/baloofile* rwk,
+	owner @{HOME}/.local/share/baloo/ rw,
+	owner @{HOME}/.local/share/baloo/** rwk,
+	
+	# Possible files to index
+	@{HOME}/{,**} r,
+	@{DATA_DIR}/{,**} r,
+	owner /*/** r,
+	
+	/usr/bin/baloo_file{,_extractor,metadata_temp_extractor} ix,
+	/usr/lib{,64,32,x32}/{,@{multiarch}/}qt5/plugins/kf5/kfilemetadata/{,**/}kfilemetadata_*.so m,
+	/usr/lib{,64,32,x32}/{,@{multiarch}/}qt5/plugins/kf5/org.kde.kidletime.platforms/{,**/}KF5IdleTime*.so m,
+	
+	/usr/share/qt5/translations/* r,
+	/usr/share/poppler/** r,
+	/usr/share/lib*/** r,
+	
+	/etc/udev/udev.conf r,
+	/etc/nsswitch.conf r,
+	/etc/fstab r,
+	/etc/passwd r,
+	/etc/group r,
+	
+	/dev/tty r,
+	
+	/sys/devices/**/ r,
+	/sys/devices/pci[0-9]*/**/uevent r,
+	/sys/devices/system/node/node[0-9]*/meminfo r,
+	@{PROC}/sys/kernel/core_pattern r,
+	
+	unix (send, receive, connect) type=(stream) peer=(addr=@/tmp/.X11-unix/* label=unconfined),
+	unix (send, receive, connect) type=(stream) peer=(addr=@/tmp/.ICE-unix/* label=unconfined),
+	
+	# Noisy
+	audit deny owner /**/* mx,
+	audit deny @{HOME}/** mx,
+	audit deny @{DATA_DIR}/** wlmx,
+	audit deny /{cdrom,var,run,tmp}/** mx,
+	
+	audit deny @{HOME}/.local/share/applications/** w,
+	audit deny @{HOME}/.local/share/flatpak/** w,
+	audit deny @{HOME}/.* w,
+	
+	audit deny @{HOME}/{,**/}.Private/** wlk,
+	audit deny @{HOME}/.bash_history r,
+	audit deny /dev/{video,audio}* rwlkmx,
+	deny /run/udev/data/** rwklmx,
+}
+
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor

@@ -1,0 +1,191 @@
+# kate: syntax AppArmor Security Profile
+# vim:  syntax=apparmor
+
+# Author: Nibaldo Gonzalez <nibgonz@gmail.com>
+# Last change: February 12, 2018
+# ------------------------------------------------------
+
+#  Audio/video extensions supported by VLC.
+#  Not included: iso, zip, rar
+
+#  Usage:
+#    /**.@{MEDIA_EXT} r,
+#    /{data,home,media,mnt,srv,net}/**.@{MEDIA_EXT} rw,
+#    owner /**.@{VIDEO_EXT} rw,
+
+# All VLC media extensions
+@{MEDIA_EXT} = @{AUDIO_EXT} @{VIDEO_EXT} @{OTHER_MEDIA_EXT}
+
+
+# Audio:
+
+# 3ga
+@{AUDIO_EXT} =  3[gG][aA]
+# 669
+@{AUDIO_EXT} += 669
+# a52, aac, ac3
+@{AUDIO_EXT} += [aA]{52,[aA][cC],[cC]3}
+# adt, adts
+@{AUDIO_EXT} += [aA][dD][tT]{,[sS]}
+# aif, aifc, aiff
+@{AUDIO_EXT} += [aA][iI][fF]{,[cCfF]}
+# au
+@{AUDIO_EXT} += [aA][uU]
+# amr
+@{AUDIO_EXT} += [aA][mM][rR]
+# aob
+@{AUDIO_EXT} += [aA][oO][bB]
+# ape
+@{AUDIO_EXT} += [aA][pP][eE]
+# caf
+@{AUDIO_EXT} += [cC][aA][fF]
+# cda
+@{AUDIO_EXT} += [cC][dD][aA]
+# dts
+@{AUDIO_EXT} += [dD][tT][sS]
+# flac
+@{AUDIO_EXT} += [fF][lL][aA][cC]
+# it
+@{AUDIO_EXT} += [iI][tT]
+# m4a, m4p
+@{AUDIO_EXT} += [mM]4[aApP]
+# mid, mod
+@{AUDIO_EXT} += [mM][iIoO][dD]
+# mka
+@{AUDIO_EXT} += [mM][kK][aA]
+# mlp
+@{AUDIO_EXT} += [mM][lL][pP]
+# mp1, mp2, mp3, mpc
+@{AUDIO_EXT} += [mM][pP][123cC]
+# mpga
+@{AUDIO_EXT} += [mM][pP][gG][aA]
+# oga, oma
+@{AUDIO_EXT} += [oO][gGmM][aA]
+# opus
+@{AUDIO_EXT} += [oO][pP][uU][sS]
+# qcp
+@{AUDIO_EXT} += [qQ][cC][pP]
+# ra
+@{AUDIO_EXT} += [rR][aA]
+# rmi
+@{AUDIO_EXT} += [rR][mM][iI]
+# snd
+@{AUDIO_EXT} += [sS][nN][dD]
+# s3m
+@{AUDIO_EXT} += [sS]3[mM]
+# spx
+@{AUDIO_EXT} += [sS][pP][xX]
+# tta
+@{AUDIO_EXT} += [tT][tT][aA]
+# voc, vqf
+@{AUDIO_EXT} += [vV]{[oO][cC],[qQ][fF]}
+# w64
+@{AUDIO_EXT} += [wW]64
+# wav, wv
+@{AUDIO_EXT} += [wW]{,[aA]}[vV]
+# wm, wma
+@{AUDIO_EXT} += [wW][mM]{,[aA]}
+# xa, xm
+@{AUDIO_EXT} += [xX][aAmM]
+
+
+# Video:
+
+# 3g2, 3gp, 3gp2, 3gpp
+@{VIDEO_EXT} =  3[gG]{[2pP],[pP][2pP]}
+# amv
+@{VIDEO_EXT} += [aA][mM][vV]
+# asf
+@{VIDEO_EXT} += [aA][sS][fF]
+# avi
+@{VIDEO_EXT} += [aA][vV][iI]
+# bik
+@{VIDEO_EXT} += [bB][iI][kK]
+# divx
+@{VIDEO_EXT} += [dD][iI][vV][xX]
+# drc
+@{VIDEO_EXT} += [dD][rR][cC]
+# dv, dvr-ms
+@{VIDEO_EXT} += [dD][vV]{,[rR]-[mM][sS]}
+# evo
+@{VIDEO_EXT} += [eE][vV][oO]
+# f4v, flv
+@{VIDEO_EXT} += [fF][4lL][vV]
+# gvi
+@{VIDEO_EXT} += [gG][vV][iI]
+# gxf
+@{VIDEO_EXT} += [gG][xX][fF]
+# m1v, m2v, m4v
+@{VIDEO_EXT} += [mM][124][vV]
+# m2t, m2ts
+@{VIDEO_EXT} += [mM]2[tT]{,[sS]}
+# mkv, mov
+@{VIDEO_EXT} += [mM][kKoO][vV]
+# mp2v, mp4v
+@{VIDEO_EXT} += [mM][pP][24][vV]
+# mp4, mpa, mpe, mpg
+@{VIDEO_EXT} += [mM][pP][4aAeEgG]
+# mpeg, mpeg1, mpeg2, mpeg4
+@{VIDEO_EXT} += [mM][pP][eE][gG]{,[124]}
+# mpv2
+@{VIDEO_EXT} += [mM][pP][vV]2
+# mts, mtv
+@{VIDEO_EXT} += [mM][tT][sSvV]
+# mxf
+@{VIDEO_EXT} += [mM][xX][fF]
+# nsv, nuv
+@{VIDEO_EXT} += [nN][sSuU][vV]
+# ogg, ogm, ogx, ogv
+@{VIDEO_EXT} += [oO][gG][gGmMxXvV]
+# rec
+@{VIDEO_EXT} += [rR][eE][cC]
+# rm, rmvb
+@{VIDEO_EXT} += [rR][mM]{,[vV][bB]}
+# rpl
+@{VIDEO_EXT} += [rR][pP][lL]
+# thp, tp
+@{VIDEO_EXT} += [tT]{,[hH]}[pP]
+# tod
+@{VIDEO_EXT} += [tT][oO][dD]
+# ts, tts
+@{VIDEO_EXT} += [tT]{,[tT]}[sS]
+# vob
+@{VIDEO_EXT} += [vV][oO][bB]
+# vro
+@{VIDEO_EXT} += [vV][rR]
+# webm
+@{VIDEO_EXT} += [wW][eE][bB][mM]
+# wmv, wtv
+@{VIDEO_EXT} += [wW][mMtT][vV]
+# xesc
+@{VIDEO_EXT} += [xX][eE][sS][cC]
+
+
+# Others:
+
+# asx
+@{OTHER_MEDIA_EXT} =  [aA][sS][xX]
+# b4s
+@{OTHER_MEDIA_EXT} += [bB]4[sS]
+# cue
+@{OTHER_MEDIA_EXT} += [cC][uU][eE]
+# ifo
+@{OTHER_MEDIA_EXT} += [iI][fF][oO]
+# m3u, m3u8
+@{OTHER_MEDIA_EXT} += [mM]3[uU]{,8}
+# pls
+@{OTHER_MEDIA_EXT} += [pP][lL][sS]
+# ram
+@{OTHER_MEDIA_EXT} += [rR][aA][mM]
+# sdp
+@{OTHER_MEDIA_EXT} += [sS][dD][pP]
+# srt
+@{OTHER_MEDIA_EXT} += [sS][rR][tT]
+# vlc, vlt
+@{OTHER_MEDIA_EXT} += [vV][lL][cCtT]
+# wvx
+@{OTHER_MEDIA_EXT} += [wW][vV][xX]
+# xspf
+@{OTHER_MEDIA_EXT} += [xX][sS][pP][fF]
+# wsz
+@{OTHER_MEDIA_EXT} += [wW][sS][zZ]
