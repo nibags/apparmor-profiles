@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 07, 2018
+# Last change: February 24, 2018
 
 include <tunables/global>
 
@@ -77,16 +77,17 @@ include <tunables/global>
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/** rw,
-	owner @{HOME}/.config/okularrc{,.lock} rwk,
-	owner @{HOME}/.config/okularpartrc{,.lock} rwk,
+	owner @{HOME}/.config/okularrc{,.[a-zA-Z0-9]*} rwkl,
+	owner @{HOME}/.config/okularpartrc{,.[a-zA-Z0-9]*} rwkl,
 	owner @{HOME}/.config/session/ rw,
-	owner @{HOME}/.config/session/{okular,.}* rwk,
+	owner @{HOME}/.config/session/{okular,.,\#[0-9]}* rwkl,
 	owner @{HOME}/.kde/share/apps/okular/** rw,
-	owner @{HOME}/.kde/share/config/okularrc{,.lock} rwk,
-	owner @{HOME}/.kde/share/config/okularpartrc{,.lock} rwk,
+	owner @{HOME}/.kde/share/config/okularrc{,.[a-zA-Z0-9]*} rwkl,
+	owner @{HOME}/.kde/share/config/okularpartrc{,.[a-zA-Z0-9]*} rwkl,
 	owner @{HOME}/.cache/okular/** rw,
 	owner @{HOME}/.cache/okular/qmlcache/{,**/}*.qmlc m,
 	
+	owner @{HOME}/.config/\#[0-9]* rwkl,
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
