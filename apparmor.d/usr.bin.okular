@@ -93,9 +93,7 @@ include <tunables/global>
 	owner @{HOME}/.config/session/\#[0-9]* rwk,
 	
 	link @{HOME}/.config/session/okular* -> "/home/*/.config/session/#[0-9]*",
-	link @{HOME}/.config/okular*.[a-zA-Z0-9]*        -> "/home/*/.config/#[0-9]*",
-	link @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
-	link @{HOME}/.config/kdeglobals.[a-zA-Z0-9]*     -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/okular{,part}rc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
 	
 	/usr/share/** r,
 	
