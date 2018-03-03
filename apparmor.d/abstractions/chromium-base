@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: February 11, 2017
+#   Last change: February 26, 2017
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -166,9 +166,12 @@ include <abstractions/kde-user>
 owner @{HOME}/.config/kio* r,
 owner @{HOME}/.config/kdialogrc rw,
 owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
+link  @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
 owner @{HOME}/.local/share/qt_temp.* rwk,
 deny @{HOME}/.local/share/RecentDocuments/* w,
 owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
+owner "/run/user/[0-9]*/#[0-9]*" rwk,
+link /run/user/[0-9]*/kdialog*.slave-socket -> "/run/user/[0-9]*/#[0-9]*",
 owner @{PROC}/[0-9]*/mounts r,
 /usr/lib{,64,/@{multiarch}}/qt5/plugins/{imageformats,platformthemes,styles}/*.so m,
 /etc/fstab r,

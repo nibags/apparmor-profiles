@@ -85,7 +85,7 @@ profile Telegram /home/*/.app/Telegram/{Telegram,Updater} {
 	/run/systemd/journal/socket rw,
 	/run/dbus/system_bus_socket r,
 	owner /run/user/[0-9]*/bus r,
-	owner /run/user/[0-9]*/*.slave-socket rwk,
+	owner /run/user/[0-9]*/*.slave-socket rwkl,
 	
 	/dev/tty r,
 	deny /dev/video* rwmlkx,  # Block cameras
@@ -105,7 +105,7 @@ profile Telegram /home/*/.app/Telegram/{Telegram,Updater} {
 	
 	audit deny owner /**/*.py* r,  # Block Python imports
 	
-	deny /run/udev/data/{,**} rwklmx,
+	deny /run/udev/data/** rwklmx,
 	deny /usr/bin/gconftool-2 x,
 	deny /var/cache/fontconfig/ w,
 	

@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 24, 2018
+# Last change: February 28, 2018
 
 include <tunables/global>
 
@@ -58,19 +58,23 @@ profile gwenview /usr/bin/gwenview {
 	/**.[xX][bBpP][mM]      rw,  # xbm, xpm
 	
 	# Gwenview configuration
-	owner @{HOME}/.config/gwenviewrc{,.*} rwkl,
-	owner @{HOME}/.config/org.kde.gwenviewrc{,.*} rwkl,
-	owner @{HOME}/.config/session/ rw,
-	owner @{HOME}/.config/session/{gwenview,org.kde.gwenview,.,\#[0-9]}* rwkl,
 	owner @{HOME}/.local/share/org.kde.gwenview/** rwk,
-	owner @{HOME}/.cache/thumbnails/** rwkl,
+	owner @{HOME}/.config/{,org.kde.}gwenviewrc rw,
+	owner @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.config/session/ rw,
+	owner @{HOME}/.config/session/.* rwk,
+	owner @{HOME}/.config/session/{,org.kde.}gwenview* rwk,
+	owner @{HOME}/.cache/thumbnails/** rw,
+	owner @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* rwk,
 	
-	## include <abstractions/kde-user>
-	owner @{HOME}/.config/\#[0-9]* rwkl,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.local/share/baloo/index-lock rwk,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop{,.lock} rwk,
-	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* rwk,
+	include <abstractions/kde-user>
+	owner @{HOME}/.local/share/baloo/index-lock rwk,	
+	owner @{HOME}/.config/session/\#[0-9]* rwk,
+	owner @{HOME}/.cache/thumbnails/*/\#[0-9]* rwk,
+	
+	link @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/session/{,org.kde.}gwenview* -> "/home/*/.config/session/#[0-9]*",
+	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/#[0-9]*",
 	
 	allow owner @{HOME}/.local/share/flatpak/exports/share/icons/** rw,
 	
@@ -100,11 +104,12 @@ profile gwenview /usr/bin/gwenview {
 	owner /var/tmp/kdecache-*/* rwkl,
 	owner /tmp/* rwkl,
 	owner /tmp/kde-*/** rwkl,
-	owner /run/user/[0-9]*/ksocket-*/** rwkl,
+	owner /run/user/[0-9]*/ksocket-*/** rwk,
 	owner /run/user/[0-9]*/bus rwk,
-	owner /run/user/[0-9]*/*-socket rwkl,
-	owner /run/user/[0-9]*/kdeinit5* rwkl,
-	owner /run/user/[0-9]*/\#[0-9]* rwkl,
+	owner /run/user/[0-9]*/*-socket rwk,
+	owner /run/user/[0-9]*/kdeinit5* rwk,
+	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	link /run/user/[0-9]*/* -> "/run/user/[0-9]*/#[0-9]*",
 	
 	signal (send) set=(term) peer=unconfined,
 }

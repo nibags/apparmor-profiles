@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 04, 2017
+# Last change: February 26, 2017
 
 include <tunables/global>
 
@@ -43,10 +43,10 @@ profile konversation /usr/bin/konversation {
 	
 	# Konversation Configuration
 	owner @{HOME}/.config/* rk,
-	owner @{HOME}/.config/konversation* w,
-	owner @{HOME}/.config/{k*.lock,.[a-zA-Z0-9]*} w,
+	owner @{HOME}/.config/konversation* wl,
+	owner @{HOME}/.config/{k*.lock,.[a-zA-Z0-9]*,\#[0-9]*} wl,
 	owner @{HOME}/.config/{KDE,kde,kde.org}/{,**} rk,
-	owner @{HOME}/.config/session/{,**} rwk,
+	owner @{HOME}/.config/session/{,**} rwkl,
 	owner @{HOME}/.kde{,4}/** r,
 	owner @{HOME}/.kde{,4}/share/config/konversation* wk,
 	owner @{HOME}/.local/share/{,**} r,
@@ -81,7 +81,8 @@ profile konversation /usr/bin/konversation {
 	owner /{,var/}tmp/kdecache-*/** rwk,
 	owner /{,var/}tmp/kde-*/** rwk,
 	owner /tmp/{,.}k*.{lock,tmp} rwk,
-	owner /run/user/[0-9]*/k*-socket rwk,
+	owner /run/user/[0-9]*/k*-socket rwkl,
+	owner /run/user/[0-9]*/\#[0-9]* rwkl,
 	
 	deny /usr/lib{,64}/vlc/plugins/plugins.dat.* w,
 	

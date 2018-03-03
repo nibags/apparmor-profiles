@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 11, 2018
+# Last change: February 26, 2018
 
 include <tunables/global>
 
@@ -29,7 +29,8 @@ profile baloo_file /usr/bin/baloo_file{,_extractor,metadata_temp_extractor} {
 	
 	# Configuration files
 	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/baloofile* rwk,
+	owner @{HOME}/.config/\#[0-9]* rwkl,
+	owner @{HOME}/.config/baloofile* rwkl,
 	owner @{HOME}/.local/share/baloo/ rw,
 	owner @{HOME}/.local/share/baloo/** rwk,
 	

@@ -2,7 +2,7 @@
 # vim:  syntax=apparmor
 
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 10, 2017
+# Last change: February 27, 2018
 
 # Local Configuration Files in KDE Plasma 5
 
@@ -13,14 +13,21 @@ owner @{HOME}/.config/QtProject.conf rw,
 owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
 owner @{HOME}/.config/QtProject/{,**} rw,
 
+owner "@{HOME}/.config/#[0-9]*" rwk,
+link @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+link @{HOME}/.config/kdeglobals.[a-zA-Z0-9]*     -> "/home/*/.config/#[0-9]*",
+#link @{HOME}/.config/?*.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+#link @{HOME}/.config/**/?*.[a-zA-Z0-9]* -> "/home/*/.config/**/#[0-9]*",
+
 owner @{HOME}/.config/baloofilerc r,
 owner @{HOME}/.config/breezerc r,
+owner @{HOME}/.config/kioslaverc r,
 owner @{HOME}/.config/klanguageoverridesrc r,
 owner @{HOME}/.config/trashrc rw,
 
-# owner @{HOME}/.config/kio* r,
 # owner @{HOME}/.config/kdebugrc rw, 
-# owner @{HOME}/.config/kdialogrc{,.[a-zA-Z0-9]*} rw,
+# owner @{HOME}/.config/kdialogrc rw,
+# owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
 # owner @{HOME}/.config/kde.org/libphonon.conf r,
 
 owner @{HOME}/.cache/icon-cache.kcache rw,

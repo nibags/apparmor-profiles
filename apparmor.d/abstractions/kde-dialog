@@ -2,7 +2,7 @@
 # vim:  syntax=apparmor
 
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 07, 2018
+# Last change: February 27, 2018
 
 #/usr/bin/kde-open{,5} Cx -> kde-dialog,
 #/usr/bin/kdeinit5 Cx -> kde-dialog,
@@ -22,6 +22,10 @@ profile kde-dialog {
 	deny @{HOME}/.local/share/RecentDocuments/* w,
 	
 	owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
+	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	
+	link @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+	link /run/user/[0-9]*/kdialog*.slave-socket -> "/run/user/[0-9]*/#[0-9]*",
 	
 	#/usr/lib{,64,/*-linux-gnu}/qt5/plugins/{imageformats,platformthemes,styles}/*.so m,
 	/etc/fstab r,

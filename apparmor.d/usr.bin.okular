@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 24, 2018
+# Last change: February 28, 2018
 
 include <tunables/global>
 
@@ -77,23 +77,25 @@ include <tunables/global>
 	
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/** rw,
-	owner @{HOME}/.config/okularrc{,.[a-zA-Z0-9]*} rwkl,
-	owner @{HOME}/.config/okularpartrc{,.[a-zA-Z0-9]*} rwkl,
+	owner @{HOME}/.config/okular{,part}rc rw,
+	owner @{HOME}/.config/okular{,part}rc.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/session/ rw,
-	owner @{HOME}/.config/session/{okular,.,\#[0-9]}* rwkl,
+	owner @{HOME}/.config/session/.* rwk,
+	owner @{HOME}/.config/session/okular* rwk,
 	owner @{HOME}/.kde/share/apps/okular/** rw,
-	owner @{HOME}/.kde/share/config/okularrc{,.[a-zA-Z0-9]*} rwkl,
-	owner @{HOME}/.kde/share/config/okularpartrc{,.[a-zA-Z0-9]*} rwkl,
+	owner @{HOME}/.kde/share/config/okular{,part}rc rw,
+	owner @{HOME}/.kde/share/config/okular{,part}rc.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.cache/okular/** rw,
 	owner @{HOME}/.cache/okular/qmlcache/{,**/}*.qmlc m,
 	
-	owner @{HOME}/.config/\#[0-9]* rwkl,
-	owner @{HOME}/.config/.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/kdeglobals.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.local/share/RecentDocuments/*.desktop.lock rwk,
-	owner @{HOME}/.local/share/RecentDocuments/.[a-zA-Z0-9]* rwk,
+	include <abstractions/kde-user>
 	owner @{HOME}/.config/libaccounts-glib/accounts.db rk,
+	owner @{HOME}/.config/session/\#[0-9]* rwk,
+	
+	link @{HOME}/.config/session/okular* -> "/home/*/.config/session/#[0-9]*",
+	link @{HOME}/.config/okular*.[a-zA-Z0-9]*        -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/QtProject.conf.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/kdeglobals.[a-zA-Z0-9]*     -> "/home/*/.config/#[0-9]*",
 	
 	/usr/share/** r,
 	
@@ -146,6 +148,9 @@ include <tunables/global>
 	owner /{,var/}run/user/[0-9]*/ksocket-*/ rw,
 	owner /{,var/}run/user/[0-9]*/ksocket-*/** rwk,
 	/run/dbus/system_bus_socket w,
+	
+	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	link /run/user/[0-9]*/*-socket -> "/run/user/[0-9]*/#[0-9]*",
 	
 	# PulseAudio
 	/etc/pulse/{client,daemon}.conf r,

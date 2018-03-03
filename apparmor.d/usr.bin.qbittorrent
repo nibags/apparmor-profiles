@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: December 14, 2017
+# Last change: February 26, 2018
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -70,6 +70,10 @@ include <tunables/global>
 	owner @{HOME}/.kde/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde/share/config/*.new rwk,
 	owner @{HOME}/.local/share/qt_temp.* rwk,
+	
+	link @{HOME}/.config/qBittorrentrc* -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/qBittorrent/*  -> "/home/*/.config/qBittorrent/#[0-9]*",
+	link @{HOME}/.config/qBittorrent/**/* -> "/home/*/.config/qBittorrent/**/#[0-9]*",
 	
 	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
 		
