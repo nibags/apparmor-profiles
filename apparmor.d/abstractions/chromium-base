@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: February 26, 2017
+#   Last change: March 30, 2017
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -101,7 +101,7 @@ owner /tmp/** m,
 owner /{var/run,run,dev}/shm/shmfd-* mrw,
 
 # Chromium Policies
-/etc/chromium-browser/policies/** r,
+/etc/chromium{,-browser}/policies/** r,
 
 # Make browsing directories work
 /{,**/} r,
@@ -158,6 +158,9 @@ deny @{HOME}/.sudo_as_admin_* r,
 owner @{HOME}/.pki/nssdb/* rwk,
 owner @{HOME}/.config/gtk-3.0/* r,
 # owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+
+owner @{HOME}/.cache/fontconfig/*.cache-* rw,
+deny /var/cache/fontconfig/ w,
 
 # For KDE Plasma 5 (used by kdialog & kde-open5).
 # This could be inside a child profile for the kdialog and kde-open5

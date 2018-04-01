@@ -2,7 +2,7 @@
 # created by Jamie Strandboge <jamie@canonical.com>
 
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 31, 2018
+# Last change: March 30, 2018
 
 # NOTE:
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
@@ -83,6 +83,8 @@ include <tunables/global>
 	/bin/rm ixr,
 	/bin/touch ixr,
 	/bin/cp ixr,
+	/bin/cat ixr,
+	/bin/mktemp ixr,
 	
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.

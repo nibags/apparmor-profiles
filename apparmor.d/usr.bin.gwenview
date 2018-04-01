@@ -1,7 +1,39 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 28, 2018
+# Last change: March 08, 2018
 
 include <tunables/global>
+
+# Some files supported:
+# bmp
+@{IMG_EXT} =  [bB][mM][pP]
+# jp2
+@{IMG_EXT} += [jJ][pP]2
+# jpg, jpeg
+@{IMG_EXT} += [jJ][pP]{,[eE]}[gG]
+# tif, tiff
+@{IMG_EXT} += [tT][iI][fF]{,[fF]}
+# ico, icb
+@{IMG_EXT} += [iI][cC][oObB]
+# wbmp
+@{IMG_EXT} += [wW][bB][mM][pP]
+# webp
+@{IMG_EXT} += [wW][eE][bB][pP]
+# dds
+@{IMG_EXT} += [dD][dD][sS] 
+# eps
+@{IMG_EXT} += [eE][pP][sS]
+# icns
+@{IMG_EXT} += [iI][cC][nN][sS]
+# pcx
+@{IMG_EXT} += [pP][cC][xX]
+# png
+@{IMG_EXT} += [pP][nN][gG]
+# pbm, pgm, ppm
+@{IMG_EXT} += [pP][bBgGpP][mM]
+# rgb
+@{IMG_EXT} += [rR][gG][bB]
+# xbp, xpm
+@{IMG_EXT} += [xX][bBpP][mM]
 
 profile gwenview /usr/bin/gwenview {
 	include <abstractions/base>
@@ -39,23 +71,12 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/** rw,
 	owner /{data,media,mnt,srv,net}/** rw,
 	
-	# Files supported
-	/**.[bB][mM][pP]        rw,  # bmp
-	/**.[jJ][pP]2           rw,  # jp2
-	/**.[jJ][pP]{,[eE]}[gG] rw,  # jpeg, jpg
-	/**.[pP][nN][gG]        rw,  # png
-	/**.[tT][iI][fF]{,[fF]} rw,  # tif, tiff
-	/**.[iI][cC][oObB]      rw,  # ico, icb
-	/**.[wW][bB][mM][pP]    rw,  # wbmp
-	/**.[wW][eE][bB][pP]    rw,  # webp
-	/**.[dD][dD][sS]        rw,  # dds
-	/**.[eE][pP][sS]        rw,  # eps
-	/**.[iI][cC][nN][sS]    rw,  # icns
-	/**.[pP][cC][xX]        rw,  # pcx
-	/**.[pP][iI][cC]        rw,  # pic
-	/**.[pP][bBgGpP][mM]    rw,  # pbm, pgm, ppm
-	/**.[rR][gG][bB]        rw,  # rgb
-	/**.[xX][bBpP][mM]      rw,  # xbm, xpm
+	owner /**/\#[0-9]* rwk,
+	link subset /{home,data,media,mnt,srv,net}/**.[a-zA-Z0-9]* -> "/{home,data,media,mnt,srv,net}/{,**/}#[0-9]*",
+	
+	owner /**/*.@{IMG_EXT} rw,
+	owner /**/*.@{IMG_EXT}.[a-zA-Z0-9]* rwk,
+	link /**/*.@{IMG_EXT}.[a-zA-Z0-9]* -> "/**/#[0-9]*",
 	
 	# Gwenview configuration
 	owner @{HOME}/.local/share/org.kde.gwenview/** rwk,
@@ -101,9 +122,8 @@ profile gwenview /usr/bin/gwenview {
 	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat{,.*} w,
 	
 	# Temporal files
+	owner /tmp/** rwkl,
 	owner /var/tmp/kdecache-*/* rwkl,
-	owner /tmp/* rwkl,
-	owner /tmp/kde-*/** rwkl,
 	owner /run/user/[0-9]*/ksocket-*/** rwk,
 	owner /run/user/[0-9]*/bus rwk,
 	owner /run/user/[0-9]*/*-socket rwk,
