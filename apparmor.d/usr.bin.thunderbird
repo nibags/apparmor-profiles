@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 05, 2018
+# Last change: March 31, 2018
 # This AppArmor profile is based on the Firefox profile
 #      by Jamie Strandboge <jamie@canonical.com>
 # And on the Thunderbird profile
@@ -220,6 +220,7 @@ include <tunables/global>
 	/usr/share/sounds/** r,
 	/usr/share/themes/** r,
 	/usr/share/qt5/translations/*.qm r,
+	/usr/share/hwdata/pnp.ids r,
 	
 	# Per-user Thunderbird configuration
 	owner @{HOME}/.thunderbird/{,**} rw,

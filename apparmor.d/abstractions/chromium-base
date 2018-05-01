@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 30, 2017
+#   Last change: March 31, 2017
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -74,7 +74,7 @@ deny @{PROC}/[0-9]*/oom_{,score_}adj w,
 /sys/devices/pci[0-9]*/**/resource r,
 /sys/devices/pci[0-9]*/**/removable r,
 /sys/devices/pci[0-9]*/**/block/**/size r,
-/sys/devices/pci[0-9]*/**/usb[0-9]*/[0-9]**/{descriptors,interface} r,
+/sys/devices/pci[0-9]*/**/usb[0-9]*/[0-9]**/{descriptors,interface,manufacturer,serial,bConfigurationValue} r,
 /sys/devices/virtual/block/**/removable r,
 /sys/devices/virtual/block/**/size r,
 /sys/devices/virtual/tty/tty[0-9]/active r,
@@ -101,7 +101,8 @@ owner /tmp/** m,
 owner /{var/run,run,dev}/shm/shmfd-* mrw,
 
 # Chromium Policies
-/etc/chromium{,-browser}/policies/** r,
+/etc/chromium-browser/policies/** r,
+/etc/chromium/** r,
 
 # Make browsing directories work
 /{,**/} r,

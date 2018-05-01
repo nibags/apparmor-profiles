@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 26, 2018
+# Last change: April 30, 2018
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -63,6 +63,7 @@ include <tunables/global>
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/kio* r,
 	owner @{HOME}/.config/kdebugrc rw,
+	owner @{HOME}/.config/kde.org/libphonon.conf r,
 	owner @{HOME}/.kde/share/config/{kde,kio}* r,
 	owner @{HOME}/.kde/share/config/ktinfowidgetpluginrc rw,
 	owner @{HOME}/.kde/share/config/kcookiejarrc r,
@@ -74,6 +75,10 @@ include <tunables/global>
 	link @{HOME}/.config/qBittorrentrc* -> "/home/*/.config/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/*  -> "/home/*/.config/qBittorrent/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/**/* -> "/home/*/.config/qBittorrent/**/#[0-9]*",
+	
+	#link @{HOME}/.local/share/data/qBittorrent/BT_backup/* -> "/home/*/.local/share/data/qBittorrent/BT_backup/#[0-9]*",
+	link @{HOME}/.local/share/data/qBittorrent/*  -> "/home/*/.local/share/data/qBittorrent/#[0-9]*",
+	link @{HOME}/.local/share/data/qBittorrent/**/* -> "/home/*/.local/share/data/qBittorrent/**/#[0-9]*",
 	
 	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
 		
@@ -97,15 +102,18 @@ include <tunables/global>
 	/usr/share/sounds/{,**} r,
 	/usr/share/mime/ r,
 	/usr/share/templates/ r,
+	/usr/share/hwdata/pnp.ids r,
 	
 	/etc/xdg/{,**} r,
 	/etc/machine-id r,
+	/etc/pulse/client.conf r,
 	/etc/ssl/openssl.cnf r,
 	/etc/udev/udev.conf r,
 	deny /etc/fstab r,
 	
 	/dev/**/ r,
 	/dev/tty r,
+	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
@@ -115,14 +123,19 @@ include <tunables/global>
 	owner @{PROC}/@{pid}/mounts r,
 	
 	# Temporal files & sockets
-	owner /tmp/*-qBitto* rwkl,
-	owner /tmp/qt_temp.* rwkl,
+	owner /tmp/*-qBitto* rwk,
+	owner /tmp/qt_temp.* rwk,
+	owner /tmp/qtsingleapp-qBitto-* rwk,
 	owner /tmp/[0-9]*/ rw,
-	owner /{,var/}tmp/{,.}qBitto** rwkl,
+	owner /{,var/}tmp/{,.}qBitto** rwk,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,
 	owner /run/user/[0-9]*/kioclient*-socket rwk,
 	owner /run/user/[0-9]*/qBitto*-socket rwk,
+	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	
+	link /run/user/[0-9]*/qBittorrent*.slave-socket -> "/run/user/[0-9]*/#[0-9]*",
+	link /tmp/.qBittorrent/* -> "/tmp/.qBittorrent/#[0-9]*",
 	
 	owner /run/user/[0-9]*/bus rwk,
 	/run/dbus/system_bus_socket rw,
