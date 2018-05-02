@@ -7,9 +7,9 @@
 
 AppArmor profiles for:
 * Baka-MPlayer
-* Baloo
+* Baloo (extra)
 * Bluetooth Daemon
-* Brave
+* Brave (extra)
 * Chromium
 * Firefox
 * Gwenview
@@ -18,12 +18,13 @@ AppArmor profiles for:
 * Okular
 * Opera
 * qBittorrent
-* Telegram
+* Telegram (extra)
 * Thunderbird
-* Vivaldi
-* VLC
+* Vivaldi (extra)
+* VLC 2.2 (extra)
 * youtube-dl
 
+**NOTE:** The profiles in the *extra* folder are not tested frequently!
 
 These are designed to work on KDE Plasma 5. 
 All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5 (in Xorg and Wayland).
