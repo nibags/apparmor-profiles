@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 31, 2017
+#   Last change: June 14, 2018
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -124,6 +124,8 @@ owner /{var/run,run,dev}/shm/shmfd-* mrw,
 /etc/xdg/xdg-xubuntu/xfce4/helpers.rc r,
 /etc/xdg/xfce4/helpers.rc r,
 
+/usr/bin/chrome-gnome-shell ixr,
+
 # GSettings
 owner /{,var/}run/user/*/dconf/     rw,
 owner /{,var/}run/user/*/dconf/user rw,
@@ -181,6 +183,11 @@ owner @{PROC}/[0-9]*/mounts r,
 /etc/fstab r,
 /etc/rpc r,
 /dev/tty r,
+
+# Plasma browser integration support (temporary solution)
+/usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
+#unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
+#unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper, addr=none),
 
 signal (send) set=(term) peer=unconfined,
 

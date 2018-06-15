@@ -1,6 +1,6 @@
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 20, 2018
+# Last change: June 14, 2018
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -51,6 +51,11 @@ include <tunables/global>
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_MOZILLA} rwklmx,
+  
+  # Plasma browser integration support (temporary solution)
+  /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
+  unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
+  unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper, addr=none),
 
   # for networking
   network inet stream,
