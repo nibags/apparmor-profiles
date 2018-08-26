@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 28, 2018
+# Last change: August 24, 2018
 
 include <tunables/global>
 
@@ -15,14 +15,14 @@ include <tunables/global>
 	include <abstractions/freedesktop.org>
 	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
-	
+
 	include <abstractions/flatpak-snap>
 	include <abstractions/block-networking>
-	
+
 	# Block full access to sensitive data, as passwords and keys.
 	# View in: tunables/confidential.
 	include <abstractions/confidential-deny>
-	
+
 	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
 	include <abstractions/open-email>
@@ -31,19 +31,19 @@ include <tunables/global>
 	# include <abstractions/ubuntu-browsers>
 	# include <abstractions/ubuntu-console-browsers>
 	# include <abstractions/ubuntu-media-players>
-	
+
 	/{,**/} r, # Read only directories
-	
+
 	# Write access in Home directory and mounted drives
 	owner @{HOME}/** rw,
 	owner /{data,media,mnt,srv,net}/** rw,
 	/{data,home,media,mnt,srv,net}/** r,
-	
+
 	# Files supported:
 	/**.[pP][dD][fF]                rw, # pdf
 	/**.[oO][kK][uU][lL][aA][rR]    rw, # okular
 	/**.[tT][xX][tT]                rw, # txt
-	
+
 	/**.[bB][mM][pP]                 r, # bmp
 	/**.[bBgGxX][zZ]                 r, # bz, gz, xz
 	/**.[fF][bB][23]{,.[zZ][iI][pP]} r, # fb2, fb3
@@ -74,7 +74,7 @@ include <tunables/global>
 	/**.[wW][bB][mM][pP]             r, # wbmp
 	/**.[wW][eE][bB][pP]             r, # webp
 	/**.[xX][bBpP][sSmM]             r, # xbm, xps, xpm
-	
+
 	# Okular configuration
 	owner @{HOME}/.local/share/okular/** rw,
 	owner @{HOME}/.config/okular{,part}rc rw,
@@ -87,30 +87,33 @@ include <tunables/global>
 	owner @{HOME}/.kde/share/config/okular{,part}rc.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.cache/okular/** rw,
 	owner @{HOME}/.cache/okular/qmlcache/{,**/}*.qmlc m,
-	
+
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/libaccounts-glib/accounts.db rk,
 	owner @{HOME}/.config/session/\#[0-9]* rwk,
-	
+
 	link @{HOME}/.config/session/okular* -> "/home/*/.config/session/#[0-9]*",
 	link @{HOME}/.config/okular{,part}rc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
-	
+	link @{HOME}/.local/share/okular/** -> "/home/*/.local/share/okular/**",
+
 	/usr/share/** r,
-	
+
 	/etc/fstab r,
 	/etc/nsswitch.conf r,
 	/etc/passwd r,
 	/etc/rpc r,
 	/etc/udev/udev.conf r,
 	/etc/xdg/** r,
-	
+
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
+	@{PROC}/sys/kernel/random/boot_id r,
+	@{PROC}/sys/kernel/core_pattern r,
 	owner @{PROC}/@{pid}/{cmdline,mountinfo,mounts,stat,status,vmstat} r,
 	owner @{PROC}/@{pid}/task/[0-9]*/stat r,
-	
+
 	# Binaries
 	/usr/bin/okular ixr,
 	/usr/bin/plasma-discover PUx,
@@ -126,16 +129,16 @@ include <tunables/global>
 	/usr/bin/kde-open{,5} ix,
 	/usr/bin/kdeinit{4,5} ix,
 	/usr/bin/kdialog ix,
-	
+
 	# Qt5
 	/usr/lib{,64,/@{multiarch}}/qt5/** r,
 	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64,/@{multiarch}}/qt5/qml/{,**/}*.{so,jsc,qmlc} m,
 	/usr/lib{,64,/@{multiarch}}/qt5/{bin,libexec}/** ix,
 	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat* w,
-	
+
 	/usr/lib/@{multiarch}/libexec/kf5/** ix,
-	
+
 	# Temporal files and sockets
 	owner /tmp/** rwlk,
 	owner /{,var/}tmp/kde{,cache}-*/ rw,
@@ -146,30 +149,30 @@ include <tunables/global>
 	owner /{,var/}run/user/[0-9]*/ksocket-*/ rw,
 	owner /{,var/}run/user/[0-9]*/ksocket-*/** rwk,
 	/run/dbus/system_bus_socket w,
-	
+
 	owner /run/user/[0-9]*/\#[0-9]* rwk,
 	link /run/user/[0-9]*/*-socket -> "/run/user/[0-9]*/#[0-9]*",
-	
+
 	# PulseAudio
 	/etc/pulse/{client,daemon}.conf r,
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
 	owner /{,var/}run/user/[0-9]*/pulse/  rw,
 	owner /{,var/}run/user/[0-9]*/pulse/{native,pid,*lock} rwk,
-	
+
 	/dev/tty r,
 	/dev/snd/controlC[0-9]* r,
-	
+
 	signal (send) set=(term) peer=unconfined,
-	
+
 	audit deny @{HOME}/.local/share/applications/** w,
 	deny @{HOME}/.local/share/flatpak/** w,
 	deny @{HOME}/.app/** w,
 	audit deny @{HOME}/.* w,
 	deny @{HOME}/.bash_history r,
-	
+
 	audit deny /dev/{video,audio}* rwlkmx, # Block cameras & microphones
 	deny /run/udev/data/** rwklmx,
-	
+
 	# Noisy
 	audit deny owner /**/* x,
 	audit deny @{HOME}/** x,
@@ -177,5 +180,5 @@ include <tunables/global>
 	audit deny /{data,media,mnt,srv,net,cdrom,var,run,tmp}/** mx,
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor
