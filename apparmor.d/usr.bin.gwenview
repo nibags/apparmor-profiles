@@ -122,7 +122,7 @@ profile gwenview /usr/bin/gwenview {
 	/usr/bin/kate PUx,
 	/usr/bin/* Pixr,
 
-    /usr/lib/gamin/gam_server Pixr,
+	/usr/lib/gamin/gam_server Pixr,
 	/usr/lib{,64,/@{multiarch}}/qt5/** r,
 	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64,/@{multiarch}}/qt5/{bin,libexec}/** ix,
@@ -142,5 +142,5 @@ profile gwenview /usr/bin/gwenview {
 	unix (send receive connect) type=stream addr=none peer=(label=unconfined),
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all; replace-tabs off;
 # vim:  syntax=apparmor
