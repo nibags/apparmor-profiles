@@ -7,7 +7,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: November 22, 2017
+#   Last change: September 29, 2018
 
 # Be fanatical since it is setuid root and don't use an abstraction
 /lib{,64}/libgcc_s.so* mr,
@@ -27,6 +27,7 @@
 /lib{,64}/tls/*/{cmov,nosegneg}/libc-*.so* mr,
 /usr/lib{,64}/libstdc++.so* mr,
 /usr/lib{,64,/@{multiarch}}/libstdc++.so* mr,
+/lib{,64,/@{multiarch}}/librt-*.so* mr,
 /etc/ld.so.cache r,
 
 # Required for dropping into PID namespace. Keep in mind that until the

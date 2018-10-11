@@ -2,8 +2,9 @@
 # Last change: August 24, 2018
 
 include <tunables/global>
+include <tunables/confidential>
 
-/usr/bin/okular {
+profile okular /usr/bin/okular {
 	include <abstractions/base>
 	include <abstractions/cups-client>
 	include <abstractions/dbus>
@@ -82,18 +83,19 @@ include <tunables/global>
 	owner @{HOME}/.config/session/ rw,
 	owner @{HOME}/.config/session/.* rwk,
 	owner @{HOME}/.config/session/okular* rwk,
+	owner @{HOME}/.cache/okular/** rw,
+	owner @{HOME}/.cache/okular/qmlcache/{,**/}*.qmlc m,
+    # For old versions
 	owner @{HOME}/.kde/share/apps/okular/** rw,
 	owner @{HOME}/.kde/share/config/okular{,part}rc rw,
 	owner @{HOME}/.kde/share/config/okular{,part}rc.[a-zA-Z0-9]* rwk,
-	owner @{HOME}/.cache/okular/** rw,
-	owner @{HOME}/.cache/okular/qmlcache/{,**/}*.qmlc m,
 
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/libaccounts-glib/accounts.db rk,
-	owner @{HOME}/.config/session/\#[0-9]* rwk,
 
+	owner @{HOME}/.config/session/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
 	link @{HOME}/.config/session/okular* -> "/home/*/.config/session/#[0-9]*",
-	link @{HOME}/.config/okular{,part}rc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.config/okular{,part}rc{,.[a-zA-Z0-9]*} -> "/home/*/.config/#[0-9]*",
 	link @{HOME}/.local/share/okular/** -> "/home/*/.local/share/okular/**",
 
 	/usr/share/** r,
@@ -150,7 +152,7 @@ include <tunables/global>
 	owner /{,var/}run/user/[0-9]*/ksocket-*/** rwk,
 	/run/dbus/system_bus_socket w,
 
-	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	owner /run/user/[0-9]*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
 	link /run/user/[0-9]*/*-socket -> "/run/user/[0-9]*/#[0-9]*",
 
 	# PulseAudio

@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: April 30, 2018
+# Last change: October 08, 2018
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -7,6 +7,7 @@
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 
 #  - Important: Check & change the torrents directory
 #    according to qBittorrent configuration.
@@ -15,50 +16,60 @@ include <tunables/global>
 # Torrents directory. Modify according to qBittorrent configuration.
 @{TORRENTS_DIR} = @{HOME}/Descargas/Torrents
 
-/usr/bin/qbittorrent {
+profile qbittorrent /usr/bin/qbittorrent {
 	include <abstractions/base>
 	include <abstractions/nameservice>
 	include <abstractions/fonts>
-	include <abstractions/dbus-strict>
 	include <abstractions/dbus-session>
 	include <abstractions/X>
 	include <abstractions/freedesktop.org>
 	include <abstractions/xdg-desktop>
-	
+
 	include <abstractions/networkmanager-strict>
 	include <abstractions/udisk-strict>
 	include <abstractions/wayland>
 	include <abstractions/flatpak-snap>
-	
+
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
-	
+
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	include <abstractions/confidential-deny>
-	
+
 	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
 	include <abstractions/open-email>
-	
+
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>
-	
+
 	network netlink dgram,
-	
+
+	## include <abstractions/dbus-strict>
+	# NOTE: The application does not start with bus=system
+	dbus (send)
+		bus=*
+		path=/org/freedesktop/DBus
+		interface=org.freedesktop.DBus
+		member={Hello,AddMatch,RemoveMatch,GetNameOwner,NameHasOwner,StartServiceByName}
+		peer=(name=org.freedesktop.DBus),
+	# member={Hello,AddMatch,RemoveMatch,GetNameOwner}
+	# peer=(name=org.freedesktop.DBus label=unconfined)
+
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,                  # Just read/write in the Torrents directory
 	owner @{HOME}/**.[tT][oO][rR][rR][eE][nN][tT] r, # Only read .torrent files
-	owner @{HOME}/{,**/} r,                          # Only read directories
-	deny @{HOME}/**/.directory r,
-	
+	owner @{HOME}/{,[^.]**/} r,                      # Only read directories
+	deny @{HOME}/{,**/}.directory r,
+
 	# qBittorrent configuration
 	owner @{HOME}/.config/qBittorrent/{,**} rwk,
 	owner @{HOME}/.config/qBittorrentrc* rwk,
 	owner @{HOME}/.local/share/data/qBittorrent/{,**} rwk,
 	owner @{HOME}/.local/share/data/ rw,
 	owner @{HOME}/.cache/qBittorrent/{,**} rw,
-	
+
 	# Local configuration
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/kio* r,
@@ -71,28 +82,29 @@ include <tunables/global>
 	owner @{HOME}/.kde/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde/share/config/*.new rwk,
 	owner @{HOME}/.local/share/qt_temp.* rwk,
-	
+
 	link @{HOME}/.config/qBittorrentrc* -> "/home/*/.config/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/*  -> "/home/*/.config/qBittorrent/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/**/* -> "/home/*/.config/qBittorrent/**/#[0-9]*",
-	
+
 	#link @{HOME}/.local/share/data/qBittorrent/BT_backup/* -> "/home/*/.local/share/data/qBittorrent/BT_backup/#[0-9]*",
 	link @{HOME}/.local/share/data/qBittorrent/*  -> "/home/*/.local/share/data/qBittorrent/#[0-9]*",
 	link @{HOME}/.local/share/data/qBittorrent/**/* -> "/home/*/.local/share/data/qBittorrent/**/#[0-9]*",
-	
+
 	deny /{media,mnt,srv,net}/** rwklmx,  # Block access to mounted drives & other directories
-		
+
 	# Binaries
 	/usr/bin/qbittorrent r,
 	/usr/bin/kdeinit{4,5} ixr,
 	/usr/bin/{gnome,gvfs,xdg}-open ixr,
 	/usr/bin/kde-open{,5} ixr,
 	/usr/bin/kdialog ixr,
-		
+
 	# Libraries
 	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/} r,
 	/usr/lib{,64,/@{multiarch}}/qt5/plugins/**.so mr,
-	
+	#/usr/lib{,64,/@{multiarch}}/libQt5*.so{,.[0-9]*} m,
+
 	/usr/share/color-schemes/{,**} r,
 	/usr/share/GeoIP/{,*} r,
 	/usr/share/knotifications5/{,*} r,
@@ -103,26 +115,28 @@ include <tunables/global>
 	/usr/share/mime/ r,
 	/usr/share/templates/ r,
 	/usr/share/hwdata/pnp.ids r,
-	
+
 	/etc/xdg/{,**} r,
 	/etc/machine-id r,
 	/etc/pulse/client.conf r,
 	/etc/ssl/openssl.cnf r,
 	/etc/udev/udev.conf r,
 	deny /etc/fstab r,
-	
+
 	/dev/**/ r,
 	/dev/tty r,
 	owner /{dev,run,var/run}/shm/pulse-shm-* rwk,
-	
+
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	owner @{PROC}/@{pid}/mounts r,
-	
+	@{PROC}/sys/kernel/random/boot_id r,
+
 	# Temporal files & sockets
+	owner /tmp/xauth-[0-9]* r,
 	owner /tmp/*-qBitto* rwk,
 	owner /tmp/qt_temp.* rwk,
 	owner /tmp/qtsingleapp-qBitto-* rwk,
@@ -132,16 +146,16 @@ include <tunables/global>
 	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,
 	owner /run/user/[0-9]*/kioclient*-socket rwk,
 	owner /run/user/[0-9]*/qBitto*-socket rwk,
-	owner /run/user/[0-9]*/\#[0-9]* rwk,
-	
+	owner /run/user/[0-9]*/#[0-9]* rwk,
+
 	link /run/user/[0-9]*/qBittorrent*.slave-socket -> "/run/user/[0-9]*/#[0-9]*",
 	link /tmp/.qBittorrent/* -> "/tmp/.qBittorrent/#[0-9]*",
-	
+
 	owner /run/user/[0-9]*/bus rwk,
-	/run/dbus/system_bus_socket rw,
-	
+	/{,var/}run/dbus/system_bus_socket rw,
+
 	signal (send) set=(term) peer=unconfined,
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor

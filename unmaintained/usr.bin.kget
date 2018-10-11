@@ -2,6 +2,7 @@
 # Last change: December 05, 2017
 
 include <tunables/global>
+include <tunables/confidential>
 
 # NOTE: By default, there is only write access to the download directories.
 

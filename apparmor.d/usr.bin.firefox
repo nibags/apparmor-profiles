@@ -15,6 +15,7 @@
 @{USER_DIR} += @{HOME}/Escritorio
 
 include <tunables/global>
+include <tunables/confidential>
 
 # We want to confine the binaries that match:
 #  /usr/lib/firefox/firefox

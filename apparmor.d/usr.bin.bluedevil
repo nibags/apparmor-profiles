@@ -2,6 +2,7 @@
 # Last change: January 03, 2018
 
 include <tunables/global>
+include <tunables/confidential>
 
 profile bluedevil /usr/bin/bluedevil-{monolithic,wizard} {
 	include <abstractions/base>

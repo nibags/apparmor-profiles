@@ -6,6 +6,7 @@
 #   on Ubuntu 16.04 with KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 include <tunables/media-extensions>
 
 # Directories where multimedia and data are stored

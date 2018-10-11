@@ -8,6 +8,7 @@
 #    there are no write accesses in the Home directory.
 
 #include <tunables/global>
+include <tunables/confidential>
 
 # Directories where multimedia and data are stored
 @{DATA_DIR}=/{home,media,mnt,srv,net,cdrom}

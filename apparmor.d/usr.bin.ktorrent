@@ -9,6 +9,7 @@
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 
 # IMPORTANT: Modify according to KTorrent configuration:
 # Download directory

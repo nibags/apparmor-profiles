@@ -2,6 +2,7 @@
 # Last change: March 08, 2018
 
 include <tunables/global>
+include <tunables/confidential>
 
 # TODO:
 #   /usr/bin/baloo{ctl,search,show}

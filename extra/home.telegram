@@ -7,6 +7,7 @@
 #  - This profile is only tested on Ubuntu 16.04 with KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Downloads directory:
 @{DOWNLOADS_DIR} = @{HOME}/Descargas

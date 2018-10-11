@@ -12,6 +12,7 @@
 #    correctly in the KDE Plasma 5 desktop environment.
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Thunderbird directory:
 @{THUNB_LIBDIR} = /usr/lib{,64}/thunderbird
@@ -21,7 +22,7 @@ include <tunables/global>
 @{USER_DIR} =  @{HOME}/Descargas
 @{USER_DIR} += @{HOME}/Escritorio
 
-/usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
+profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	include <abstractions/audio>
 	include <abstractions/aspell>
 	include <abstractions/cups-client>
@@ -401,5 +402,5 @@ include <tunables/global>
 	# include <local/usr.bin.thunderbird>
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile;
 # vim:  syntax=apparmor

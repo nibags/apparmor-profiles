@@ -6,9 +6,10 @@
 # NOTE:
 #  - Important: Check & change the user download & desktop directory.
 #  - By default, there is only write access to the download & desktop directory.
-#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+#  - This profile is only tested on Ubuntu 16.04, with KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Vivaldi directory:
 @{VIVALDI_LIBDIR} = /opt/vivaldi
@@ -18,10 +19,10 @@ include <tunables/global>
 @{USER_DIR} =  @{HOME}/Descargas
 @{USER_DIR} += @{HOME}/Escritorio
 
-/opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
+profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
-	
+
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>
 
@@ -32,9 +33,9 @@ include <tunables/global>
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_VIVALDI} rwklmx,
-	
+
 	owner /{dev,run}/shm/{,.}com.vivaldi.* mrw,
-		
+
 	# Access to Home, removable medias & other folders
 	@{HOME}/{,*,[^.]**} r,
 	/{data,media,mnt,srv,net}/** r,
@@ -43,7 +44,7 @@ include <tunables/global>
 	owner @{HOME}/ r,
 	owner @{USER_DIR}/ r,
 	owner @{USER_DIR}/** rw,
-	
+
 	# Vivaldi configuration.
 	# For Vivaldi-snapshot, use the "vivaldi-snapshot" directory instead of "vivaldi".
 	owner @{HOME}/.config/vivaldi/ rw,
@@ -53,8 +54,13 @@ include <tunables/global>
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
-	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw, 
-	
+	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
+
+	deny /usr/local/share/fonts/** w,
+    deny /usr/share/fonts/** w,
+	deny /usr/share/texmf/fonts/** w,
+	deny /usr/share/poppler/** w,
+
 	# Access to Vivaldi directory
 	deny @{VIVALDI_LIBDIR}/** w, # Noisy
 	@{VIVALDI_LIBDIR}/** r,
@@ -68,34 +74,34 @@ include <tunables/global>
 
 	# Allow communicating with sandbox
 	unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin//vivaldi_sandbox),
-	
+
 	/usr/bin/xdg-desktop-menu ixr,
-	
+
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
 		include <abstractions/chromium-base-xdgsettings>
-		
+
 		deny @{CONFIDENTIAL_EXCEPT_VIVALDI} rwklmx,
-		
+
 		@{VIVALDI_LIBDIR}/xdg-settings r,
 		/dev/tty r,
 	}
-	
+
 	profile vivaldi_sandbox flags=(attach_disconnected) {
 		# Base rules for vivaldi-sandbox binary.
 		include <abstractions/chromium-base-sandbox>
-		
+
 		signal (receive) peer=@{VIVALDI_LIBDIR}/vivaldi-bin,
 		unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin),
-		
+
 		@{VIVALDI_LIBDIR}/vivaldi r, # vivaldi{,-snapshot}
 		@{VIVALDI_LIBDIR}/vivaldi-bin Px,
 		@{VIVALDI_LIBDIR}/vivaldi-sandbox r,
 	}
-	
+
 	# Site-specific additions and overrides. See local/README for details.
 	include <local/usr.bin.chromium-browser>
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor

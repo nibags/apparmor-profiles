@@ -9,6 +9,7 @@
 #  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Brave directory:
 @{BRAVE_LIBDIR} = /usr/lib{,64}/brave

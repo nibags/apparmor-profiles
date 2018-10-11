@@ -6,46 +6,52 @@ include <tunables/global>
 /usr/lib{,32,64}/bluetooth/bluetoothd {
 	include <abstractions/base>
 	include <abstractions/dbus-session>
-	
+
 	network bluetooth,
 	network netlink raw,
 
 	capability net_admin,
 	capability net_bind_service,
-	
+
 	/usr/lib{,32,64}/bluetooth/bluetoothd ixmr,
 	/var/lib{,32,64}/bluetooth/** rwk,
 	/usr/lib{,32,64}/{,@{multiarch}/}bluetooth/{,**} r,
 	/usr/lib{,32,64}/{,@{multiarch}/}bluetooth/plugins/sixaxis.so m,
 	/etc/bluetooth/** r,
 	/etc/udev/udev.conf r,
-	
+
 	/dev/rfkill rw,
 	/dev/uinput rw,
-	
+
 	/sys/devices/{,**} r,
 	/run/udev/{,**} r,
 	/run/systemd/notify w,
 	/run/dbus/system_bus_socket rw,
-	
+
+	/run/systemd/journal/{socket,dev-log} rw,
+	/dev/log rw,
+
+	#dbus (send write read) path="run/systemd/journal/dev-log",
+	#dbus (send write read) path="run/dbus/system_bus_socket",
+
 	dbus (bind)
 		bus=system
 		name=org.bluez,
-	
+
 	dbus (receive)
 		bus=system
 		path=/org/bluez{,/**},
 	dbus (send)
 		bus=system
 		interface=org.bluez.*,
-	
+
 	dbus (send)
 		bus=system
 		path=/org/bluez/hci[0-9]**
 		interface=org.freedesktop.DBus.Properties
 		member=PropertiesChanged
 		peer=(name=org.freedesktop.DBus),
-	
+
 	dbus (send)
 		bus=system
 		path=/
@@ -56,7 +62,7 @@ include <tunables/global>
 		path=/
 		interface=org.freedesktop.DBus.ObjectManager
 		member={GetAll,GetManagedObjects},
-	
+
 	dbus (receive)
 		bus=system
 		path=/
@@ -68,24 +74,24 @@ include <tunables/global>
 		interface=org.freedesktop.DBus
 		member={Hello,RequestName,AddMatch,RemoveMatch,GetNameOwner}
 		peer=(name=org.freedesktop.DBus),
-	
+
 	dbus (send)
 		bus=system
 		path=/org/freedesktop/hostname[0-9]*
 		interface=org.freedesktop.DBus.Properties
 		member=GetAll,
-	
+
 	# Noisy
 	deny /{home,root,media,mnt,srv,net}/** rwkl,
 	audit deny /{home,root,media,mnt,srv,net,cdrom,run,tmp}/** mx,
 	audit deny /dev/{audio,video}* rwklmx,
-	
+
 	audit deny /boot/** rwklmx,
 	audit deny /var/log/** rwklmx,
 	audit deny /etc/apparmor.d/** rwklmx,
 	audit deny /etc/apparmor/** rwklmx,
 	audit deny /var/lib/apparmor/** rwklmx,
-	
+
 	audit deny /etc/init.d/** rwklmx,
 	audit deny /etc/cron.*/** rwklmx,
 	audit deny /etc/initramfs-tools/** rwklmx,
@@ -93,5 +99,5 @@ include <tunables/global>
 	audit deny /etc/xdg/{autostart,systemd}/** rwklmx,
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor

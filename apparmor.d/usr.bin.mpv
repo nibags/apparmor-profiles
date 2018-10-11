@@ -1,11 +1,12 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 12, 2018
+# Last change: October 05, 2018
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the include rule:
 # <abstractions/nameservice> and remove: <abstractions/block-networking>
 
 include <tunables/global>
+include <tunables/confidential>
 include <tunables/media-extensions>
 
 # Directories where videos and data are stored
@@ -18,68 +19,70 @@ profile mpv /usr/bin/mpv {
 	include <abstractions/audio>
 	include <abstractions/X>
 	include <abstractions/freedesktop.org>
-	
+
 	# Block network connection:
 	include <abstractions/block-networking>
 	# Allow network connection (uncomment this line):
 	# include <abstractions/nameservice>
-	
+
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	include <abstractions/confidential-deny>
-	
+
 	# Only reading access in Home directory, mounted drives and others directories
 	@{DATA_DIR}/** r,
-	
+
 	# Supported files
 	/**?.@{MEDIA_EXT} r,
-	
+
 	# Configuration
 	owner @{HOME}/.config/ rw,
 	owner @{HOME}/.config/mpv/ rw,
 	owner @{HOME}/.config/mpv/** rwk,
-	
+
 	owner @{HOME}/mpv-shot[0-9]*.jpg rw,
-	
+
 	/etc/mpv/{,**} r,
 	/etc/nsswitch.conf r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
-	
+	/etc/glvnd/** r,
+	/usr/share/glvnd/** r,
+
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
 	/sys/devices/system/**/meminfo r,
 	/sys/devices/pci[0-9]*/**/{config,revision} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
-	
+
 	# Device access
 	/dev/ati/{,**} r,
 	/dev/dri/{,**} r,
 	/dev/tty rw,
 	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
-	
+
 	# Binaries and libraries
 	/usr/bin/mpv ixr,
 	/usr{,/local}/bin/youtube-dl Pxr,
 	/usr/bin/{dbus-send,xdg-screensaver,xset} Pixr,
 	/bin/{grep,hostname,mv,sed,which} Pixr,
 	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat{,.*} w,
-	
+
 	# Block compiled libraries & executables
 	audit deny @{DATA_DIR}/** mx,
 	audit deny owner /**/* mx,
-	
+
 	deny /run/udev/data/** rwklmx,
 	deny owner /**/*.py* r,
 	deny @{DATA_DIR}/**.py* r,
 	deny owner @{HOME}/.recently-used.xbel* rw,
 	deny owner @{HOME}/.local/share/recently-used.xbel* rw,
-	
+
 	# Temp files
 	owner /tmp/xauth-* r,
-	
+
 	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor

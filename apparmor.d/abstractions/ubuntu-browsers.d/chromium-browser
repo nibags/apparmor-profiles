@@ -1,0 +1,20 @@
+# kate: syntax AppArmor Security Profile;
+# vim:  syntax=apparmor
+
+# NOTE: This file is part of the "apparmor-profiles" package of Ubuntu 16.04 & 18.04.
+
+# This file is updated currently not managed by the package but in the future
+# will be overwritten on upgrades.
+#
+# For site-specific adjustments, please see:
+# /etc/apparmor.d/local/usr.bin.chromium-browser
+
+#include <abstractions/ubuntu-browsers.d/plugins-common>
+#include <abstractions/ubuntu-browsers.d/mailto>
+#include <abstractions/ubuntu-browsers.d/multimedia>
+#include <abstractions/ubuntu-browsers.d/productivity>
+#include <abstractions/ubuntu-browsers.d/java>
+#include <abstractions/ubuntu-browsers.d/kde>
+#include <abstractions/ubuntu-browsers.d/text-editors>
+#include <abstractions/ubuntu-browsers.d/ubuntu-integration>
+#include <abstractions/ubuntu-browsers.d/user-files>

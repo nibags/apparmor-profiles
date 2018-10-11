@@ -184,13 +184,14 @@ owner @{PROC}/[0-9]*/mounts r,
 # with kdialog (info: Failed name lookup - deleted entry). 
 # The problem is not reproduced in Opera, Vivaldi and Brave.
 owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
-owner "/run/user/[0-9]*/#[0-9]*" rwk,
+owner /run/user/[0-9]*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
 link /run/user/[0-9]*/kdialog*.slave-socket -> "/run/user/[0-9]*/#[0-9]*",
 
 # Plasma browser integration support (temporary solution)
 /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
 #unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
 #unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper, addr=none),
+/etc/opt/chrome/native-messaging-hosts/org.kde.plasma.browser_integration.json r,
 
 signal (send) set=(term) peer=unconfined,
 

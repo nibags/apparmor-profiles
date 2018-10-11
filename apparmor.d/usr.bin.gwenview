@@ -1,7 +1,8 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 08, 2018
+# Last change: October 10, 2018
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Some files supported:
 # bmp
@@ -19,7 +20,7 @@ include <tunables/global>
 # webp
 @{IMG_EXT} += [wW][eE][bB][pP]
 # dds
-@{IMG_EXT} += [dD][dD][sS] 
+@{IMG_EXT} += [dD][dD][sS]
 # eps
 @{IMG_EXT} += [eE][pP][sS]
 # icns
@@ -41,45 +42,49 @@ profile gwenview /usr/bin/gwenview {
 	include <abstractions/fonts>
 	include <abstractions/dbus>
 	include <abstractions/dbus-session>
-	include <abstractions/dbus-accessibility>	
+	include <abstractions/dbus-accessibility>
 	include <abstractions/audio>
 	include <abstractions/X>
 	include <abstractions/xdg-desktop>
 	include <abstractions/ubuntu-helpers>
-	
+
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
-	
+
 	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
 	include <abstractions/general-security>
-	
+
 	# Block network connection
 	include <abstractions/block-networking>
-	
+
 	# Needed to open links (only for some Web browsers/e-mail clients).
 	include <abstractions/open-browser>
 	include <abstractions/open-email>
-	
+
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_VIEWER} rwklmx,
-	
+
 	# Full reading access
 	/{,**/,**} r,
-	
+
 	# Write access in Home directory and mounted drives
 	owner @{HOME}/** rw,
 	owner /{data,media,mnt,srv,net}/** rw,
-	
-	owner /**/\#[0-9]* rwk,
-	link subset /{home,data,media,mnt,srv,net}/**.[a-zA-Z0-9]* -> "/{home,data,media,mnt,srv,net}/{,**/}#[0-9]*",
-	
+
+	owner /**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+	link subset /{home,data,media,mnt,srv,net}/**.[a-zA-Z0-9]* -> "/{home,data,media,mnt,srv,net}/{,**/}#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+
 	owner /**/*.@{IMG_EXT} rw,
 	owner /**/*.@{IMG_EXT}.[a-zA-Z0-9]* rwk,
-	link /**/*.@{IMG_EXT}.[a-zA-Z0-9]* -> "/**/#[0-9]*",
-	
+	link /**/*.@{IMG_EXT}.[a-zA-Z0-9]* -> "/**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+
+	deny owner @{HOME}/#[0-9]* m,
+	deny owner /tmp/#[0-9]* m,
+	deny owner /**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] m,
+
 	# Gwenview configuration
-	owner @{HOME}/.local/share/org.kde.gwenview/** rwk,
+	owner @{HOME}/.local/share/{,org.kde.}gwenview/** rwk,
 	owner @{HOME}/.config/{,org.kde.}gwenviewrc rw,
 	owner @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* rwk,
 	owner @{HOME}/.config/session/ rw,
@@ -87,24 +92,25 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.config/session/{,org.kde.}gwenview* rwk,
 	owner @{HOME}/.cache/thumbnails/** rw,
 	owner @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* rwk,
-	
+
 	include <abstractions/kde-user>
-	owner @{HOME}/.local/share/baloo/index-lock rwk,	
-	owner @{HOME}/.config/session/\#[0-9]* rwk,
-	owner @{HOME}/.cache/thumbnails/*/\#[0-9]* rwk,
-	
+	owner @{HOME}/.local/share/baloo/index-lock rwk,
+	owner @{HOME}/.config/session/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+	owner @{HOME}/.cache/thumbnails/*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+
 	link @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
+	link @{HOME}/.local/share/{,org.kde.}gwenview/** -> "/home/*/.local/share/{,org.kde.}gwenview/{,**/}#[0-9]*",
 	link @{HOME}/.config/session/{,org.kde.}gwenview* -> "/home/*/.config/session/#[0-9]*",
 	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/#[0-9]*",
-	
+
 	allow owner @{HOME}/.local/share/flatpak/exports/share/icons/** rw,
-	
+
 	# Libraries and binaries
 	/usr/bin/gwenview ixr,
 	/usr/bin/dolphin PUx,
 	/usr/bin/plasma-discover PUx,
 	/usr/bin/khelpcenter Cxr -> sanitized_helper,
-	
+
 	/usr/bin/digikam PUx,
 	/usr/bin/gimp PUx,
 	/usr/bin/gimp-2.8 PUx,
@@ -115,12 +121,13 @@ profile gwenview /usr/bin/gwenview {
 	/usr/bin/mirage PUx,
 	/usr/bin/kate PUx,
 	/usr/bin/* Pixr,
-	
+
+    /usr/lib/gamin/gam_server Pixr,
 	/usr/lib{,64,/@{multiarch}}/qt5/** r,
 	/usr/lib{,64,/@{multiarch}}/qt5/plugins/{,**/}*.so m,
 	/usr/lib{,64,/@{multiarch}}/qt5/{bin,libexec}/** ix,
 	deny /usr/lib{,64,/@{multiarch}}/vlc/plugins/plugins.dat{,.*} w,
-	
+
 	# Temporal files
 	owner /tmp/** rwkl,
 	owner /var/tmp/kdecache-*/* rwkl,
@@ -128,11 +135,12 @@ profile gwenview /usr/bin/gwenview {
 	owner /run/user/[0-9]*/bus rwk,
 	owner /run/user/[0-9]*/*-socket rwk,
 	owner /run/user/[0-9]*/kdeinit5* rwk,
-	owner /run/user/[0-9]*/\#[0-9]* rwk,
+	owner /run/user/[0-9]*/#[0-9]* rwk,
 	link /run/user/[0-9]*/* -> "/run/user/[0-9]*/#[0-9]*",
-	
+
 	signal (send) set=(term) peer=unconfined,
+	unix (send receive connect) type=stream addr=none peer=(label=unconfined),
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
 # vim:  syntax=apparmor

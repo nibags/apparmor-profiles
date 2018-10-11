@@ -2,6 +2,7 @@
 # Last change: February 12, 2017
 
 include <tunables/global>
+include <tunables/confidential>
 
 # Python versions
 @{PYTHON} = python{,[23],2.[4-7],3.[0-6]}

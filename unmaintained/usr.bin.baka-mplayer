@@ -2,6 +2,7 @@
 # Last change: December 04, 2017
 
 include <tunables/global>
+include <tunables/confidential>
 
 profile baka-mplayer /usr/bin/baka-mplayer {
 	include <abstractions/base>
