@@ -1,9 +1,9 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: February 07, 2017
+# Last change: March 07, 2019
 
 include <tunables/global>
 
-/usr/lib{,32,64}/bluetooth/bluetoothd {
+/usr/lib{,32,64}/bluetooth/bluetoothd flags=(attach_disconnected) {
 	include <abstractions/base>
 	include <abstractions/dbus-session>
 
@@ -30,9 +30,6 @@ include <tunables/global>
 
 	/run/systemd/journal/{socket,dev-log} rw,
 	/dev/log rw,
-
-	#dbus (send write read) path="run/systemd/journal/dev-log",
-	#dbus (send write read) path="run/dbus/system_bus_socket",
 
 	dbus (bind)
 		bus=system

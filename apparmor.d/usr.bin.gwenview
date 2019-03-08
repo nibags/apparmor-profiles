@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 10, 2018
+# Last change: March 07, 2019
 
 include <tunables/global>
 include <tunables/confidential>
@@ -35,6 +35,8 @@ include <tunables/confidential>
 @{IMG_EXT} += [rR][gG][bB]
 # xbp, xpm
 @{IMG_EXT} += [xX][bBpP][mM]
+
+@{TMP_FILE} = \#[0-9]{[0-9],}{[0-9],}{[0-9],}{[0-9],}{[0-9],}{[0-9],}{[0-9],}
 
 profile gwenview /usr/bin/gwenview {
 	include <abstractions/base>
@@ -72,16 +74,16 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/** rw,
 	owner /{data,media,mnt,srv,net}/** rw,
 
-	owner /**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
-	link subset /{home,data,media,mnt,srv,net}/**.[a-zA-Z0-9]* -> "/{home,data,media,mnt,srv,net}/{,**/}#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+	owner /**/@{TMP_FILE} rwk,
+	link subset /{home,data,media,mnt,srv,net}/**.[a-zA-Z0-9]* -> "/{home,data,media,mnt,srv,net}/{,**/}@{TMP_FILE}",
 
 	owner /**/*.@{IMG_EXT} rw,
 	owner /**/*.@{IMG_EXT}.[a-zA-Z0-9]* rwk,
-	link /**/*.@{IMG_EXT}.[a-zA-Z0-9]* -> "/**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+	link /**/*.@{IMG_EXT}.[a-zA-Z0-9]* -> "/**/@{TMP_FILE}",
 
-	deny owner @{HOME}/#[0-9]* m,
-	deny owner /tmp/#[0-9]* m,
-	deny owner /**/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] m,
+	deny owner @{HOME}/@{TMP_FILE} m,
+	deny owner /tmp/@{TMP_FILE} m,
+	deny owner /**/@{TMP_FILE} m,
 
 	# Gwenview configuration
 	owner @{HOME}/.local/share/{,org.kde.}gwenview/** rwk,
@@ -92,16 +94,17 @@ profile gwenview /usr/bin/gwenview {
 	owner @{HOME}/.config/session/{,org.kde.}gwenview* rwk,
 	owner @{HOME}/.cache/thumbnails/** rw,
 	owner @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* rwk,
+	owner @{HOME}/.cache/mesa_shader_cache/**.tmp rwk,
 
 	include <abstractions/kde-user>
 	owner @{HOME}/.local/share/baloo/index-lock rwk,
-	owner @{HOME}/.config/session/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
-	owner @{HOME}/.cache/thumbnails/*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+	owner @{HOME}/.config/session/@{TMP_FILE} rwk,
+	owner @{HOME}/.cache/thumbnails/*/@{TMP_FILE} rwk,
 
-	link @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* -> "/home/*/.config/#[0-9]*",
-	link @{HOME}/.local/share/{,org.kde.}gwenview/** -> "/home/*/.local/share/{,org.kde.}gwenview/{,**/}#[0-9]*",
-	link @{HOME}/.config/session/{,org.kde.}gwenview* -> "/home/*/.config/session/#[0-9]*",
-	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/#[0-9]*",
+	link @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* -> "/home/*/.config/@{TMP_FILE}",
+	link @{HOME}/.local/share/{,org.kde.}gwenview/** -> "/home/*/.local/share/{,org.kde.}gwenview/{,**/}@{TMP_FILE}",
+	link @{HOME}/.config/session/{,org.kde.}gwenview* -> "/home/*/.config/session/@{TMP_FILE}",
+	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/@{TMP_FILE}",
 
 	allow owner @{HOME}/.local/share/flatpak/exports/share/icons/** rw,
 
@@ -135,8 +138,8 @@ profile gwenview /usr/bin/gwenview {
 	owner /run/user/[0-9]*/bus rwk,
 	owner /run/user/[0-9]*/*-socket rwk,
 	owner /run/user/[0-9]*/kdeinit5* rwk,
-	owner /run/user/[0-9]*/#[0-9]* rwk,
-	link /run/user/[0-9]*/* -> "/run/user/[0-9]*/#[0-9]*",
+	owner /run/user/[0-9]*/@{TMP_FILE} rwk,
+	link /run/user/[0-9]*/* -> "/run/user/[0-9]*/@{TMP_FILE}",
 
 	signal (send) set=(term) peer=unconfined,
 	unix (send receive connect) type=stream addr=none peer=(label=unconfined),

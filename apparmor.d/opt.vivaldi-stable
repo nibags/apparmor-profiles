@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 05, 2018
+# Last change: March 07, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -53,6 +53,7 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	owner @{HOME}/.config/vivaldi/**/Cache/* mr,
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
+	owner @{HOME}/.cache/mesa_shader_cache/** rwk,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
 
@@ -67,6 +68,9 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	@{VIVALDI_LIBDIR}/*.pak mr,
 	@{VIVALDI_LIBDIR}/locales/* mr,
 	@{VIVALDI_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+
+	@{VIVALDI_LIBDIR}/libwidevinecdm.so mr,
+	/var/opt/vivaldi/libwidevinecdm.so mr,
 
 	# Allow transitions to ourself and our sandbox
 	@{VIVALDI_LIBDIR}/vivaldi-bin ix,

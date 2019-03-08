@@ -1,14 +1,14 @@
 
 # AppArmor Security Profiles for some applications
 
-**Author:** Nibaldo González (<nibgonz@gmail.com>) (Valparaíso, Chile)
+**Author:** Nibaldo González (<nibgonz@gmail.com>)
 
 ## Description:
 
 AppArmor profiles for:
 * Baka-MPlayer (extra)
 * Baloo (extra)
-* Bluetooth Daemon (only for Ubuntu 16.04)
+* Bluetooth Daemon (tested on Ubuntu 18.04)
 * Brave (extra)
 * Chromium (tested on Ubuntu 18.04)
 * Firefox
@@ -20,14 +20,14 @@ AppArmor profiles for:
 * qBittorrent (tested on Ubuntu 18.04)
 * Telegram (extra)
 * Thunderbird (tested on Ubuntu 18.04)
-* Vivaldi
+* Vivaldi (tested on Ubuntu 18.04)
 * VLC 2.2 (extra)
 * youtube-dl (extra)
 
 **NOTE:** The profiles in the *extra* folder are not tested frequently!
 
 These are designed to work on KDE Plasma 5. 
-All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5 (in Xorg and Wayland). 
+All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5. 
 Some profiles are also tested in Ubuntu 18.04.
 
 If you use Ubuntu, please install the `apparmor-utils` package.
