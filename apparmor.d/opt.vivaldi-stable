@@ -107,5 +107,5 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	include <local/usr.bin.chromium-browser>
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

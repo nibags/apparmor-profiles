@@ -35,7 +35,7 @@ include <tunables/confidential>
   include <abstractions/p11-kit>
   include <abstractions/ubuntu-unity7-base>
   include <abstractions/ubuntu-unity7-launcher>
-  
+
   include <abstractions/flatpak-snap>
   include <abstractions/open-messaging>
 
@@ -48,11 +48,11 @@ include <tunables/confidential>
        interface=org.a11y.atspi**,
   dbus (receive, send)
        bus=accessibility,
-       
+
   # Block full access to sensitive data, as passwords and keys.
   # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_MOZILLA} rwklmx,
-  
+
   # Plasma browser integration support (temporary solution)
   /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
   unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
@@ -151,8 +151,8 @@ include <tunables/confidential>
   /sys/devices/system/node/node[0-9]*/meminfo r,
   /sys/devices/pci[0-9]*/**/{config,revision} r,  # Modifications
   owner @{HOME}/.cache/thumbnails/** w,
-  
-  
+
+
   /etc/mtab r,
   /etc/fstab r,
 
@@ -186,27 +186,27 @@ include <tunables/confidential>
   owner @{HOME}/ r,
   owner @{USER_DIR}/ r,
   owner @{USER_DIR}/** rw,
-  
+
   owner @{HOME}/{*,[^.]*/**}.{[jJ][sS][oO][nN],[hH][tT][mM][lL]} rw,  # To backup bookmarks
   owner @{HOME}/dwhelper/{,**} rw,
   owner @{HOME}/mozilla.pdf rw,
-  
+
   # Noisy
   audit deny /{data,media,mnt,srv,net}/** mx,
   audit deny @{HOME}/{*,[^.]**} m,
   audit deny @{HOME}/.[^mf]*/** m,
   audit deny @{HOME}/** x,
   audit deny owner /**/* x,
-  
+
   deny @{HOME}/.local/share/{applications,flatpak}/** w,
   audit deny @{HOME}/.* w,
   audit deny @{HOME}/.bash_history r,
-  
+
   # Modifications (for Firefox 58)
   /etc/ld.so.conf r,
   /etc/ld.so.conf.d/*.conf r,
   owner @{HOME}/.cache/fontconfig/*.cache-* rw,
-  
+
   # per-user firefox configuration
   owner @{HOME}/.{firefox,mozilla}/ rw,
   owner @{HOME}/.{firefox,mozilla}/** rw,
@@ -334,5 +334,5 @@ include <tunables/confidential>
   include <local/usr.bin.firefox>
 }
 
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

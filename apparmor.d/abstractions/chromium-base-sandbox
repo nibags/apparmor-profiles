@@ -1,4 +1,4 @@
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor
 
 # Chromium sandbox binary:

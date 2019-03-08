@@ -182,5 +182,5 @@ profile okular /usr/bin/okular {
 	audit deny /{data,media,mnt,srv,net,cdrom,var,run,tmp}/** mx,
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

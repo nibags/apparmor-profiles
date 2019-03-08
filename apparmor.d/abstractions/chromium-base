@@ -1,4 +1,4 @@
-# kate: syntax AppArmor Security Profile
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor
 
 # Rules for Web browsers based on Chromium.
@@ -183,8 +183,8 @@ owner @{PROC}/[0-9]*/mounts r,
 /etc/fstab r,
 /etc/rpc r,
 /dev/tty r,
-# FIXME: chromium-browser has problems opening dialogs to open or save files 
-# with kdialog (info: Failed name lookup - deleted entry). 
+# FIXME: chromium-browser has problems opening dialogs to open or save files
+# with kdialog (info: Failed name lookup - deleted entry).
 # The problem is not reproduced in Opera, Vivaldi and Brave.
 owner /run/user/[0-9]*/kdialog*.slave-socket rwk,
 owner /run/user/[0-9]*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
@@ -215,11 +215,11 @@ profile lsb_release flags=(attach_disconnected) {
 	/etc/debian_version r,
 	/usr/share/distro-info/*.csv r,
 	/var/lib/dpkg/** r,
-	
+
 	/usr/local/lib{,64}/python3.[0-6]/dist-packages/ r,
 	/usr/bin/ r,
 	/usr/bin/python3.[0-6] mr,
-	
+
 	# file_inherit
 	deny /tmp/gtalkplugin.log w,
 }

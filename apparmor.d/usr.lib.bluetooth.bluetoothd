@@ -96,5 +96,5 @@ include <tunables/global>
 	audit deny /etc/xdg/{autostart,systemd}/** rwklmx,
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

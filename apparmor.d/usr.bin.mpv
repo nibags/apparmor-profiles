@@ -84,5 +84,5 @@ profile mpv /usr/bin/mpv {
 	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

@@ -145,5 +145,5 @@ profile gwenview /usr/bin/gwenview {
 	unix (send receive connect) type=stream addr=none peer=(label=unconfined),
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces all; replace-tabs off;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

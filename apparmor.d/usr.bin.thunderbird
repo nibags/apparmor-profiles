@@ -37,7 +37,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	include <abstractions/ssl_certs>
 	include <abstractions/openssl>
 	include <abstractions/ubuntu-unity7-base>  # For notifications
-	
+
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 
@@ -63,9 +63,9 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	dbus (send)
 		bus=session
 		interface=org.kde.KWallet,
-		
-    capability sys_admin,
-	
+
+	capability sys_admin,
+
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
 	deny @{CONFIDENTIAL_EXCEPT_THUNDERBIRD} rwklmx,
@@ -95,7 +95,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	audit deny @{HOME}/.[^t]*/** m,
 	audit deny @{HOME}/** x,
 	audit deny owner /**/* x,
-	
+
 	audit deny @{HOME}/.* w,
 	audit deny @{HOME}/.bash_history r,
 
@@ -104,7 +104,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 
 	# WARNING: Required for GNOME 3
 	# /run/systemd/journal/socket w,
-	
+
 	# For networking
 	network inet stream,
 	network inet6 stream,
@@ -136,7 +136,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	# Doesn't seem to be required, but noisy. Maybe allow 'r' for 'b*' if needed.
 	# Possibly move to an abstraction if anything else needs it.
 	deny /run/udev/data/** r,
-	
+
 	# Thunderbird specific
 	/etc/thunderbird*/ r,
 	/etc/thunderbird*/** r,
@@ -185,13 +185,13 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	owner @{PROC}/@{pid}/status r,
 	owner @{PROC}/@{pid}/task/[0-9]*/stat r,
 	@{PROC}/sys/vm/overcommit_memory r,
-	
+
 	/sys/devices/pci[0-9]*/**/{busnum,config,revision,uevent} r,
 	/sys/devices/pci[0-9]*/**/{,subsystem_}{device,vendor} r,
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	/sys/devices/platform/**/uevent r,
 	/dev/tty r,
-	
+
 	/etc/fstab r,
 	/etc/mtab r,
 	/etc/timezone r,
@@ -214,7 +214,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 
 	# So browsing directories works
 	/{,**/} r,
-	
+
 	/usr/share/applications/*.list r,
 	/usr/share/color-schemes/** r,
 	/usr/share/glib-*/** r,
@@ -224,7 +224,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	/usr/share/themes/** r,
 	/usr/share/qt5/translations/*.qm r,
 	/usr/share/hwdata/pnp.ids r,
-	
+
 	# Per-user Thunderbird configuration
 	owner @{HOME}/.thunderbird/{,**} rw,
 	owner @{HOME}/.thunderbird/**/storage.sdb k,
@@ -233,22 +233,22 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	owner @{HOME}/.thunderbird/**/plugins/** rm,
 	owner @{HOME}/.cache/thunderbird/{,**} rw,
 	owner @{HOME}/.cache/thunderbird/**/*.sqlite k,
-	
+
 	owner @{HOME}/.config/gtk-3.0/** r,
 	owner @{HOME}/.config/gtk-3.0/bookmarks r,
 	owner @{HOME}/.gtkrc-2.0{,-kde4} r,
-	
+
 	# For KDE Plasma 5
 	owner @{HOME}/.config/kdeglobals r,
 	owner @{HOME}/.config/klanguageoverridesrc r,
 	owner @{HOME}/.config/kwalletrc r,
 	owner @{HOME}/.cache/icon-cache.kcache rw,
-	
+
 	owner @{HOME}/.config/mimeapps.list{,.[a-zA-Z0-9]} rw,
 	owner @{HOME}/.local/share/applications/defaults.list r,
 	owner @{HOME}/.local/share/applications/mimeapps.list r,
 	owner @{HOME}/.local/share/applications/mimeinfo.cache r,
-	
+
 	owner @{HOME}/.{cache,config}/dconf/user rw,
 	owner /{,var/}run/user/[0-9]*/dconf/user rw,
 	deny owner @{HOME}/.local/share/gvfs-metadata/* r,
@@ -301,7 +301,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 		/usr/local/lib{,64}/python3.[0-6]/dist-packages/ r,
 		/usr/bin/ r,
 		/usr/bin/python3.[0-6] mr,
-		
+
 		# file_inherit
 		deny /tmp/gtalkplugin.log w,
 	}
@@ -343,7 +343,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 
 	profile gpg2 {
 		include <abstractions/base>
-		
+
 		# Required to import keys from keyservers
 		include <abstractions/nameservice>
 		include <abstractions/p11-kit>
@@ -404,5 +404,5 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	# include <local/usr.bin.thunderbird>
 }
 
-# kate: syntax AppArmor Security Profile;
+# kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;
 # vim:  syntax=apparmor
