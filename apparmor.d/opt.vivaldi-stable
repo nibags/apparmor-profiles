@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 07, 2019
+# Last change: March 10, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -22,6 +22,7 @@ include <tunables/confidential>
 profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
+	include <abstractions/ubuntu-helpers>
 
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>

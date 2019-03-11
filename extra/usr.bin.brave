@@ -22,6 +22,7 @@ include <tunables/confidential>
 /usr/lib{,64}/brave/brave flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
+	include <abstractions/ubuntu-helpers>
 
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>

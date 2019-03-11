@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 05, 2018
+# Last change: March 10, 2019
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the include rule:
@@ -44,6 +44,7 @@ profile mpv /usr/bin/mpv {
 
 	/etc/mpv/{,**} r,
 	/etc/nsswitch.conf r,
+	deny /etc/passwd r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
 	/etc/glvnd/** r,

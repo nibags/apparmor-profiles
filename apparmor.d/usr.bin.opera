@@ -28,6 +28,7 @@ include <tunables/confidential>
 /usr/lib{64,/x86_64-linux-gnu}/opera/opera flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
+	include <abstractions/ubuntu-helpers>
 
 	# Required to open downloaded files.
 	include <abstractions/open-some-applications>

@@ -6,7 +6,14 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 07, 2019
+#   Last change: March 10, 2019
+
+# IMPORTANT: In the main profile, also include the
+# abstraction "ubuntu-helpers" to use the transition
+# to "sanitized_helper". This is not included here to
+# avoid possible errors of duplicate profiles.
+
+#  include <abstractions/ubuntu-helpers>
 
 include <abstractions/audio>
 include <abstractions/cups-client>
@@ -168,10 +175,13 @@ owner @{HOME}/.config/gtk-3.0/* r,
 owner @{HOME}/.cache/fontconfig/*.cache-* rw,
 deny /var/cache/fontconfig/ w,
 
+
 # For KDE Plasma 5 (used by kdialog & kde-open5).
 # This could be inside a child profile for the kdialog and kde-open5
 # binaries, but most of the rules in the parent profile are repeated.
+
 include <abstractions/kde-user>
+
 owner @{HOME}/.config/kio* r,
 owner @{HOME}/.config/kdialogrc rw,
 owner @{HOME}/.config/kdialogrc.[a-zA-Z0-9]* rwk,
@@ -183,6 +193,7 @@ owner @{PROC}/[0-9]*/mounts r,
 /etc/fstab r,
 /etc/rpc r,
 /dev/tty r,
+
 # FIXME: chromium-browser has problems opening dialogs to open or save files
 # with kdialog (info: Failed name lookup - deleted entry).
 # The problem is not reproduced in Opera, Vivaldi and Brave.
@@ -196,9 +207,8 @@ link /run/user/[0-9]*/kdeinit5* -> "/run/user/[0-9]*/#[0-9]*",
 @{PROC}/sys/kernel/core_pattern r,
 
 # Plasma browser integration support (temporary solution)
+# NOTE: "sanitized_helper" is provided by the "ubuntu-helpers" abstraction.
 /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
-#unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
-#unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper, addr=none),
 /etc/opt/chrome/native-messaging-hosts/org.kde.plasma.browser_integration.json r,
 
 signal (send) set=(term) peer=unconfined,
