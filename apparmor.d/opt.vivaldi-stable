@@ -6,7 +6,7 @@
 # NOTE:
 #  - Important: Check & change the user download & desktop directory.
 #  - By default, there is only write access to the download & desktop directory.
-#  - This profile is only tested on Ubuntu 16.04, with KDE Plasma 5.
+#  - This profile is only tested on Ubuntu 18.04 & 16.04, with KDE Plasma 5.
 
 include <tunables/global>
 include <tunables/confidential>
@@ -59,7 +59,7 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
 
 	deny /usr/local/share/fonts/** w,
-    deny /usr/share/fonts/** w,
+	deny /usr/share/fonts/** w,
 	deny /usr/share/texmf/fonts/** w,
 	deny /usr/share/poppler/** w,
 

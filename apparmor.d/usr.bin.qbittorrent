@@ -4,7 +4,7 @@
 # NOTE:
 #  - This profile is more restrictive than the one provided
 #    in <abstractions/ubuntu-bittorrent-clients>.
-#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+#  - This profile is only tested on Ubuntu 18.04 & 16.04 with KDE Plasma 5.
 
 include <tunables/global>
 include <tunables/confidential>
