@@ -1,12 +1,14 @@
+#  AppArmor profile for Brave Web browser
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: January 05, 2018
+# Last change: March 13, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
 # NOTE:
 #  - Important: Check & change the user download & desktop directory.
 #  - By default, there is only write access to the download & desktop directory.
-#  - This profile is only tested on Ubuntu 16.04 & KDE Plasma 5.
+#  - This profile is tested on Ubuntu 18.04 & KDE Plasma 5.
 
 # Requirements:
 #    apparmor.d/tunables/confidential
@@ -20,21 +22,15 @@
 include <tunables/global>
 include <tunables/confidential>
 
-# The Opera directory can be:
-#      /usr/lib/x86_64-linux-gnu/opera/ [Ubuntu, Debian]   [64 bits]
-#      /usr/lib/i386-linux-gnu/opera/   [Ubuntu, Debian]   [32 bits]
-#      /usr/lib/opera/                  [Arch Linux]
-#      /usr/lib64/opera/                [OpenSUSE, Fedora] [64 bits]
-# For general use: /usr/lib{,64,/x86_64-linux-gnu,/i386-linux-gnu}/opera/opera
-# This directory is used for Ubuntu, Debian and OpenSUSE (64 bits):
-@{OPERA_LIBDIR} = /usr/lib{64,/x86_64-linux-gnu}/opera
+# Brave directory:
+@{BRAVE_LIBDIR} = /opt/brave.com/brave
 
 # User directories, with write access
 # (downloads and desktop directories):
 @{USER_DIR} =  @{HOME}/Descargas
 @{USER_DIR} += @{HOME}/Escritorio
 
-/usr/lib{64,/x86_64-linux-gnu}/opera/opera flags=(attach_disconnected) {
+profile brave-browser /opt/brave.com/brave/brave flags=(attach_disconnected) {
 	# Base rules for Web browsers based on Chromium.
 	include <abstractions/chromium-base>
 	include <abstractions/ubuntu-helpers>
@@ -48,11 +44,14 @@ include <tunables/confidential>
 
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
-	deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
+	deny @{CONFIDENTIAL_EXCEPT_BRAVE} rwklmx,
 
-	/sys/devices/pci[0-9]*/**/{bConfigurationValue,descriptors,manufacturer,product,serial} r,
 	owner /{dev,run}/shm/{,.}org.chromium.* mrw,
-	owner /{dev,run}/shm/{,.}com.opera.* mrw,
+	deny /etc/opt/chrome/ w,
+
+	# For the file download dialog
+	owner @{PROC}/@{pid}/mountinfo r,
+	/run/mount/utab r,
 
 	# Access to Home, removable medias & other folders
 	@{HOME}/{,*,[^.]**} r,
@@ -63,59 +62,58 @@ include <tunables/confidential>
 	owner @{USER_DIR}/ r,
 	owner @{USER_DIR}/** rw,
 
-	# Opera configuration
-	owner @{HOME}/.config/opera/ rw,
-	owner @{HOME}/.config/opera/** rwk,
-	owner @{HOME}/.config/opera/**/Cache/* mr,
-	owner @{HOME}/.cache/opera/{,**} rw,
-	owner @{HOME}/.cache/opera/Cache/* mr,
-	owner @{HOME}/.local/share/.org.chromium.Chromium{,.[a-zA-Z0-9]*} rw,
+	# Brave configuration
+	owner @{HOME}/.{config,cache}/BraveSoftware/{,Brave-Browser/} rw,
+	owner @{HOME}/.config/BraveSoftware/Brave-Browser/** rwk,
+	owner @{HOME}/.config/BraveSoftware/Brave-Browser/{,**/}Dictionaries/*.bdic mr,
+	owner @{HOME}/.config/BraveSoftware/Brave-Browser/**/Cache/* mr,
+	owner @{HOME}/.cache/BraveSoftware/Brave-Browser/** rw,
+	owner "@{HOME}/.cache/BraveSoftware/Brave-Browser/{Default,Tor Profile}/Cache/*" mr,
+	owner @{HOME}/.cache/mesa_shader_cache/** rw,
 
-	# Access to Opera directory
-	deny @{OPERA_LIBDIR}/** w,  # Noisy
-	@{OPERA_LIBDIR}/*.pak mr,
-	@{OPERA_LIBDIR}/locales/* mr,
+	# Tor
+	# TODO: create a child profile for Tor
+	owner @{HOME}/.config/BraveSoftware/Brave-Browser/*/[0-9]*/tor-[0-9]*-linux-brave-[0-9] ix,
+	@{PROC}/sys/kernel/random/uuid r,
 
-	@{OPERA_LIBDIR}/opera ix,
-	@{OPERA_LIBDIR}/opera_sandbox cx -> opera_sandbox,
-	@{OPERA_LIBDIR}/opera_autoupdate ixrk,
-	@{OPERA_LIBDIR}/opera_crashreporter ixr,
-	@{OPERA_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+	# Access to Brave directory
+	deny @{BRAVE_LIBDIR}/** w,  # Noisy
+	@{BRAVE_LIBDIR}/** r,
+	@{BRAVE_LIBDIR}/*.pak mr,
+	@{BRAVE_LIBDIR}/locales/* mr,
+	@{BRAVE_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+
+	# Allow transitions to ourself and our sandbox
+	@{BRAVE_LIBDIR}/brave ix,
+	@{BRAVE_LIBDIR}/brave-sandbox cx -> brave_sandbox,
 
 	# Allow communicating with sandbox
-	unix (receive, send) peer=(label=@{OPERA_LIBDIR}/opera//opera_sandbox),
-
-	/bin/which ixr,
+	unix (receive, send) peer=(label=@{BRAVE_LIBDIR}/brave//brave_sandbox),
 
 	# Noisy
-	audit deny @{HOME}/** x,
-	audit deny owner /**/* x,
+	audit deny @{HOME}/.[^c]** x,
 
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
 		include <abstractions/chromium-base-xdgsettings>
 
-		deny @{CONFIDENTIAL_EXCEPT_OPERA} rwklmx,
-
-		@{OPERA_LIBDIR}/xdg-settings r,
+		deny @{CONFIDENTIAL_EXCEPT_BRAVE} rwklmx,
 	}
 
-	profile opera_sandbox flags=(attach_disconnected) {
-		# Base rules for opera_sandbox binary.
+	profile brave_sandbox flags=(attach_disconnected) {
+		# Base rules for brave-sandbox binary.
 		include <abstractions/chromium-base-sandbox>
 
-		signal (receive) peer=@{OPERA_LIBDIR}/opera,
-		unix (receive, send) peer=(label=@{OPERA_LIBDIR}/opera),
+		signal (receive) peer=@{BRAVE_LIBDIR}/brave,
+		unix (receive, send) peer=(label=@{BRAVE_LIBDIR}/brave),
 
-		/usr/bin/opera r,
-		@{OPERA_LIBDIR}/opera Px,
-		@{OPERA_LIBDIR}/opera_sandbox r,
-		@{OPERA_LIBDIR}/opera_autoupdate ixrk,
-		@{OPERA_LIBDIR}/opera_crashreporter ixr,
+		@{BRAVE_LIBDIR}/brave-browser r,
+		@{BRAVE_LIBDIR}/brave Px,
+		@{BRAVE_LIBDIR}/brave-sandbox r,
 	}
 
 	# Site-specific additions and overrides. See local/README for details.
-	include <local/usr.bin.chromium-browser>
+	# include <local/usr.bin.chromium-browser>
 }
 
 # kate: syntax AppArmor Security Profile; replace-tabs off; remove-trailing-spaces mod;

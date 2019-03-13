@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 07, 2019
+# Last change: March 12, 2019
 
 include <tunables/global>
 include <tunables/confidential>
@@ -104,7 +104,7 @@ profile gwenview /usr/bin/gwenview {
 	link @{HOME}/.config/{,org.kde.}gwenviewrc.[a-zA-Z0-9]* -> "/home/*/.config/@{TMP_FILE}",
 	link @{HOME}/.local/share/{,org.kde.}gwenview/** -> "/home/*/.local/share/{,org.kde.}gwenview/{,**/}@{TMP_FILE}",
 	link @{HOME}/.config/session/{,org.kde.}gwenview* -> "/home/*/.config/session/@{TMP_FILE}",
-	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/@{TMP_FILE}",
+	link @{HOME}/.cache/thumbnails/*/*.[a-zA-Z0-9]* -> "/home/*/.cache/thumbnails/*/*",
 
 	allow owner @{HOME}/.local/share/flatpak/exports/share/icons/** rw,
 

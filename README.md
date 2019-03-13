@@ -9,7 +9,7 @@ AppArmor profiles for:
 * Baka-MPlayer (extra)
 * Baloo (extra)
 * Bluetooth Daemon (tested on Ubuntu 18.04)
-* Brave (extra)
+* Brave (tested on Ubuntu 18.04)
 * Chromium (tested on Ubuntu 18.04)
 * Firefox
 * Gwenview (tested on Ubuntu 18.04)

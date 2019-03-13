@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 10, 2019
+#   Last change: March 13, 2019
 
 # IMPORTANT: In the main profile, also include the
 # abstraction "ubuntu-helpers" to use the transition
@@ -157,9 +157,9 @@ ptrace (trace read) peer=@{profile_name}//xdgsettings,
 
 # Block binary execution and mapping of compiled libraries
 audit deny /{data,media,mnt,srv,net}/** mx,
-audit deny @{HOME}/{*,[^.]**} m,
-audit deny @{HOME}/** x,
-audit deny owner /**/* x,
+audit deny @{HOME}/{*,[^.]**} mx,
+audit deny /tmp/** x,
+# audit deny owner /**/* x,
 
 deny @{HOME}/.local/share/applications/** w,
 deny @{HOME}/.local/share/flatpak/** w,

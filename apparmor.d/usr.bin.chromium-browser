@@ -1,3 +1,5 @@
+#  AppArmor profile for Chromium Web browser
+# --------------------------------------------
 # This AppArmor profile is a modification of the original Chromium profile
 # created by Jamie Strandboge <jamie@canonical.com>
 
@@ -9,6 +11,15 @@
 #  - By default, full write access is granted to the owner of the
 #    directories: /home, /media, /mnt, /srv, /net.
 #    View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/abstractions/chromium-base
+#    apparmor.d/abstractions/chromium-base-xdgsettings
+#    apparmor.d/abstractions/chromium-base-sandbox
+#    apparmor.d/abstractions/kde-user
+#    apparmor.d/abstractions/flatpak-snap
+#    apparmor.d/abstractions/open-messaging
 
 include <tunables/global>
 include <tunables/confidential>
@@ -86,6 +97,10 @@ profile chromium-browser /usr/lib{,64}/chromium-browser/chromium-browser flags=(
 	/bin/cp ixr,
 	/bin/cat ixr,
 	/bin/mktemp ixr,
+
+	# Noisy
+	audit deny @{HOME}/** x,
+	audit deny owner /**/* x,
 
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.

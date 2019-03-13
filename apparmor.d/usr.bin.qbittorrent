@@ -1,5 +1,5 @@
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 08, 2018
+# Last change: March 12, 2019
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -56,6 +56,11 @@ profile qbittorrent /usr/bin/qbittorrent {
 		peer=(name=org.freedesktop.DBus),
 	# member={Hello,AddMatch,RemoveMatch,GetNameOwner}
 	# peer=(name=org.freedesktop.DBus label=unconfined)
+	dbus (receive)
+		bus=system
+		path=/org/freedesktop/NetworkManager
+		interface=org.freedesktop.NetworkManager
+		member=PropertiesChanged,
 
 	# Access to Home
 	owner @{TORRENTS_DIR}/{,**} rw,                  # Just read/write in the Torrents directory
@@ -82,10 +87,13 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner @{HOME}/.kde/share/config/ktimezonedrc r,
 	owner @{HOME}/.kde/share/config/*.new rwk,
 	owner @{HOME}/.local/share/qt_temp.* rwk,
+	owner @{HOME}/.local/share/kservices5/{,**} r,
+	owner @{HOME}/.cache/mesa_shader_cache/** rw,
 
 	link @{HOME}/.config/qBittorrentrc* -> "/home/*/.config/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/*  -> "/home/*/.config/qBittorrent/#[0-9]*",
 	link @{HOME}/.config/qBittorrent/**/* -> "/home/*/.config/qBittorrent/**/#[0-9]*",
+	link @{HOME}/.config/qBittorrent/qBittorrent.conf -> "/home/*/.config/qBittorrent/qBittorrent_new.conf",
 
 	#link @{HOME}/.local/share/data/qBittorrent/BT_backup/* -> "/home/*/.local/share/data/qBittorrent/BT_backup/#[0-9]*",
 	link @{HOME}/.local/share/data/qBittorrent/*  -> "/home/*/.local/share/data/qBittorrent/#[0-9]*",
@@ -134,6 +142,8 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/sys/devices/pci[0-9]*/**/id{Product,Vendor} r,
 	owner @{PROC}/@{pid}/mounts r,
 	@{PROC}/sys/kernel/random/boot_id r,
+	@{PROC}/sys/kernel/core_pattern r, # investigate
+	#owner @{PROC}/@{pid}/mountinfo r, # investigate
 
 	# Temporal files & sockets
 	owner /tmp/xauth-[0-9]* r,

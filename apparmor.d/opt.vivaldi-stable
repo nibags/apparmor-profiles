@@ -1,5 +1,7 @@
+#  AppArmor profile for Vivaldi Web browser
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 10, 2019
+# Last change: March 13, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -7,6 +9,15 @@
 #  - Important: Check & change the user download & desktop directory.
 #  - By default, there is only write access to the download & desktop directory.
 #  - This profile is only tested on Ubuntu 18.04 & 16.04, with KDE Plasma 5.
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/abstractions/chromium-base
+#    apparmor.d/abstractions/chromium-base-xdgsettings
+#    apparmor.d/abstractions/chromium-base-sandbox
+#    apparmor.d/abstractions/kde-user
+#    apparmor.d/abstractions/flatpak-snap
+#    apparmor.d/abstractions/open-some-applications
 
 include <tunables/global>
 include <tunables/confidential>
@@ -54,7 +65,7 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	owner @{HOME}/.config/vivaldi/**/Cache/* mr,
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
-	owner @{HOME}/.cache/mesa_shader_cache/** rwk,
+	owner @{HOME}/.cache/mesa_shader_cache/** rw,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
 
@@ -81,6 +92,10 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin//vivaldi_sandbox),
 
 	/usr/bin/xdg-desktop-menu ixr,
+
+	# Noisy
+	audit deny @{HOME}/** x,
+	audit deny owner /**/* x,
 
 	profile xdgsettings flags=(attach_disconnected) {
 		# Base rules for xdg-settings binary.
