@@ -1,9 +1,17 @@
+#  AppArmor profile for mpv media player
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: March 10, 2019
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the include rule:
 # <abstractions/nameservice> and remove: <abstractions/block-networking>
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/tunables/media-extensions
+#    apparmor.d/abstractions/confidential-deny
+#    apparmor.d/abstractions/block-networking
 
 include <tunables/global>
 include <tunables/confidential>

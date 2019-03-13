@@ -1,3 +1,5 @@
+#  AppArmor profile for Thunderbird
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: October 15, 2018
 # This AppArmor profile is based on the Firefox profile
@@ -10,6 +12,12 @@
 #  - By default, there is only write access to the download & desktop directories.
 #  - This profile was designed with the intention of working
 #    correctly in the KDE Plasma 5 desktop environment.
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/abstractions/flatpak-snap
+#    apparmor.d/abstractions/open-browser
+#    apparmor.d/abstractions/open-some-applications
 
 include <tunables/global>
 include <tunables/confidential>

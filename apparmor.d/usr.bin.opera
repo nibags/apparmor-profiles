@@ -1,3 +1,5 @@
+#  AppArmor profile for Opera Web browser
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: January 05, 2018
 # This AppArmor profile is based on the Chromium profile

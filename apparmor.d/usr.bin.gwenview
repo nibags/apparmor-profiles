@@ -1,5 +1,16 @@
+#  AppArmor profile for Gwenview
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: March 12, 2019
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/abstractions/kde-user
+#    apparmor.d/abstractions/flatpak-snap
+#    apparmor.d/abstractions/general-security
+#    apparmor.d/abstractions/block-networking
+#    apparmor.d/abstractions/open-browser
+#    apparmor.d/abstractions/open-email
 
 include <tunables/global>
 include <tunables/confidential>
@@ -17,7 +28,7 @@ include <tunables/confidential>
 @{IMG_EXT} += [iI][cC][oObB]
 # wbmp
 @{IMG_EXT} += [wW][bB][mM][pP]
-# webp
+# webps
 @{IMG_EXT} += [wW][eE][bB][pP]
 # dds
 @{IMG_EXT} += [dD][dD][sS]

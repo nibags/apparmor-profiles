@@ -1,5 +1,17 @@
+#  AppArmor profile for Okular
+# ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
 # Last change: August 24, 2018
+
+# Requirements:
+#    apparmor.d/tunables/confidential
+#    apparmor.d/abstractions/kde-user
+#    apparmor.d/abstractions/confidential-deny
+#    apparmor.d/abstractions/flatpak-snap
+#    apparmor.d/abstractions/general-security
+#    apparmor.d/abstractions/block-networking
+#    apparmor.d/abstractions/open-browser
+#    apparmor.d/abstractions/open-email
 
 include <tunables/global>
 include <tunables/confidential>
