@@ -24,7 +24,7 @@ AppArmor profiles for:
 **NOTE:** The profiles in the *extra* folder are not tested frequently!
 
 These are designed to work on KDE Plasma 5. 
-All profiles have been tested on Ubuntu 18.04 & 16.04 with KDE Plasma 5. 
+All profiles have been tested on Ubuntu 18.04 & 16.04, with KDE Plasma 5. 
 
 If you use Ubuntu, please install the `apparmor-utils` package.
 
@@ -36,7 +36,7 @@ If you use Ubuntu, please install the `apparmor-utils` package.
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
-* Check the location of the Telegram executable. The profile uses: `/home/*/.app/Telegram/{Telegram,Updater}`. NOTE: The Telegram profile is unmaintained; for sandbox, use the Flatpak or Snap package.
+* Check the location of the Telegram executable. The profile uses: `/home/*/.app/Telegram/{Telegram,Updater}`. **NOTE:** The Telegram profile is unmaintained; for sandbox, use the Flatpak or Snap package.
 
 ## Installation:
 
