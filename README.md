@@ -6,29 +6,25 @@
 ## Description:
 
 AppArmor profiles for:
-* Baka-MPlayer (extra)
-* Baloo (extra)
-* Bluetooth Daemon (tested on Ubuntu 18.04)
-* Brave (tested on Ubuntu 18.04)
-* Chromium (tested on Ubuntu 18.04)
+
+* Bluetooth Daemon
+* Brave
+* Chromium
 * Firefox
-* Gwenview (tested on Ubuntu 18.04)
-* KTorrent
-* mpv (tested on Ubuntu 18.04)
-* Okular (tested on Ubuntu 18.04)
-* Opera
-* qBittorrent (tested on Ubuntu 18.04)
-* Telegram (extra)
-* Thunderbird (tested on Ubuntu 18.04)
-* Vivaldi (tested on Ubuntu 18.04)
-* VLC 2.2 (extra)
+* Gwenview
+* KTorrent (not tested in latest versions!)
+* mpv
+* Okular
+* Opera (not tested in latest versions!)
+* qBittorrent
+* Thunderbird
+* Vivaldi
 * youtube-dl (extra)
 
 **NOTE:** The profiles in the *extra* folder are not tested frequently!
 
 These are designed to work on KDE Plasma 5. 
-All profiles have been tested on Ubuntu 16.04 & KDE Plasma 5. 
-Some profiles are also tested in Ubuntu 18.04.
+All profiles have been tested on Ubuntu 18.04 & 16.04 with KDE Plasma 5. 
 
 If you use Ubuntu, please install the `apparmor-utils` package.
 
@@ -40,7 +36,7 @@ If you use Ubuntu, please install the `apparmor-utils` package.
 	
 * The profiles of KTorrent and qBittorrent use the directory `@{HOME}/Descargas/Torrents/` to save the downloads. You must modify this according to your configuration.
 
-* Check the location of the Telegram executable. The profile uses: `/home/*/.app/Telegram/{Telegram,Updater}`.
+* Check the location of the Telegram executable. The profile uses: `/home/*/.app/Telegram/{Telegram,Updater}`. NOTE: The Telegram profile is unmaintained; for sandbox, use the Flatpak or Snap package.
 
 ## Installation:
 
