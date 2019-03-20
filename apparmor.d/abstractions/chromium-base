@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 13, 2019
+#   Last change: March 19, 2019
 
 # IMPORTANT: In the main profile, also include the
 # abstraction "ubuntu-helpers" to use the transition
@@ -175,6 +175,9 @@ owner @{HOME}/.config/gtk-3.0/* r,
 owner @{HOME}/.cache/fontconfig/*.cache-* rw,
 deny /var/cache/fontconfig/ w,
 
+owner @{HOME}/.cache/mesa_shader_cache/** rw,
+owner @{HOME}/.cache/mesa_shader_cache/**.tmp k,
+
 
 # For KDE Plasma 5 (used by kdialog & kde-open5).
 # This could be inside a child profile for the kdialog and kde-open5
@@ -210,6 +213,7 @@ link /run/user/[0-9]*/kdeinit5* -> "/run/user/[0-9]*/#[0-9]*",
 # NOTE: "sanitized_helper" is provided by the "ubuntu-helpers" abstraction.
 /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
 /etc/opt/chrome/native-messaging-hosts/org.kde.plasma.browser_integration.json r,
+# ptrace (read) peer=@{profile_name}//sanitized_helper,
 
 signal (send) set=(term) peer=unconfined,
 

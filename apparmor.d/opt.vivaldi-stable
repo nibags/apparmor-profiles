@@ -1,7 +1,7 @@
 #  AppArmor profile for Vivaldi Web browser
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 13, 2019
+# Last change: March 19, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -65,9 +65,10 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	owner @{HOME}/.config/vivaldi/**/Cache/* mr,
 	owner @{HOME}/.cache/vivaldi/{,**} rw,
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
-	owner @{HOME}/.cache/mesa_shader_cache/** rw,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
+	owner @{HOME}/.local/lib/{,vivaldi/} rw,
+	owner @{HOME}/.local/lib/vivaldi/libffmpeg.so{,.*} mr,
 
 	deny /usr/local/share/fonts/** w,
 	deny /usr/share/fonts/** w,
@@ -80,6 +81,7 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	@{VIVALDI_LIBDIR}/*.pak mr,
 	@{VIVALDI_LIBDIR}/locales/* mr,
 	@{VIVALDI_LIBDIR}/xdg-settings Cxr -> xdgsettings,
+	@{VIVALDI_LIBDIR}/lib/libffmpeg.so mr,
 
 	@{VIVALDI_LIBDIR}/libwidevinecdm.so mr,
 	/var/opt/vivaldi/libwidevinecdm.so mr,
@@ -92,6 +94,8 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	unix (receive, send) peer=(label=@{VIVALDI_LIBDIR}/vivaldi-bin//vivaldi_sandbox),
 
 	/usr/bin/xdg-desktop-menu ixr,
+
+	#ptrace (read) peer=@{profile_name}//sanitized_helper,
 
 	# Noisy
 	audit deny @{HOME}/** x,

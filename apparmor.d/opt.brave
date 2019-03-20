@@ -1,7 +1,7 @@
 #  AppArmor profile for Brave Web browser
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 13, 2019
+# Last change: March 19, 2019
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -69,7 +69,6 @@ profile brave-browser /opt/brave.com/brave/brave flags=(attach_disconnected) {
 	owner @{HOME}/.config/BraveSoftware/Brave-Browser/**/Cache/* mr,
 	owner @{HOME}/.cache/BraveSoftware/Brave-Browser/** rw,
 	owner "@{HOME}/.cache/BraveSoftware/Brave-Browser/{Default,Tor Profile}/Cache/*" mr,
-	owner @{HOME}/.cache/mesa_shader_cache/** rw,
 
 	# Tor
 	# TODO: create a child profile for Tor
