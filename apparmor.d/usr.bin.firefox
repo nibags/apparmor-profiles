@@ -1,21 +1,21 @@
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: June 14, 2018
+# Last change: March 23, 2019
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
 
 # NOTE: By default, full write access is granted to the owner of the
 # directories: /home, /media, /mnt, /srv, /net.
-# View in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
+# See in: /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files
 
 # User directories, with write access
 # (downloads and desktop directories):
 @{USER_DIR} =  @{HOME}/Descargas
 @{USER_DIR} += @{HOME}/Escritorio
 
-include <tunables/global>
-include <tunables/confidential>
+#include <tunables/global>
+#include <tunables/confidential>
 
 # We want to confine the binaries that match:
 #  /usr/lib/firefox/firefox
@@ -23,23 +23,23 @@ include <tunables/confidential>
 # but not:
 #  /usr/lib/firefox/firefox.sh
 /usr/lib/firefox/firefox{,*[^s][^h]} {
-  include <abstractions/audio>
-  include <abstractions/cups-client>
-  include <abstractions/dbus-strict>
-  include <abstractions/dbus-session-strict>
-  include <abstractions/dconf>
-  include <abstractions/gnome>
-  include <abstractions/ibus>
-  include <abstractions/nameservice>
-  include <abstractions/openssl>
-  include <abstractions/p11-kit>
-  include <abstractions/ubuntu-unity7-base>
-  include <abstractions/ubuntu-unity7-launcher>
+  #include <abstractions/audio>
+  #include <abstractions/cups-client>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/dbus-session-strict>
+  #include <abstractions/dconf>
+  #include <abstractions/gnome>
+  #include <abstractions/ibus>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+  #include <abstractions/p11-kit>
+  #include <abstractions/ubuntu-unity7-base>
+  #include <abstractions/ubuntu-unity7-launcher>
 
-  include <abstractions/flatpak-snap>
-  include <abstractions/open-messaging>
+  #include <abstractions/flatpak-snap>
+  #include <abstractions/open-messaging>
 
-  include <abstractions/dbus-accessibility-strict>
+  #include <abstractions/dbus-accessibility-strict>
   dbus (send)
        bus=session
        peer=(name=org.a11y.Bus),
@@ -50,7 +50,7 @@ include <tunables/confidential>
        bus=accessibility,
 
   # Block full access to sensitive data, as passwords and keys.
-  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.
+  # Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. See in: tunables/confidential.
   deny @{CONFIDENTIAL_EXCEPT_MOZILLA} rwklmx,
 
   # Plasma browser integration support (temporary solution)
@@ -89,7 +89,7 @@ include <tunables/confidential>
   owner /tmp/** m,
   owner /var/tmp/** m,
   owner /{,var/}run/shm/shmfd-* rw,
-  owner /{dev,run}/shm/org.chromium.* rwk,
+  owner /{dev,run}/shm/org.{chromium,mozilla}.* rwk,
   /tmp/.X[0-9]*-lock r,
   /etc/udev/udev.conf r,
   # Doesn't seem to be required, but noisy. Maybe allow 'r' for 'b*' if needed.
@@ -149,7 +149,7 @@ include <tunables/confidential>
   /sys/devices/pci*/**/{,subsystem_}device r,
   /sys/devices/pci*/**/{,subsystem_}vendor r,
   /sys/devices/system/node/node[0-9]*/meminfo r,
-  /sys/devices/pci[0-9]*/**/{config,revision} r,  # Modifications
+  # /sys/devices/pci[0-9]*/**/{config,revision} r,
   owner @{HOME}/.cache/thumbnails/** w,
 
 
@@ -193,19 +193,24 @@ include <tunables/confidential>
 
   # Noisy
   audit deny /{data,media,mnt,srv,net}/** mx,
+  audit deny /{,var/}tmp/** mx,
   audit deny @{HOME}/{*,[^.]**} m,
   audit deny @{HOME}/.[^mf]*/** m,
   audit deny @{HOME}/** x,
-  audit deny owner /**/* x,
+  # audit deny owner /**/* x,
 
   deny @{HOME}/.local/share/{applications,flatpak}/** w,
   audit deny @{HOME}/.* w,
   audit deny @{HOME}/.bash_history r,
 
-  # Modifications (for Firefox 58)
+  # Nosy: included in abstraction/base
   /etc/ld.so.conf r,
   /etc/ld.so.conf.d/*.conf r,
+  # Noisy: included in abstraction/gnome -> abstraction/fonts
   owner @{HOME}/.cache/fontconfig/*.cache-* rw,
+
+  owner @{HOME}/.cache/mesa_shader_cache/** rw,
+  # owner @{HOME}/.cache/mesa_shader_cache/**.tmp k,
 
   # per-user firefox configuration
   owner @{HOME}/.{firefox,mozilla}/ rw,
@@ -308,8 +313,8 @@ include <tunables/confidential>
 
   /usr/bin/lsb_release Cxr -> lsb_release,
   profile lsb_release {
-    include <abstractions/base>
-    include <abstractions/python>
+    #include <abstractions/base>
+    #include <abstractions/python>
     /usr/bin/lsb_release r,
     /bin/dash ixr,
     /usr/bin/dpkg-query ixr,
@@ -328,11 +333,11 @@ include <tunables/confidential>
   }
 
   # Addons
-  include <abstractions/ubuntu-browsers.d/firefox>
+  #include <abstractions/ubuntu-browsers.d/firefox>
 
   # Site-specific additions and overrides. See local/README for details.
-  include <local/usr.bin.firefox>
+  #include <local/usr.bin.firefox>
 }
 
-# kate: syntax AppArmor Security Profile; remove-trailing-spaces mod;
+# kate: syntax AppArmor Security Profile; replace-tabs on; tab-width 2; indent-width 2; remove-trailing-spaces mod;
 # vim:  syntax=apparmor

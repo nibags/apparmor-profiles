@@ -6,7 +6,7 @@
 # This abstraction is based on the Chromium profile,
 # created by Jamie Strandboge <jamie@canonical.com>
 #   Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-#   Last change: March 19, 2019
+#   Last change: March 23, 2019
 
 # IMPORTANT: In the main profile, also include the
 # abstraction "ubuntu-helpers" to use the transition
@@ -162,7 +162,8 @@ audit deny /tmp/** x,
 # audit deny owner /**/* x,
 
 deny @{HOME}/.local/share/applications/** w,
-deny @{HOME}/.local/share/flatpak/** w,
+audit deny @{HOME}/.local/share/flatpak/** w,
+audit deny @{HOME}/.kde{,4}/{,share/,share/apps/} w,
 deny /usr/lib/vlc/plugins/plugins.dat.* w,
 deny @{HOME}/.* w,
 deny @{HOME}/.bash* r,

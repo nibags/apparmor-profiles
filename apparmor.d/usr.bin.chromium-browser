@@ -39,8 +39,11 @@ profile chromium-browser /usr/lib{,64}/chromium-browser/chromium-browser flags=(
 	# This include specifies which ubuntu-browsers.d abstractions to use. Eg, if
 	# you want access to productivity applications, adjust the following file
 	# accordingly.
-	include <abstractions/ubuntu-browsers.d/chromium-browser>
-	include <abstractions/open-messaging>
+	# include <abstractions/ubuntu-browsers.d/chromium-browser>
+	# include <abstractions/open-messaging>
+
+	# Required to open downloaded files.
+	include <abstractions/open-some-applications>
 
 	# Block full access to sensitive data, as passwords and keys.
 	# Includes /boot/**, /var/log/** & /etc/apparmor.d/** directories. View in: tunables/confidential.

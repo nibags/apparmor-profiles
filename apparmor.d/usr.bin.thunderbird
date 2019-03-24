@@ -110,7 +110,7 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	# Required for LVM setups
 	/sys/devices/virtual/block/dm-[0-9]*/uevent r,
 
-	# WARNING: Required for GNOME 3
+	# Required for GNOME 3
 	# /run/systemd/journal/socket w,
 
 	# For networking

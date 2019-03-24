@@ -1,7 +1,7 @@
 #  AppArmor profile for Okular
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: August 24, 2018
+# Last change: March 23, 2019
 
 # Requirements:
 #    apparmor.d/tunables/confidential
@@ -179,8 +179,9 @@ profile okular /usr/bin/okular {
 	signal (send) set=(term) peer=unconfined,
 
 	audit deny @{HOME}/.local/share/applications/** w,
-	deny @{HOME}/.local/share/flatpak/** w,
-	deny @{HOME}/.app/** w,
+	audit deny @{HOME}/.local/share/flatpak/** w,
+	audit deny @{HOME}/.kde{,4}/{,share/,share/apps/} w,
+	audit deny @{HOME}/.app/** w,
 	audit deny @{HOME}/.* w,
 	deny @{HOME}/.bash_history r,
 

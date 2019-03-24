@@ -24,8 +24,9 @@ deny /media/*/[Ww]indows/Users/*/ w,
 
 # Avoid modifications
 audit deny @{HOME}/.local/share/applications/** w,
-deny @{HOME}/.local/share/flatpak/** w,
-deny @{HOME}/.app/** w,
+audit deny @{HOME}/.local/share/flatpak/** w,
+audit deny @{HOME}/.kde{,4}/{,share/,share/apps/} w,
+audit deny @{HOME}/.app/** w,
 
 audit deny @{HOME}/.* w,
 deny @{HOME}/.bash_history r,
