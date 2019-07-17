@@ -1,6 +1,6 @@
 # Author: Jamie Strandboge <jamie@canonical.com>
 # Modifications: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 23, 2019
+# Last change: Jun 19, 2019
 
 # Declare an apparmor variable to help with overrides
 @{MOZ_LIBDIR}=/usr/lib/firefox
@@ -57,6 +57,22 @@
   /usr/bin/plasma-browser-integration-host Cxr -> sanitized_helper,
   unix (send, receive) type=(seqpacket) peer=(label=@{profile_name}//sanitized_helper, addr=none),
   unix (send, receive) type=(stream) peer=(label=@{profile_name}//sanitized_helper, addr=none),
+
+  capability sys_admin,
+  capability sys_chroot,
+  capability sys_ptrace,
+  network netlink raw,
+  unix (send, receive) type=(stream),
+  unix (send, receive) type=(seqpacket),
+  unix (send, receive) type=(raw),
+  /run/mount/utab r,
+  owner @{PROC}/[0-9]*/{uid_map,gid_map,setgroups} rw,
+
+  dbus (send)
+       bus=system
+       interface=org.freedesktop.DBus.Properties
+       path=/org/freedesktop/hostname[0-9]*
+       member=GetAll,
 
   # for networking
   network inet stream,
@@ -194,10 +210,16 @@
   # Noisy
   audit deny /{data,media,mnt,srv,net}/** mx,
   audit deny /{,var/}tmp/** mx,
-  audit deny @{HOME}/{*,[^.]**} m,
-  audit deny @{HOME}/.[^mf]*/** m,
-  audit deny @{HOME}/** x,
+  audit deny @{HOME}/{*,[^.]**} mx,
+  audit deny @{HOME}/.[^amf]*/** m,
+  audit deny @{HOME}/.[^a]*/** x,
+  # audit deny @{HOME}/** x,
   # audit deny owner /**/* x,
+
+  owner @{HOME}/.app/net.downloadhelper.coapp-*/** r,
+  owner @{HOME}/.app/net.downloadhelper.coapp-*/bin/{net.downloadhelper.coapp-linux-*,xdg-open} ix,
+  owner @{HOME}/.app/net.downloadhelper.coapp-*/converter/build/linux/[0-9]*/ff{mpeg,play,probe} ix,
+  owner @{HOME}/.app/net.downloadhelper.coapp-*/converter/build/linux/[0-9]*/*.so{,.*} m,
 
   deny @{HOME}/.local/share/{applications,flatpak}/** w,
   audit deny @{HOME}/.* w,

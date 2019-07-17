@@ -185,7 +185,7 @@ profile okular /usr/bin/okular {
 	audit deny @{HOME}/.* w,
 	deny @{HOME}/.bash_history r,
 
-	audit deny /dev/{video,audio}* rwlkmx, # Block cameras & microphones
+	audit deny /dev/{video,audio}* rwlkmx,
 	deny /run/udev/data/** rwklmx,
 
 	# Noisy

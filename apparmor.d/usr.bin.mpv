@@ -68,7 +68,7 @@ profile mpv /usr/bin/mpv {
 	/dev/ati/{,**} r,
 	/dev/dri/{,**} r,
 	/dev/tty rw,
-	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	audit deny /dev/{video,audio}* rwlkmx,
 
 	# Binaries and libraries
 	/usr/bin/mpv ixr,

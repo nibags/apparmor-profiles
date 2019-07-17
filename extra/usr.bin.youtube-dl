@@ -12,7 +12,7 @@ profile youtube_dl /usr{,/local}/bin/youtube-dl {
 	include <abstractions/python>
 	include <abstractions/nameservice>
 	
-	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	# Blocks binaries, precompiled libraries, etc.
 	include <abstractions/general-security>
 	
 	# Block full access to sensitive data, as passwords and keys.

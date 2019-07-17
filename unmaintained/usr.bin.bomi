@@ -73,7 +73,7 @@ profile bomi /usr/bin/bomi {
 	/dev/ati/{,**} rwk,
 	/dev/dri/{,**} rwk,
 	/dev/shm/{,**} rwk,
-	audit deny /dev/{video,audio}* rwlkmx,  # Block cameras & microphones
+	audit deny /dev/{video,audio}* rwlkmx,
 	
 	# Temporal files and sockets
 	owner /var/tmp/kdecache-*/* rwk,

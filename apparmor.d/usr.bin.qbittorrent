@@ -1,7 +1,7 @@
 #  AppArmor profile for qBittorrent
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 12, 2019
+# Last change: July 15, 2019
 
 # NOTE:
 #  - This profile is more restrictive than the one provided
@@ -44,7 +44,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	include <abstractions/wayland>
 	include <abstractions/flatpak-snap>
 
-	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	# Blocks binaries, precompiled libraries, etc.
 	include <abstractions/general-security>
 
 	# Block full access to sensitive data, as passwords and keys.
@@ -137,6 +137,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	/usr/share/mime/ r,
 	/usr/share/templates/ r,
 	/usr/share/hwdata/pnp.ids r,
+	/usr/share/drirc.d/{,**} r,
 
 	/etc/xdg/{,**} r,
 	/etc/machine-id r,
@@ -165,6 +166,7 @@ profile qbittorrent /usr/bin/qbittorrent {
 	owner /tmp/qt_temp.* rwk,
 	owner /tmp/qtsingleapp-qBitto-* rwk,
 	owner /tmp/[0-9]*/ rw,
+	owner /tmp/.[a-zA-Z0-9]*/{,*} rw,
 	owner /{,var/}tmp/{,.}qBitto** rwk,
 	owner /var/tmp/kdecache-*/{,*} rwk,
 	owner /run/user/[0-9]*/ksocket-*/{,qBitto*} rwk,

@@ -64,7 +64,7 @@ profile gwenview /usr/bin/gwenview {
 	include <abstractions/flatpak-snap>
 	include <abstractions/wayland>
 
-	# Blocks binaries, precompiled libraries, access to camera and microphone, etc.
+	# Blocks binaries, precompiled libraries, etc.
 	include <abstractions/general-security>
 
 	# Block network connection

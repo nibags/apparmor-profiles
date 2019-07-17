@@ -89,7 +89,6 @@ profile thunderbird /usr/lib{,64}/thunderbird/thunderbird{,*[^s][^h]} {
 	#   audit deny @{HOME}/.gnupg/** mrwkl,
 	#   audit deny @{HOME}/.ssh/** mrwkl,
 
-	# Block access to cameras & microphones
 	audit deny /dev/{video,audio}* rwlkmx,
 
 	# Access to HOME
