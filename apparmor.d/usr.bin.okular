@@ -1,7 +1,7 @@
 #  AppArmor profile for Okular
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 23, 2019
+# Last change: October 13, 2019
 
 # Requirements:
 #    apparmor.d/tunables/confidential
@@ -105,7 +105,7 @@ profile okular /usr/bin/okular {
 	include <abstractions/kde-user>
 	owner @{HOME}/.config/libaccounts-glib/accounts.db rk,
 
-	owner @{HOME}/.config/session/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+	owner @{HOME}/.config/session/#[0-9]{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]} rwk,
 	link @{HOME}/.config/session/okular* -> "/home/*/.config/session/#[0-9]*",
 	link @{HOME}/.config/okular{,part}rc{,.[a-zA-Z0-9]*} -> "/home/*/.config/#[0-9]*",
 	link @{HOME}/.local/share/okular/** -> "/home/*/.local/share/okular/**",
@@ -164,7 +164,7 @@ profile okular /usr/bin/okular {
 	owner /{,var/}run/user/[0-9]*/ksocket-*/** rwk,
 	/run/dbus/system_bus_socket w,
 
-	owner /run/user/[0-9]*/#[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9] rwk,
+	owner /run/user/[0-9]*/#[0-9]{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]}{,[0-9]} rwk,
 	link /run/user/[0-9]*/*-socket -> "/run/user/[0-9]*/#[0-9]*",
 
 	# PulseAudio

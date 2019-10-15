@@ -2,7 +2,7 @@
 # vim:  syntax=apparmor
 
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 13, 2019
+# Last change: October 13, 2019
 
 # Open Web browsers, needed to open links.
 # Only for Firefox, Opera, Chromium, Chrome, Vivaldi, Brave, Falkon & Pale Moon.
@@ -13,7 +13,8 @@
 # Firefox
 # "/usr/bin/firefox" is a link to: "/usr/lib{,64}/firefox/firefox.sh"
 # This is a script that executes: "/usr/lib{,64}/firefox/firefox"
-/usr/lib{,64}/firefox/firefox.sh ix,
+/usr/bin/{,_*.}firefox ixr,
+/usr/lib{,64}/firefox/firefox.sh ixr,
 /usr/lib{,64}/firefox/firefox PUx,
 
 # Opera
@@ -22,25 +23,25 @@
 
 # Chromium
 # "/usr/bin/chromium-browser" is a script that executes: "/usr/lib{,64}/chromium-browser/chromium-browser"
-/usr/bin/chromium-browser ix,
+/usr/bin/chromium-browser ixr,
 /usr/lib{,64}/chromium-browser/chromium-browser PUx,
 
 # Chrome
 # "/usr/bin/google-chrome-stable" is a link to: "/opt/google/chrome/google-chrome"
 # This is a script that executes: "/opt/google/chrome/chrome"
-/opt/google/chrome/google-chrome ix,
+/opt/google/chrome/google-chrome ixr,
 /opt/google/chrome/chrome PUx,
 
 # Vivaldi
 # "/usr/bin/vivaldi" is a link to: "/opt/vivaldi/vivaldi"
 # This is a script that executes: "/opt/vivaldi/vivaldi-bin"
-/opt/vivaldi/vivaldi ix,
+/opt/vivaldi/vivaldi ixr,
 /opt/vivaldi/vivaldi-bin PUx,
 
 # Bave
 # "/usr/bin/brave-browser" is a link to: "/opt/brave.com/brave/brave-browser"
 # This is a script that executes: "/opt/brave.com/brave/brave"
-/opt/brave.com/brave/brave-browser ix,
+/opt/brave.com/brave/brave-browser ixr,
 /opt/brave.com/brave/brave PUx,
 
 # Falkon
@@ -49,4 +50,4 @@
 # Pale Moon
 /usr/lib{,64}/palemoon/palemoon PUx,
 
-/bin/which ix,
+/bin/which ixr,
