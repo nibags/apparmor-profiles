@@ -1,7 +1,7 @@
 #  AppArmor profile for mpv media player
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 10, 2019
+# Last change: October 23, 2019
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the include rule:
@@ -55,8 +55,8 @@ profile mpv /usr/bin/mpv {
 	deny /etc/passwd r,
 	/etc/udev/udev.conf r,
 	/etc/vdpau_wrapper.cfg r,
-	/etc/glvnd/** r,
-	/usr/share/glvnd/** r,
+	/etc/glvnd/{,**} r,
+	/usr/share/{glvnd,drirc.d}/{,**} r,
 
 	/sys/**/ r,
 	/sys/devices/**/uevent r,
