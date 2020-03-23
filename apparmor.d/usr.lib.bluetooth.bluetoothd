@@ -24,6 +24,7 @@ include <tunables/global>
 
 	/dev/rfkill rw,
 	/dev/uinput rw,
+	/dev/hidraw/{,**} rw,
 
 	/sys/devices/{,**} r,
 	/run/udev/{,**} r,
