@@ -1,7 +1,7 @@
 #  AppArmor profile for Vivaldi Web browser
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 19, 2019
+# Last change: March 24, 2020
 # This AppArmor profile is based on the Chromium profile
 # by Jamie Strandboge <jamie@canonical.com>
 
@@ -67,6 +67,7 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	owner @{HOME}/.cache/vivaldi/Default/Cache/* mr,
 	owner @{HOME}/.local/share/.vivaldi_user_id{,.[a-zA-Z0-9]*} rw,
 	owner @{HOME}/.local/share/.com.vivaldi.Vivaldi{,.[a-zA-Z0-9]*} rw,
+	owner @{HOME}/.local/share/.vivaldi_reporting_data{,.[a-zA-Z0-9]*} rwk,
 	owner @{HOME}/.local/lib/{,vivaldi/} rw,
 	owner @{HOME}/.local/lib/vivaldi/libffmpeg.so{,.*} mr,
 
@@ -82,9 +83,16 @@ profile vivaldi-stable /opt/vivaldi/vivaldi-bin flags=(attach_disconnected) {
 	@{VIVALDI_LIBDIR}/locales/* mr,
 	@{VIVALDI_LIBDIR}/xdg-settings Cxr -> xdgsettings,
 	@{VIVALDI_LIBDIR}/lib/libffmpeg.so mr,
-
 	@{VIVALDI_LIBDIR}/libwidevinecdm.so mr,
+
+	/var/opt/vivaldi/** r,
 	/var/opt/vivaldi/libwidevinecdm.so mr,
+	/var/opt/vivaldi/media-codecs-*/libffmpeg.so mr,
+
+	@{PROC}/sys/fs/inotify/max_user_watches r,
+	@{PROC}/devices/virtual/dmi/id/sys_vendor r,
+	/sys/devices/virtual/dmi/id/{sys_vendor,product_name} r,
+	owner @{PROC}/[0-9]*/clear_refs rw,
 
 	# Allow transitions to ourself and our sandbox
 	@{VIVALDI_LIBDIR}/vivaldi-bin ix,

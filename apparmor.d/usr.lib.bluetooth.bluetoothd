@@ -1,7 +1,7 @@
 #  AppArmor profile for the Bluetooth Daemon
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 07, 2019
+# Last change: March 23, 2020
 
 include <tunables/global>
 
