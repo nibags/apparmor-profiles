@@ -1,7 +1,7 @@
 #  AppArmor profile for mpv media player
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: October 23, 2019
+# Last change: October 29, 2020
 
 # NOTE: By default, the internet connection is blocked.
 # To allow video streaming, uncomment the include rule:
@@ -26,6 +26,7 @@ profile mpv /usr/bin/mpv {
 	include <abstractions/dbus-session-strict>
 	include <abstractions/audio>
 	include <abstractions/X>
+	include <abstractions/wayland>
 	include <abstractions/freedesktop.org>
 
 	# Block network connection:
@@ -89,6 +90,10 @@ profile mpv /usr/bin/mpv {
 
 	# Temp files
 	owner /tmp/xauth-* r,
+
+	/run/systemd/userdb/{,**} r,
+	/run/systemd/userdb/io.systemd.DynamicUser w,
+	@{PROC}/sys/kernel/random/boot_id r,
 
 	#unix (send, receive) type=(stream) protocol=0 peer=(addr=none),
 }

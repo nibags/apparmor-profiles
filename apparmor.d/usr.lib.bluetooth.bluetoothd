@@ -1,7 +1,7 @@
 #  AppArmor profile for the Bluetooth Daemon
 # ---------------------------------------------
 # Author: Nibaldo Gonzalez <nibgonz@gmail.com>
-# Last change: March 23, 2020
+# Last change: October 29, 2020
 
 include <tunables/global>
 
@@ -11,6 +11,7 @@ include <tunables/global>
 
 	network bluetooth,
 	network netlink raw,
+	network alg seqpacket,
 
 	capability net_admin,
 	capability net_bind_service,
