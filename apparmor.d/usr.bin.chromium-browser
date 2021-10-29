@@ -87,6 +87,14 @@ profile chromium-browser /usr/lib{,64}/chromium-browser/chromium-browser flags=(
 	# Allow communicating with sandbox
 	unix (receive, send) peer=(label=@{CHROM_LIBDIR}/chromium-browser//chromium_browser_sandbox),
 
+	# for CRX extensions
+	owner /tmp/scoped_dir_*/ rw,
+	owner /tmp/scoped_dir_*/.org.chromium.Chromium.* rw,
+	owner /tmp/scoped_dir_*/CRX_INSTALL/ rw,
+	owner /tmp/scoped_dir_*/CRX_INSTALL/** rw,
+	owner /tmp/scoped_dir*/DECODED* rw,
+	owner /tmp/scoped_dir_*/mccea*_[0-9]*.crx rw,
+
 	# Binaries
 	/usr/bin/xdg-desktop-menu ixr,
 	/usr/bin/xdg-icon-resource ixr,
